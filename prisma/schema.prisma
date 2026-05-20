@@ -24,4 +24,25 @@ model User {
   email String @unique
   password String
   role Roles[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  info User_info?
+}
+
+model User_info {
+  id String @id @default(uuid())
+  dni String @unique
+  name String
+  surname String
+  birthday DateTime
+  status Boolean
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+
+  user User @relation(fields: [user_id], references: [id])
+  user_id String @unique
 }
