@@ -19,6 +19,30 @@ enum Roles {
   ADMIN
 }
 
+enum Fighting_Mode {
+  POINT_FIGHTING
+  KICK_LIGHT 
+  LIGHT_CONTACT
+  FULL_CONTACT
+  LOW_KICK
+  K1
+  BOXING
+}
+
+enum Fighting_Category {
+  CH
+  YC
+  OC
+  J
+  S
+  M
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
 model User {
   id String @id @default(uuid())
   email String @unique
@@ -45,4 +69,12 @@ model User_info {
 
   user User @relation(fields: [user_id], references: [id])
   user_id String @unique
+}
+
+model Fighting_Weights {
+  id String @id @default(uuid())
+  mode Fighting_Mode
+  category Fighting_Category
+  gender Gender
+  weights Int[]
 }
