@@ -43,6 +43,33 @@ enum Gender {
   FEMALE
 }
 
+enum States {
+  AMAZONAS
+  ANZOATEGUI
+  APURE
+  ARAGUA
+  BARINAS
+  BOLIVAR
+  CARABOBO
+  COJEDES
+  DELTA_AMACURO
+  DISTRITO_CAPITAL
+  FALCON
+  GUARICO
+  LARA
+  LA_GUAIRA
+  MERIDA
+  MIRANDA
+  MONAGAS
+  NUEVA_ESPARTA
+  PORTUGUESA
+  SUCRE
+  TACHIRA
+  TRUJILLO
+  YARACUY
+  ZULIA
+}
+
 model User {
   id String @id @default(uuid())
   email String @unique
@@ -52,23 +79,59 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  info User_info?
+  person Person? @relation(fields: [person_id], references: [id])
+  person_id String? @unique
 }
 
-model User_info {
+model Person {
   id String @id @default(uuid())
   dni String @unique
   name String
   surname String
   birthday DateTime
-  status Boolean
-
+  status Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  user User?
+  coach Coach?
+  athlete Athlete?
+}
 
-  user User @relation(fields: [user_id], references: [id])
-  user_id String @unique
+model Gym {
+  id String @id @default(uuid())
+  name String
+  address String
+  state States
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  coaches Coach[]
+  athletes Athlete[]
+}
+
+model Coach {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person Person @relation(fields: [person_id], references: [id])
+  person_id String @unique
+
+  gym Gym @relation(fields: [gym_id], references: [id])
+  gym_id String
+}
+
+model Athlete {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person Person @relation(fields: [person_id], references: [id])
+  person_id String @unique
+
+  gym Gym @relation(fields: [gym_id], references: [id])
+  gym_id String
 }
 
 model Fighting_Weights {
