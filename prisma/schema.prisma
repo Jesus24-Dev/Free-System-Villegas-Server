@@ -89,6 +89,7 @@ model Person {
   name String
   surname String
   birthday DateTime
+  gender Gender
   status Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
