@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -16,7 +17,7 @@ export class PersonController {
   constructor(private readonly personService: PersonService) {}
 
   @Post()
-  create(@Body() createPersonDto: CreatePersonDto) {
+  create(@Body(new ValidationPipe()) createPersonDto: CreatePersonDto) {
     return this.personService.create(createPersonDto);
   }
 
@@ -31,7 +32,10 @@ export class PersonController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePersonDto: UpdatePersonDto) {
+  update(
+    @Param('id') id: string,
+    @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
+  ) {
     return this.personService.update(id, updatePersonDto);
   }
 
