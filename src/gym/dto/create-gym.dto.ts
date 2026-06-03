@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Length, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, Length, IsEnum, IsUUID } from 'class-validator';
 import { States } from 'src/generated/prisma/enums';
 
 export class CreateGymDto {
@@ -18,4 +18,8 @@ export class CreateGymDto {
   })
   @IsNotEmpty({ message: 'Debes asignar un estado al gimnasio' })
   state!: States;
+
+  @IsUUID('4', { message: 'El ID del propietario debe ser un UUID válido' })
+  @IsNotEmpty({ message: 'El ID del propietario es obligatorio' })
+  owner_id!: string;
 }

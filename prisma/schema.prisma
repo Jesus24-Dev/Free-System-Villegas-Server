@@ -101,11 +101,13 @@ model Person {
 
 model Gym {
   id String @id @default(uuid())
-  name String
+  name String @unique
   address String
   state States
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  coach_owner Coach @relation("GymOwner", fields: [owner_id], references: [id])
+  owner_id String @unique
 
   coaches Coach[]
   athletes Athlete[]
@@ -115,6 +117,8 @@ model Coach {
   id String @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  gym_owned Gym? @relation("GymOwner")
 
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
