@@ -137,6 +137,8 @@ model Athlete {
 
   gym Gym @relation(fields: [gym_id], references: [id])
   gym_id String
+
+  registrations Athlete_Registration[] @relation("AthleteRegistrations")
 }
 
 model Fighting_Weights {
@@ -145,4 +147,48 @@ model Fighting_Weights {
   category Fighting_Category
   gender Gender
   weights Int[]
+}
+
+// Models for competitions
+
+model Competition {
+  id String @id @default(uuid())
+  name String
+  description String?
+  logo_url String?
+  location String
+  inscription_begin_at DateTime
+  inscription_end_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  athletes_registered Athlete_Registration[] @relation("CompetitionRegistrations")
+}
+
+model Athlete_Registration {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  athlete Athlete @relation("AthleteRegistrations", fields: [athlete_id], references: [id])
+  athlete_id String
+
+  fighting_modes Fight_Mode[] @relation("AthleteFightModes")
+
+  competition Competition @relation("CompetitionRegistrations", fields: [competition_id], references: [id])
+  competition_id String
+}
+
+model Fight_Mode {
+  id String @id @default(uuid())
+  gender Gender
+  mode Fighting_Mode
+  category Fighting_Category
+  weight Int
+
+  id_competition String
+
+  athlete_registration Athlete_Registration @relation("AthleteFightModes", fields: [athlete_registration_id], references: [id])
+  athlete_registration_id String
+
 }
