@@ -6,6 +6,7 @@ import { PersonModule } from './person/person.module';
 import { GymModule } from './gym/gym.module';
 import { AthleteModule } from './athlete/athlete.module';
 import { CoachModule } from './coach/coach.module';
+import { CompetitionModule } from './competition/competition.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CoachModule } from './coach/coach.module';
     GymModule,
     AthleteModule,
     CoachModule,
+    CompetitionModule,
   ],
   controllers: [],
   providers: [],
