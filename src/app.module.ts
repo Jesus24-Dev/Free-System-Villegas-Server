@@ -7,6 +7,7 @@ import { GymModule } from './features/gym/gym.module';
 import { AthleteModule } from './features/athlete/athlete.module';
 import { CoachModule } from './features/coach/coach.module';
 import { CompetitionModule } from './features/competition/competition.module';
+import { AthleteRegisterModule } from './features/athlete-register/athlete-register.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CompetitionModule } from './features/competition/competition.module';
     AthleteModule,
     CoachModule,
     CompetitionModule,
+    AthleteRegisterModule,
   ],
   controllers: [],
   providers: [],
