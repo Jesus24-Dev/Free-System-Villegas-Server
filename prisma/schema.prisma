@@ -163,6 +163,7 @@ model Competition {
   updated_at DateTime @updatedAt
 
   athletes_registered Athlete_Registration[] @relation("CompetitionRegistrations")
+  fight_modes Fight_Mode[] @relation("FightModeForAthletes")
 }
 
 model Athlete_Registration {
@@ -186,7 +187,8 @@ model Fight_Mode {
   category Fighting_Category
   weight Int
 
-  id_competition String
+  competition Competition @relation("FightModeForAthletes", fields: [competition_id], references: [id])
+  competition_id String 
 
   athlete_registration Athlete_Registration @relation("AthleteFightModes", fields: [athlete_registration_id], references: [id])
   athlete_registration_id String
