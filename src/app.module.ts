@@ -8,6 +8,7 @@ import { AthleteModule } from './features/athlete/athlete.module';
 import { CoachModule } from './features/coach/coach.module';
 import { CompetitionModule } from './features/competition/competition.module';
 import { AthleteRegisterModule } from './features/athlete-register/athlete-register.module';
+import { FightModeModule } from './features/fight-mode/fight-mode.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AthleteRegisterModule } from './features/athlete-register/athlete-regis
     CoachModule,
     CompetitionModule,
     AthleteRegisterModule,
+    FightModeModule,
   ],
   controllers: [],
   providers: [],
