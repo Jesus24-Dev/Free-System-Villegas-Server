@@ -19,9 +19,202 @@ enum Roles {
   ADMIN
 }
 
+enum Fighting_Mode {
+  POINT_FIGHTING
+  KICK_LIGHT 
+  LIGHT_CONTACT
+  FULL_CONTACT
+  LOW_KICK
+  K1
+  BOXING
+}
+
+enum Fighting_Category {
+  CH
+  YC
+  OC
+  J
+  S
+  M
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum States {
+  AMAZONAS
+  ANZOATEGUI
+  APURE
+  ARAGUA
+  BARINAS
+  BOLIVAR
+  CARABOBO
+  COJEDES
+  DELTA_AMACURO
+  DISTRITO_CAPITAL
+  FALCON
+  GUARICO
+  LARA
+  LA_GUAIRA
+  MERIDA
+  MIRANDA
+  MONAGAS
+  NUEVA_ESPARTA
+  PORTUGUESA
+  SUCRE
+  TACHIRA
+  TRUJILLO
+  YARACUY
+  ZULIA
+}
+
 model User {
   id String @id @default(uuid())
   email String @unique
   password String
   role Roles[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person Person? @relation(fields: [person_id], references: [id])
+  person_id String? @unique
+}
+
+model Person {
+  id String @id @default(uuid())
+  dni String @unique
+  name String
+  surname String
+  birthday DateTime
+  gender Gender
+  status Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User?
+  coach Coach?
+  athlete Athlete?
+}
+
+model Gym {
+  id String @id @default(uuid())
+  name String @unique
+  address String
+  state States
+  monthly_payment Float
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  coach_owner Coach @relation("GymOwner", fields: [owner_id], references: [id])
+  owner_id String @unique
+
+  coaches Coach[]
+  athletes Athlete[]
+  payments Gym_Payment[] @relation("GymPayment")
+}
+
+model Coach {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  gym_owned Gym? @relation("GymOwner")
+
+  person Person @relation(fields: [person_id], references: [id])
+  person_id String @unique
+
+  gym Gym @relation(fields: [gym_id], references: [id])
+  gym_id String
+}
+
+model Athlete {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person Person @relation(fields: [person_id], references: [id])
+  person_id String @unique
+
+  gym Gym @relation(fields: [gym_id], references: [id])
+  gym_id String
+
+  registrations Athlete_Registration[] @relation("AthleteRegistrations")
+  payments_gym Gym_Payment[] @relation("AthleteGymPayment")
+}
+
+model Fighting_Weights {
+  id String @id @default(uuid())
+  mode Fighting_Mode
+  category Fighting_Category
+  gender Gender
+  weights Int[]
+}
+
+// Models for competitions
+
+model Competition {
+  id String @id @default(uuid())
+  name String
+  description String?
+  logo_url String?
+  location String
+  inscription_begin_at DateTime
+  inscription_end_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  athletes_registered Athlete_Registration[] @relation("CompetitionRegistrations")
+  fight_modes Fight_Mode[] @relation("FightModeForAthletes")
+}
+
+model Athlete_Registration {
+  id String @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  athlete Athlete @relation("AthleteRegistrations", fields: [athlete_id], references: [id])
+  athlete_id String
+
+  fighting_modes Fight_Mode[] @relation("AthleteFightModes")
+
+  competition Competition @relation("CompetitionRegistrations", fields: [competition_id], references: [id])
+  competition_id String
+}
+
+model Fight_Mode {
+  id String @id @default(uuid())
+  gender Gender
+  mode Fighting_Mode
+  category Fighting_Category
+  weight Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  competition Competition @relation("FightModeForAthletes", fields: [competition_id], references: [id])
+  competition_id String 
+
+  athlete_registration Athlete_Registration @relation("AthleteFightModes", fields: [athlete_registration_id], references: [id])
+  athlete_registration_id String
+
+}
+
+// Models for payments
+
+model Gym_Payment {
+  id String @id @default(uuid())
+  day_payed DateTime
+  amount Float
+  evidence_url String?
+  payment_reference String
+  isConfirmed Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  athlete Athlete @relation("AthleteGymPayment", fields: [athlete_id], references: [id])
+  athlete_id String
+
+  gym Gym @relation("GymPayment", fields: [gym_id], references: [id])
+  gym_id String
 }
