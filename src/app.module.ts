@@ -9,6 +9,7 @@ import { CoachModule } from './features/coach/coach.module';
 import { CompetitionModule } from './features/competition/competition.module';
 import { AthleteRegisterModule } from './features/athlete-register/athlete-register.module';
 import { FightModeModule } from './features/fight-mode/fight-mode.module';
+import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FightModeModule } from './features/fight-mode/fight-mode.module';
     CompetitionModule,
     AthleteRegisterModule,
     FightModeModule,
+    GymPaymentModule,
   ],
   controllers: [],
   providers: [],
