@@ -104,6 +104,7 @@ model Gym {
   name String @unique
   address String
   state States
+  monthly_payment Float
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   coach_owner Coach @relation("GymOwner", fields: [owner_id], references: [id])
@@ -111,6 +112,7 @@ model Gym {
 
   coaches Coach[]
   athletes Athlete[]
+  payments Gym_Payment[] @relation("GymPayment")
 }
 
 model Coach {
@@ -139,6 +141,7 @@ model Athlete {
   gym_id String
 
   registrations Athlete_Registration[] @relation("AthleteRegistrations")
+  payments_gym Gym_Payment[] @relation("AthleteGymPayment")
 }
 
 model Fighting_Weights {
@@ -186,6 +189,8 @@ model Fight_Mode {
   mode Fighting_Mode
   category Fighting_Category
   weight Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   competition Competition @relation("FightModeForAthletes", fields: [competition_id], references: [id])
   competition_id String 
@@ -193,4 +198,23 @@ model Fight_Mode {
   athlete_registration Athlete_Registration @relation("AthleteFightModes", fields: [athlete_registration_id], references: [id])
   athlete_registration_id String
 
+}
+
+// Models for payments
+
+model Gym_Payment {
+  id String @id @default(uuid())
+  day_payed DateTime
+  amount Float
+  evidence_url String?
+  payment_reference String
+  isConfirmed Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  athlete Athlete @relation("AthleteGymPayment", fields: [athlete_id], references: [id])
+  athlete_id String
+
+  gym Gym @relation("GymPayment", fields: [gym_id], references: [id])
+  gym_id String
 }
