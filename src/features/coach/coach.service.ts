@@ -13,15 +13,12 @@ export class CoachService {
   }
 
   async findAll() {
-    return this.prisma.coach.findMany({
-      include: { person: true, gym: true },
-    });
+    return this.prisma.coach.findMany();
   }
 
   async findOne(id: string) {
     return this.prisma.coach.findUnique({
       where: { id },
-      include: { person: true, gym: true },
     });
   }
 

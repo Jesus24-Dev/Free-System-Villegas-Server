@@ -13,15 +13,12 @@ export class AthleteService {
   }
 
   async findAll() {
-    return this.prisma.athlete.findMany({
-      include: { person: true, gym: true },
-    });
+    return this.prisma.athlete.findMany({});
   }
 
   async findOne(id: string) {
     return this.prisma.athlete.findUnique({
       where: { id },
-      include: { person: true, gym: true },
     });
   }
 
