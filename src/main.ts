@@ -1,8 +1,9 @@
 import 'dotenv/config';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +20,9 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .build();
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   const document = SwaggerModule.createDocument(app, config);
 
