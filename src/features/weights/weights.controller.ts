@@ -19,7 +19,9 @@ export class WeightsController {
     description: 'Lista de pesos obtenida exitosamente.',
     type: [WeightResponseDto],
   })
-  async findAll(@Query() filterDto: WeightsFilterDto) {
+  async findAll(
+    @Query() filterDto: WeightsFilterDto,
+  ): Promise<WeightResponseDto[]> {
     return this.weightsService.findAll(filterDto);
   }
 }

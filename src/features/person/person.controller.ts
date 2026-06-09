@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto, PersonResponseDto } from './dto/create-person.dto';
@@ -25,7 +27,9 @@ export class PersonController {
     description: 'La persona ha sido creada exitosamente',
     type: PersonResponseDto,
   })
-  create(@Body(new ValidationPipe()) createPersonDto: CreatePersonDto) {
+  async create(
+    @Body(new ValidationPipe()) createPersonDto: CreatePersonDto,
+  ): Promise<PersonResponseDto> {
     return this.personService.create(createPersonDto);
   }
 
@@ -36,7 +40,7 @@ export class PersonController {
     description: 'Lista de todas las personas',
     type: [PersonResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<PersonResponseDto[]> {
     return this.personService.findAll();
   }
 
@@ -47,7 +51,7 @@ export class PersonController {
     description: 'Persona encontrada',
     type: PersonResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<PersonResponseDto> {
     return this.personService.findOne(id);
   }
 
@@ -58,20 +62,21 @@ export class PersonController {
     description: 'Persona actualizada',
     type: PersonResponseDto,
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
-  ) {
+  ): Promise<PersonResponseDto> {
     return this.personService.update(id, updatePersonDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar una persona por su ID' })
   @ApiResponse({
     status: 204,
     description: 'Persona eliminada',
   })
-  remove(@Param('id') id: string) {
-    return this.personService.remove(id);
+  async remove(@Param('id') id: string) {
+    await this.personService.remove(id);
   }
 }

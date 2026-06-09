@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ValidationPipe,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { GymService } from './gym.service';
 import { CreateGymDto, GymResponseDto } from './dto/create-gym.dto';
@@ -25,7 +27,9 @@ export class GymController {
     description: 'Crear un nuevo gimnasio exitosamente',
     type: GymResponseDto,
   })
-  create(@Body(new ValidationPipe()) createGymDto: CreateGymDto) {
+  async create(
+    @Body(new ValidationPipe()) createGymDto: CreateGymDto,
+  ): Promise<GymResponseDto> {
     return this.gymService.create(createGymDto);
   }
 
@@ -36,7 +40,7 @@ export class GymController {
     description: 'Lista de gimnasios conseguida exitosamente',
     type: [GymResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<GymResponseDto[]> {
     return this.gymService.findAll();
   }
 
@@ -47,7 +51,7 @@ export class GymController {
     description: 'Gimnasio conseguido exitosamente',
     type: GymResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<GymResponseDto> {
     return this.gymService.findOne(id);
   }
 
@@ -58,21 +62,22 @@ export class GymController {
     description: 'Gimnasio actualizado exitosamente',
     type: GymResponseDto,
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateGymDto: UpdateGymDto,
-  ) {
+  ): Promise<GymResponseDto> {
     return this.gymService.update(id, updateGymDto);
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un gimnasio por su ID' })
   @ApiResponse({
     status: 204,
     description: 'Gimnasio eliminado exitosamente',
     type: GymResponseDto,
   })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.gymService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.gymService.remove(id);
   }
 }

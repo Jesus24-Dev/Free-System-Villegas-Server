@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AthleteRegisterService } from './athlete-register.service';
 import {
@@ -29,7 +31,9 @@ export class AthleteRegisterController {
     description: 'Crear un nuevo usuario exitosamente',
     type: AthleteRegisterResponseDto,
   })
-  create(@Body() createAthleteRegisterDto: CreateAthleteRegisterDto) {
+  async create(
+    @Body() createAthleteRegisterDto: CreateAthleteRegisterDto,
+  ): Promise<AthleteRegisterResponseDto> {
     return this.athleteRegisterService.create(createAthleteRegisterDto);
   }
 
@@ -42,7 +46,7 @@ export class AthleteRegisterController {
     description: 'Lista de registros encontrada',
     type: [AthleteRegisterResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<AthleteRegisterResponseDto[]> {
     return this.athleteRegisterService.findAll();
   }
 
@@ -53,7 +57,7 @@ export class AthleteRegisterController {
     description: 'Registro encontrado',
     type: AthleteRegisterResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<AthleteRegisterResponseDto> {
     return this.athleteRegisterService.findOne(id);
   }
 
@@ -64,21 +68,22 @@ export class AthleteRegisterController {
     description: 'Registro actualizado',
     type: AthleteRegisterResponseDto,
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateAthleteRegisterDto: UpdateAthleteRegisterDto,
-  ) {
+  ): Promise<AthleteRegisterResponseDto> {
     return this.athleteRegisterService.update(id, updateAthleteRegisterDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un registro por ID' })
   @ApiResponse({
     status: 204,
     description: 'Registro eliminado',
     type: AthleteRegisterResponseDto,
   })
-  remove(@Param('id') id: string) {
-    return this.athleteRegisterService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.athleteRegisterService.remove(id);
   }
 }

@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { CompetitionService } from './competition.service';
 import {
@@ -27,7 +29,9 @@ export class CompetitionController {
     description: 'Competencia creada exitosamente',
     type: CompetitionResponseDto,
   })
-  create(@Body() createCompetitionDto: CreateCompetitionDto) {
+  async create(
+    @Body() createCompetitionDto: CreateCompetitionDto,
+  ): Promise<CompetitionResponseDto> {
     return this.competitionService.create(createCompetitionDto);
   }
 
@@ -38,7 +42,7 @@ export class CompetitionController {
     description: 'Lista de las competencias',
     type: [CompetitionResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<CompetitionResponseDto[]> {
     return this.competitionService.findAll();
   }
 
@@ -50,7 +54,7 @@ export class CompetitionController {
     description: 'Competencia encontrada',
     type: CompetitionResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<CompetitionResponseDto> {
     return this.competitionService.findOne(id);
   }
 
@@ -61,21 +65,22 @@ export class CompetitionController {
     description: 'Competencia actualizada con exito',
     type: CompetitionResponseDto,
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
-  ) {
+  ): Promise<CompetitionResponseDto> {
     return this.competitionService.update(id, updateCompetitionDto);
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar competencia por ID' })
   @ApiResponse({
     status: 204,
     description: 'Competencia eliminada',
     type: CompetitionResponseDto,
   })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.competitionService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.competitionService.remove(id);
   }
 }

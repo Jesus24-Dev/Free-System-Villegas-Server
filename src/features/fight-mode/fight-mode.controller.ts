@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { FightModeService } from './fight-mode.service';
 import {
@@ -29,7 +31,9 @@ export class FightModeController {
     description: 'Modalidad registrada con exito',
     type: FightModeResponseDto,
   })
-  create(@Body() createFightModeDto: CreateFightModeDto) {
+  async create(
+    @Body() createFightModeDto: CreateFightModeDto,
+  ): Promise<FightModeResponseDto> {
     return this.fightModeService.create(createFightModeDto);
   }
 
@@ -43,7 +47,7 @@ export class FightModeController {
     description: 'Modalidades obtenidas con exito',
     type: [FightModeResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<FightModeResponseDto[]> {
     return this.fightModeService.findAll();
   }
 
@@ -56,7 +60,7 @@ export class FightModeController {
     description: 'Modalidad obtenida con exito',
     type: FightModeResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<FightModeResponseDto> {
     return this.fightModeService.findOne(id);
   }
 
@@ -69,14 +73,15 @@ export class FightModeController {
     description: 'Modalidad actualizada con exito',
     type: FightModeResponseDto,
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateFightModeDto: UpdateFightModeDto,
-  ) {
+  ): Promise<FightModeResponseDto> {
     return this.fightModeService.update(id, updateFightModeDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     summary: 'Eliminar una modalidad registrada por su ID',
   })
@@ -85,7 +90,7 @@ export class FightModeController {
     description: 'Modalidad eliminar con exito',
     type: FightModeResponseDto,
   })
-  remove(@Param('id') id: string) {
-    return this.fightModeService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.fightModeService.remove(id);
   }
 }

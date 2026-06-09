@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { CoachService } from './coach.service';
 import { CreateCoachDto, CoachResponseDto } from './dto/create-coach.dto';
@@ -23,7 +25,9 @@ export class CoachController {
     type: CoachResponseDto,
   })
   @Post()
-  create(@Body() createCoachDto: CreateCoachDto) {
+  async create(
+    @Body() createCoachDto: CreateCoachDto,
+  ): Promise<CoachResponseDto> {
     return this.coachService.create(createCoachDto);
   }
 
@@ -34,7 +38,7 @@ export class CoachController {
     description: 'Obtener lista de atletas registrados',
     type: [CoachResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<CoachResponseDto[]> {
     return this.coachService.findAll();
   }
 
@@ -45,7 +49,7 @@ export class CoachController {
     description: 'Obtener solo un atleta por su identificador',
     type: CoachResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<CoachResponseDto> {
     return this.coachService.findOne(id);
   }
 
@@ -56,18 +60,22 @@ export class CoachController {
     description: 'Actualizar datos del coach',
     type: CoachResponseDto,
   })
-  update(@Param('id') id: string, @Body() updateCoachDto: UpdateCoachDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateCoachDto: UpdateCoachDto,
+  ): Promise<CoachResponseDto> {
     return this.coachService.update(id, updateCoachDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar coach' })
   @ApiResponse({
     status: 204,
     description: 'Eliminar un coach de la base de datos',
     type: CoachResponseDto,
   })
-  remove(@Param('id') id: string) {
-    return this.coachService.remove(id);
+  async remove(@Param('id') id: string) {
+    await this.coachService.remove(id);
   }
 }

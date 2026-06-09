@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { AthleteService } from './athlete.service';
 import { CreateAthleteDto, AthleteResponseDto } from './dto/create-athlete.dto';
@@ -24,7 +26,9 @@ export class AthleteController {
     description: 'Crear un nuevo atleta exitosamente',
     type: AthleteResponseDto,
   })
-  create(@Body() createAthleteDto: CreateAthleteDto) {
+  async create(
+    @Body() createAthleteDto: CreateAthleteDto,
+  ): Promise<AthleteResponseDto> {
     return this.athleteService.create(createAthleteDto);
   }
 
@@ -35,7 +39,7 @@ export class AthleteController {
     description: 'Obtener lista de atletas registrados',
     type: [AthleteResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<AthleteResponseDto[]> {
     return this.athleteService.findAll();
   }
 
@@ -46,7 +50,7 @@ export class AthleteController {
     description: 'Obtener solo un atleta por su identificador',
     type: AthleteResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<AthleteResponseDto> {
     return this.athleteService.findOne(id);
   }
 
@@ -57,18 +61,22 @@ export class AthleteController {
     description: 'Actualizar datos del atleta',
     type: AthleteResponseDto,
   })
-  update(@Param('id') id: string, @Body() updateAthleteDto: UpdateAthleteDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateAthleteDto: UpdateAthleteDto,
+  ): Promise<AthleteResponseDto> {
     return this.athleteService.update(id, updateAthleteDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar atleta' })
   @ApiResponse({
     status: 204,
     description: 'Eliminar un atleta de la base de datos',
     type: AthleteResponseDto,
   })
-  remove(@Param('id') id: string) {
-    return this.athleteService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.athleteService.remove(id);
   }
 }

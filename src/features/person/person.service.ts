@@ -3,6 +3,7 @@ import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person } from 'src/generated/prisma/client';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class PersonService {
@@ -11,22 +12,26 @@ export class PersonService {
     return this.prisma.person.create({ data: createPersonDto });
   }
 
-  async findAll() {
+  async findAll(): Promise<Person[]> {
     return this.prisma.person.findMany();
   }
 
-  async findOne(id: string) {
-    return this.prisma.person.findUnique({ where: { id } });
+  async findOne(id: string): Promise<Person> {
+    const person = await this.prisma.person.findUnique({ where: { id } });
+    if (!person) {
+      throw new NotFoundException(`Persona con ID ${id} no encontrada`);
+    }
+    return person;
   }
 
-  async update(id: string, updatePersonDto: UpdatePersonDto) {
+  async update(id: string, updatePersonDto: UpdatePersonDto): Promise<Person> {
     return this.prisma.person.update({
       where: { id },
       data: updatePersonDto,
     });
   }
 
-  remove(id: string) {
-    return this.prisma.person.delete({ where: { id } });
+  async remove(id: string): Promise<void> {
+    await this.prisma.person.delete({ where: { id } });
   }
 }

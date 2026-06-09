@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { GymPaymentService } from './gym-payment.service';
 import {
@@ -27,7 +29,9 @@ export class GymPaymentController {
     description: 'Pago registrado con exito',
     type: GymPaymentResponseDto,
   })
-  create(@Body() createGymPaymentDto: CreateGymPaymentDto) {
+  async create(
+    @Body() createGymPaymentDto: CreateGymPaymentDto,
+  ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.create(createGymPaymentDto);
   }
 
@@ -38,7 +42,7 @@ export class GymPaymentController {
     description: 'Lista de pagos',
     type: [GymPaymentResponseDto],
   })
-  findAll() {
+  async findAll(): Promise<GymPaymentResponseDto[]> {
     return this.gymPaymentService.findAll();
   }
 
@@ -49,7 +53,7 @@ export class GymPaymentController {
     description: 'Pago obtenido',
     type: GymPaymentResponseDto,
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.findOne(id);
   }
 
@@ -60,21 +64,22 @@ export class GymPaymentController {
     description: 'Pago actualizado',
     type: GymPaymentResponseDto,
   })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateGymPaymentDto: UpdateGymPaymentDto,
-  ) {
+  ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.update(id, updateGymPaymentDto);
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un pago por su ID' })
   @ApiResponse({
     status: 204,
     description: 'Pago eliminado',
     type: GymPaymentResponseDto,
   })
-  remove(@Param('id') id: string) {
-    return this.gymPaymentService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.gymPaymentService.remove(id);
   }
 }
