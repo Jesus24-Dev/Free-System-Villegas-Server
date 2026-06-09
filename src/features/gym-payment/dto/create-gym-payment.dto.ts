@@ -40,10 +40,11 @@ export class CreateGymPaymentDto {
   @ApiPropertyOptional({
     description: 'Fecha en que se realiza el pago',
     example: '2026-06-06T21:50:00.000Z',
+    nullable: true,
   })
   @IsUrl({}, { message: 'La URL de la evidencia debe ser una URL válida' })
   @IsOptional()
-  evidence_url?: string;
+  evidence_url?: string | null;
 
   @ApiPropertyOptional({
     description: 'Numero de referencia del pago',

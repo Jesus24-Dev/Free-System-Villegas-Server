@@ -26,18 +26,20 @@ export class CreateCompetitionDto {
   @ApiPropertyOptional({
     description: 'Descripcion y detalles de la competencia',
     example: 'Celebramos esta edicion...',
+    nullable: true,
   })
   @IsString({ message: 'La descripción debe ser una cadena de texto' })
   @IsOptional()
-  description?: string;
+  description?: string | null;
 
   @ApiPropertyOptional({
     description: 'URL del logo/banner de la competencia',
     example: 'https://servidordeimagenes/competencia1',
+    nullable: true,
   })
   @IsUrl({}, { message: 'La URL del logo debe ser una URL válida' })
   @IsOptional()
-  logo_url?: string;
+  logo_url?: string | null;
 
   @ApiProperty({
     description: 'Direccion geografica de la competencia',
