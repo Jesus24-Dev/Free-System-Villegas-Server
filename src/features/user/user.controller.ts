@@ -9,11 +9,15 @@ import {
   ValidationPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
+  SerializeOptions,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto, UserResponseDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { plainToInstance } from 'class-transformer';
 
 @ApiTags('Users')
 @Controller('users')
@@ -27,8 +31,13 @@ export class UserController {
     description: 'Crear un nuevo usuario exitosamente',
     type: UserResponseDto,
   })
-  create(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll' })
+  async create(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<UserResponseDto> {
+    const user = await this.userService.create(createUserDto);
+    return plainToInstance(UserResponseDto, user);
   }
 
   @Get()
@@ -38,20 +47,25 @@ export class UserController {
     description: 'Los usuarios han sido encontrados exitosamente',
     type: [UserResponseDto],
   })
-  findAll() {
-    return this.userService.findAll();
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll' })
+  async findAll(): Promise<UserResponseDto[]> {
+    const users = await this.userService.findAll();
+    return plainToInstance(UserResponseDto, users);
   }
 
   @Get(':id')
-  @UseInterceptors(ClassSerializerInterceptor)
   @ApiOperation({ summary: 'Obtener un usuario por su ID' })
   @ApiResponse({
     status: 200,
     description: 'El usuario ha sido encontrado exitosamente',
     type: UserResponseDto,
   })
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll' })
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.userService.findOne(id);
+    const user = await this.userService.findOne(id);
+    return plainToInstance(UserResponseDto, user);
   }
 
   @Patch(':id')
@@ -61,21 +75,24 @@ export class UserController {
     description: 'El usuario ha sido actualizado exitosamente',
     type: UserResponseDto,
   })
-  update(
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll' })
+  async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
-  ) {
-    return this.userService.update(id, updateUserDto);
+  ): Promise<UserResponseDto> {
+    const user = await this.userService.update(id, updateUserDto);
+    return plainToInstance(UserResponseDto, user);
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un usuario existente' })
   @ApiResponse({
     status: 204,
     description: 'El usuario ha sido eliminado exitosamente',
-    type: UserResponseDto,
   })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.userService.remove(id);
   }
 }

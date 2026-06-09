@@ -6,10 +6,15 @@ import {
   IsEnum,
   IsNotEmpty,
   IsUUID,
+  IsOptional,
 } from 'class-validator';
-import { Exclude } from 'class-transformer';
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
+export enum AllowedClientRoles {
+  ATHLETE = 'ATHLETE',
+  COACH = 'COACH',
+}
 export class CreateUserDto {
   @ApiProperty({
     description: 'Email del usuario',
@@ -31,21 +36,22 @@ export class CreateUserDto {
     },
   )
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
-  @Exclude({ toPlainOnly: true })
   password!: string;
 
   @ApiProperty({
     description: 'Roles del usuario',
     example: ['user'],
+    enum: AllowedClientRoles,
+    isArray: true,
   })
   @IsArray({ message: 'Los roles deben enviarse dentro de un arreglo ([])' })
-  @IsEnum(Roles, {
+  @IsEnum(AllowedClientRoles, {
     each: true,
     message:
-      'Uno o más roles seleccionados no son válidos. Los valores permitidos son: ATHLETE, COACH, ADMIN',
+      'Uno o más roles seleccionados no son válidos. Los valores permitidos son: ATHLETE o COACH',
   })
   @IsNotEmpty({ message: 'Debes asignar al menos un rol al usuario' })
-  role!: Roles[];
+  role!: AllowedClientRoles[];
 
   @ApiProperty({
     description:
@@ -54,23 +60,35 @@ export class CreateUserDto {
   })
   @IsNotEmpty({ message: 'El ID de la persona asociada es obligatorio' })
   @IsUUID('4', { message: 'El ID de la persona debe ser un UUID válido' })
+  @IsOptional()
   person_id!: string | null;
 }
 
-export class DatabaseGeneratedFields {
-  @ApiProperty({
-    description: 'ID único del usuario',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
+export class UserResponseDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  @Expose()
   id!: string;
+
+  @ApiProperty({ example: 'user@example.com' })
+  @Expose()
+  email!: string;
+
+  @ApiProperty({ enum: Roles, isArray: true, example: ['ADMIN'] })
+  @Expose()
+  role!: Roles[];
+
+  @ApiProperty({
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    nullable: true,
+  })
+  @Expose()
+  person_id!: string | null;
+
   @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
+  @Expose()
   created_at!: Date;
 
   @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
+  @Expose()
   updated_at!: Date;
 }
-
-export class UserResponseDto extends IntersectionType(
-  CreateUserDto,
-  DatabaseGeneratedFields,
-) {}
