@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateAuthDto, AuthResponseDto } from './dto/auth.dto';
+import { RegisterDto } from './dto/register-auth.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -18,5 +19,17 @@ export class AuthController {
   })
   async signIn(@Body() createAuthDto: CreateAuthDto): Promise<AuthResponseDto> {
     return this.authService.signIn(createAuthDto.email, createAuthDto.password);
+  }
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Nuevo usuario registrado',
+    type: AuthResponseDto,
+  })
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+    return this.authService.register(registerDto);
   }
 }
