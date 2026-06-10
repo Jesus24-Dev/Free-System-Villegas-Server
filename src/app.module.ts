@@ -10,10 +10,12 @@ import { CompetitionModule } from './features/competition/competition.module';
 import { AthleteRegisterModule } from './features/athlete-register/athlete-register.module';
 import { FightModeModule } from './features/fight-mode/fight-mode.module';
 import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
+import { AuthModule } from './features/auth/auth.module';
 
 @Module({
   imports: [
     PrismaModule,
+    AuthModule,
     UserModule,
     WeightsModule,
     PersonModule,
@@ -26,6 +28,5 @@ import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
     GymPaymentModule,
   ],
   controllers: [],
-  providers: [],
 })
 export class AppModule {}
