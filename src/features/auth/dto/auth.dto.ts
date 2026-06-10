@@ -19,16 +19,13 @@ export class CreateAuthDto {
 }
 
 export class AuthDto {
-  id!: string;
-  token!: string;
+  access_token!: string;
 }
 
 export class AuthResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
-  id!: string;
   @ApiProperty({
     example:
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIi...',
   })
-  token!: string;
+  access_token!: string;
 }
