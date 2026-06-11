@@ -125,8 +125,8 @@ model Coach {
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
 
-  gym Gym @relation(fields: [gym_id], references: [id])
-  gym_id String
+  gym Gym? @relation(fields: [gym_id], references: [id])
+  gym_id String?
 }
 
 model Athlete {
@@ -137,8 +137,8 @@ model Athlete {
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
 
-  gym Gym @relation(fields: [gym_id], references: [id])
-  gym_id String
+  gym Gym? @relation(fields: [gym_id], references: [id])
+  gym_id String?
 
   registrations Athlete_Registration[] @relation("AthleteRegistrations")
   payments_gym Gym_Payment[] @relation("AthleteGymPayment")
