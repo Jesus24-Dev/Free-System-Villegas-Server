@@ -15,7 +15,7 @@ export class CreateAthleteDto {
   })
   @IsUUID('4', { message: 'Gym id debe ser un UUID valido' })
   @IsNotEmpty({ message: 'Gym ID no debe estar vacio' })
-  gym_id!: string;
+  gym_id!: string | null;
 }
 
 export class DatabaseGeneratedFields {
