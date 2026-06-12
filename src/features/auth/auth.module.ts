@@ -5,8 +5,8 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { PasswordService } from './dto/services/password.service';
-import { TokenService } from './dto/services/token.service';
+import { PasswordService } from './services/password.service';
+import { TokenService } from './services/token.service';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
 
 @Module({

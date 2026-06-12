@@ -29,3 +29,7 @@ export class AuthResponseDto {
   })
   access_token!: string;
 }
+export class JwtPayload {
+  sub!: string;
+  role?: string[];
+}

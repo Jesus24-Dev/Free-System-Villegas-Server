@@ -2,9 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { AuthDto } from './dto/auth.dto';
 import { RegisterDto } from './dto/register-auth.dto';
-import { PasswordService } from './dto/services/password.service';
-import { TokenService } from './dto/services/token.service';
+import { PasswordService } from './services/password.service';
+import { TokenService } from './services/token.service';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
+import { User } from 'src/generated/prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -24,14 +25,17 @@ export class AuthService {
         'La clave no coincide con el registro encontrado.',
       );
     }
-    const access_token = this.tokenService.generateAccessToken(user);
-
+    const access_token = await this.tokenService.generateAccessToken(user);
     return { access_token };
   }
 
   async register(registerDto: RegisterDto): Promise<AuthDto> {
     const newUser = await this.registerUserUseCase.execute(registerDto);
-    const access_token = this.tokenService.generateAccessToken(newUser);
+    const access_token = await this.tokenService.generateAccessToken(newUser);
     return { access_token };
+  }
+
+  async profile(userId: string): Promise<User> {
+    return this.userService.getProfile(userId);
   }
 }

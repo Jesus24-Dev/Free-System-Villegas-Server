@@ -7,7 +7,7 @@ export class TokenService {
   constructor(private readonly jwtService: JwtService) {}
 
   generateAccessToken(user: User) {
-    return this.jwtService.sign({
+    return this.jwtService.signAsync({
       sub: user.id,
       role: user.role,
     });

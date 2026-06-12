@@ -24,6 +24,17 @@ export class UserService {
     return user;
   }
 
+  async getProfile(id: string): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { person: true },
+    });
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
