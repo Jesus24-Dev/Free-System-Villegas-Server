@@ -11,6 +11,8 @@ import { AthleteRegisterModule } from './features/athlete-register/athlete-regis
 import { FightModeModule } from './features/fight-mode/fight-mode.module';
 import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
 import { AuthModule } from './features/auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './features/auth/auth.guard';
 
 @Module({
   imports: [
@@ -26,6 +28,12 @@ import { AuthModule } from './features/auth/auth.module';
     AthleteRegisterModule,
     FightModeModule,
     GymPaymentModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
   controllers: [],
 })
