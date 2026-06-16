@@ -6,23 +6,24 @@ import {
   IntersectionType,
 } from '@nestjs/swagger';
 import {
-  Fighting_Category,
-  Fighting_Mode,
+  FightingCategory,
+  FightingMode,
   Gender,
 } from 'src/generated/prisma/enums';
 
 export class WeightsFilterDto {
   @ApiPropertyOptional({
     description: 'Modo de pelea del competidor',
-    enum: Fighting_Mode,
-    example: Fighting_Mode.K1,
+    enum: FightingMode,
+    example: FightingMode.K1,
   })
   @IsOptional()
-  @Transform(({ value }: TransformFnParams) =>
-    typeof value === 'string' ? value.toUpperCase() : value,
-  )
-  @IsEnum(Fighting_Mode)
-  mode?: Fighting_Mode;
+  @Transform(({ value }: TransformFnParams) => {
+    const val = value as unknown;
+    return typeof val === 'string' ? val.toUpperCase() : val;
+  })
+  @IsEnum(FightingMode)
+  mode?: FightingMode;
 
   @ApiPropertyOptional({
     description: 'Género del atleta',
@@ -30,23 +31,25 @@ export class WeightsFilterDto {
     example: Gender.MALE,
   })
   @IsOptional()
-  @Transform(({ value }: TransformFnParams) =>
-    typeof value === 'string' ? value.toUpperCase() : value,
-  )
+  @Transform(({ value }: TransformFnParams) => {
+    const val = value as unknown;
+    return typeof val === 'string' ? val.toUpperCase() : val;
+  })
   @IsEnum(Gender)
   gender?: Gender;
 
   @ApiPropertyOptional({
     description: 'Categoría de peso según la modalidad',
-    enum: Fighting_Category,
-    example: Fighting_Category.S,
+    enum: FightingCategory,
+    example: FightingCategory.S,
   })
   @IsOptional()
-  @Transform(({ value }: TransformFnParams) =>
-    typeof value === 'string' ? value.toUpperCase() : value,
-  )
-  @IsEnum(Fighting_Category)
-  category?: Fighting_Category;
+  @Transform(({ value }: TransformFnParams) => {
+    const val = value as unknown;
+    return typeof val === 'string' ? val.toUpperCase() : val;
+  })
+  @IsEnum(FightingCategory)
+  category?: FightingCategory;
 }
 
 export class DatabaseGeneratedFields {
@@ -57,10 +60,10 @@ export class DatabaseGeneratedFields {
   id!: string;
 
   @ApiProperty({
-    description: 'Pesos disponibles en KG de la categoria',
-    example: [51, 54, 57, 60, 63, 67, 71, 75, 81, 86, 91],
+    description: 'Pesos en KG de la categoria',
+    example: 75,
   })
-  weights!: number[];
+  weight!: number;
 }
 
 export class WeightResponseDto extends IntersectionType(
