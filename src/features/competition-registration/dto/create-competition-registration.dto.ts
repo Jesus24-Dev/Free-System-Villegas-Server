@@ -1,7 +1,7 @@
 import { IsUUID, IsNotEmpty } from 'class-validator';
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
 
-export class CreateAthleteRegisterDto {
+export class CreateCompetitionRegistrationDto {
   @ApiProperty({
     description: 'ID único del atleta',
     example: '123e4567-e89b-12d3-a456-426614174000',
@@ -14,9 +14,9 @@ export class CreateAthleteRegisterDto {
     description: 'ID único del gimnasio',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsUUID('4', { message: 'El id de la competencia debe ser un UUID valido' })
-  @IsNotEmpty({ message: 'El id de la competencia es obligatorio ' })
-  competition_id!: string;
+  @IsUUID('4', { message: 'El id de la division debe ser un UUID valido' })
+  @IsNotEmpty({ message: 'El id de la division es obligatorio ' })
+  division_id!: string;
 }
 
 export class DatabaseGeneratedFields {
@@ -32,7 +32,7 @@ export class DatabaseGeneratedFields {
   updated_at!: Date;
 }
 
-export class AthleteRegisterResponseDto extends IntersectionType(
-  CreateAthleteRegisterDto,
+export class CompetitionRegistrationResponseDto extends IntersectionType(
+  CreateCompetitionRegistrationDto,
   DatabaseGeneratedFields,
 ) {}
