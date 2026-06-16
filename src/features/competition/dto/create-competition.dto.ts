@@ -5,6 +5,7 @@ import {
   IsUrl,
   IsDate,
   Length,
+  IsEnum,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import {
@@ -12,6 +13,7 @@ import {
   IntersectionType,
   ApiPropertyOptional,
 } from '@nestjs/swagger';
+import { CompetitionStatus } from 'src/generated/prisma/enums';
 
 export class CreateCompetitionDto {
   @ApiProperty({
@@ -66,6 +68,18 @@ export class CreateCompetitionDto {
   @IsDate()
   @IsNotEmpty({ message: 'La fecha de fin de inscripción es obligatoria' })
   inscription_end_at!: Date;
+
+  @ApiProperty({
+    description: 'Estado de la competencia',
+    enum: CompetitionStatus,
+    example: CompetitionStatus.OPEN,
+  })
+  @IsEnum(CompetitionStatus, {
+    each: true,
+    message: `El estado de competencia no es valido. Los valores aceptados son ${Object.keys(CompetitionStatus).join(',')}`,
+  })
+  @IsNotEmpty({ message: 'Debes asignar un estado a la competencia' })
+  status!: CompetitionStatus;
 }
 
 export class DatabaseGeneratedFields {

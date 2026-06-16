@@ -61,7 +61,7 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'El ID de la persona asociada es obligatorio' })
   @IsUUID('4', { message: 'El ID de la persona debe ser un UUID válido' })
   @IsOptional()
-  person_id!: string | null;
+  person_id!: string;
 }
 
 export class UserResponseDto {

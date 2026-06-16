@@ -7,8 +7,13 @@ import { Gym } from 'src/generated/prisma/client';
 @Injectable()
 export class GymService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(createGymDto: CreateGymDto): Promise<Gym> {
-    return this.prisma.gym.create({ data: createGymDto });
+  async create(ownerId: string, createGymDto: CreateGymDto): Promise<Gym> {
+    return this.prisma.gym.create({
+      data: {
+        owner_id: ownerId,
+        ...createGymDto,
+      },
+    });
   }
 
   async findAll(): Promise<Gym[]> {

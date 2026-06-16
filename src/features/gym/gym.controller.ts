@@ -14,11 +14,17 @@ import { GymService } from './gym.service';
 import { CreateGymDto, GymResponseDto } from './dto/create-gym.dto';
 import { UpdateGymDto } from './dto/update-gym.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { CreateGymUseCase } from './use-cases/create-gym.use-case';
+import { GetUser } from '../auth/dto/decorators/get-user.decorator';
+import { JwtPayload } from '../auth/dto/auth.dto';
 
 @ApiTags('Gym')
 @Controller('gym')
 export class GymController {
-  constructor(private readonly gymService: GymService) {}
+  constructor(
+    private readonly gymService: GymService,
+    private readonly gymUseCase: CreateGymUseCase,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo gimnasio' })
@@ -29,8 +35,9 @@ export class GymController {
   })
   async create(
     @Body(new ValidationPipe()) createGymDto: CreateGymDto,
+    @GetUser() user: JwtPayload,
   ): Promise<GymResponseDto> {
-    return this.gymService.create(createGymDto);
+    return this.gymUseCase.execute(user.sub, createGymDto);
   }
 
   @Get()

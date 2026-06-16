@@ -2,11 +2,11 @@ import { ApiProperty, IntersectionType } from '@nestjs/swagger';
 import { IsUUID, IsNotEmpty, IsEnum, IsNumber, Min } from 'class-validator';
 import {
   Gender,
-  Fighting_Mode,
-  Fighting_Category,
+  FightingMode,
+  FightingCategory,
 } from 'src/generated/prisma/enums';
 
-export class CreateFightModeDto {
+export class CreateCompetitionDivisionDto {
   @ApiProperty({
     description: 'Genero del atleta a registrar',
     example: Gender.MALE,
@@ -22,27 +22,27 @@ export class CreateFightModeDto {
 
   @ApiProperty({
     description: 'Modalidad de combate del atleta a registrar',
-    example: Fighting_Mode.K1,
-    enum: Fighting_Mode,
+    example: FightingMode.K1,
+    enum: FightingCategory,
   })
-  @IsEnum(Fighting_Mode, {
+  @IsEnum(FightingMode, {
     each: true,
-    message: `La modalidad de combate seleccionada no es valida. Los valores permitidos son: ${Object.values(Fighting_Mode).join(', ')}`,
+    message: `La modalidad de combate seleccionada no es valida. Los valores permitidos son: ${Object.values(FightingMode).join(', ')}`,
   })
   @IsNotEmpty({ message: 'La modalidad de combate es obligatorio' })
-  mode!: Fighting_Mode;
+  mode!: FightingMode;
 
   @ApiProperty({
     description: 'Categoria de combate del atleta a registrar',
-    example: Fighting_Category.S,
-    enum: Fighting_Category,
+    example: FightingCategory.S,
+    enum: FightingCategory,
   })
-  @IsEnum(Fighting_Category, {
+  @IsEnum(FightingCategory, {
     each: true,
-    message: `La categoria de combate no es valida. Los valores permitidos son: ${Object.values(Fighting_Category).join(', ')}`,
+    message: `La categoria de combate no es valida. Los valores permitidos son: ${Object.values(FightingCategory).join(', ')}`,
   })
   @IsNotEmpty({ message: 'La categoria de combate es obligatorio' })
-  category!: Fighting_Category;
+  category!: FightingCategory;
 
   @ApiProperty({
     description: 'Peso del atleta para competir',
@@ -60,16 +60,6 @@ export class CreateFightModeDto {
   @IsUUID('4', { message: 'El id de la competencia debe ser un UUID valido' })
   @IsNotEmpty({ message: 'El id de la competencia es obligatorio' })
   competition_id!: string;
-
-  @ApiProperty({
-    description: 'ID único del atleta registrado para competir',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsUUID('4', {
-    message: 'El id del atleta registrado debe ser un UUID valido',
-  })
-  @IsNotEmpty({ message: 'El id del atleta registrado es obligatorio' })
-  athlete_registration_id!: string;
 }
 
 export class DatabaseGeneratedFields {
@@ -85,7 +75,7 @@ export class DatabaseGeneratedFields {
   updated_at!: Date;
 }
 
-export class FightModeResponseDto extends IntersectionType(
-  CreateFightModeDto,
+export class CompetitionDivisionResponseDto extends IntersectionType(
+  CreateCompetitionDivisionDto,
   DatabaseGeneratedFields,
 ) {}

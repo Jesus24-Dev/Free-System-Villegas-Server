@@ -6,6 +6,7 @@ import {
   IsUUID,
   Min,
   IsNumber,
+  IsOptional,
 } from 'class-validator';
 import { States } from 'src/generated/prisma/enums';
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
@@ -54,8 +55,8 @@ export class CreateGymDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsUUID('4', { message: 'El ID del propietario debe ser un UUID válido' })
-  @IsNotEmpty({ message: 'El ID del propietario es obligatorio' })
-  owner_id!: string;
+  @IsOptional()
+  owner_id?: string;
 }
 
 export class DatabaseGeneratedFields {
