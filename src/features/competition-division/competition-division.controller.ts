@@ -9,18 +9,20 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { FightModeService } from './fight-mode.service';
+import { CompetitionDivisionService } from './competition-division.service';
 import {
-  CreateFightModeDto,
-  FightModeResponseDto,
-} from './dto/create-fight-mode.dto';
-import { UpdateFightModeDto } from './dto/update-fight-mode.dto';
+  CreateCompetitionDivisionDto,
+  CompetitionDivisionResponseDto,
+} from './dto/create-competition-division.dto';
+import { UpdateCompetitionDivisionDto } from './dto/update-competition-division.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Fight Mode')
 @Controller('fight-mode')
-export class FightModeController {
-  constructor(private readonly fightModeService: FightModeService) {}
+export class CompetitionDivisionController {
+  constructor(
+    private readonly competitionDivisionService: CompetitionDivisionService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -29,12 +31,12 @@ export class FightModeController {
   @ApiResponse({
     status: 201,
     description: 'Modalidad registrada con exito',
-    type: FightModeResponseDto,
+    type: CompetitionDivisionResponseDto,
   })
   async create(
-    @Body() createFightModeDto: CreateFightModeDto,
-  ): Promise<FightModeResponseDto> {
-    return this.fightModeService.create(createFightModeDto);
+    @Body() createCompetitionDivisionDto: CreateCompetitionDivisionDto,
+  ): Promise<CompetitionDivisionResponseDto> {
+    return this.competitionDivisionService.create(createCompetitionDivisionDto);
   }
 
   @Get()
@@ -45,10 +47,10 @@ export class FightModeController {
   @ApiResponse({
     status: 200,
     description: 'Modalidades obtenidas con exito',
-    type: [FightModeResponseDto],
+    type: [CompetitionDivisionResponseDto],
   })
-  async findAll(): Promise<FightModeResponseDto[]> {
-    return this.fightModeService.findAll();
+  async findAll(): Promise<CompetitionDivisionResponseDto[]> {
+    return this.competitionDivisionService.findAll();
   }
 
   @Get(':id')
@@ -58,10 +60,12 @@ export class FightModeController {
   @ApiResponse({
     status: 200,
     description: 'Modalidad obtenida con exito',
-    type: FightModeResponseDto,
+    type: CompetitionDivisionResponseDto,
   })
-  async findOne(@Param('id') id: string): Promise<FightModeResponseDto> {
-    return this.fightModeService.findOne(id);
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<CompetitionDivisionResponseDto> {
+    return this.competitionDivisionService.findOne(id);
   }
 
   @Patch(':id')
@@ -71,13 +75,16 @@ export class FightModeController {
   @ApiResponse({
     status: 200,
     description: 'Modalidad actualizada con exito',
-    type: FightModeResponseDto,
+    type: CompetitionDivisionResponseDto,
   })
   async update(
     @Param('id') id: string,
-    @Body() updateFightModeDto: UpdateFightModeDto,
-  ): Promise<FightModeResponseDto> {
-    return this.fightModeService.update(id, updateFightModeDto);
+    @Body() updateCompetitionDivisionDto: UpdateCompetitionDivisionDto,
+  ): Promise<CompetitionDivisionResponseDto> {
+    return this.competitionDivisionService.update(
+      id,
+      updateCompetitionDivisionDto,
+    );
   }
 
   @Delete(':id')
@@ -88,9 +95,9 @@ export class FightModeController {
   @ApiResponse({
     status: 200,
     description: 'Modalidad eliminar con exito',
-    type: FightModeResponseDto,
+    type: CompetitionDivisionResponseDto,
   })
   async remove(@Param('id') id: string): Promise<void> {
-    await this.fightModeService.remove(id);
+    await this.competitionDivisionService.remove(id);
   }
 }
