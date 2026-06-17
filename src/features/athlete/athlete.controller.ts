@@ -54,6 +54,25 @@ export class AthleteController {
     return this.athleteService.findOne(id);
   }
 
+  @Get('gym/:gymId/athletes')
+  @ApiOperation({ summary: 'Obtener todos los atletas de un gimnasio' })
+  @ApiResponse({
+    status: 200,
+    description: 'Atletas del gimnasio ... obtenidos.',
+  })
+  async findAthletesByGym(@Param('gymId') gymId: string): Promise<any> {
+    return this.athleteService.findAllAthletesByGym(gymId);
+  }
+
+  @Get('profile/:id')
+  @ApiOperation({ summary: 'Obtener el perfil de un atleta' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil del atleta... obtenido.',
+  })
+  async findAthleteProfile(@Param('id') id: string): Promise<any> {
+    return this.athleteService.findAthleteProfile(id);
+  }
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar atleta' })
   @ApiResponse({
