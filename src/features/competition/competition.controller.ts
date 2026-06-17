@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CompetitionService } from './competition.service';
 import {
@@ -16,6 +17,7 @@ import {
 } from './dto/create-competition.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { FindCompetitionDto } from './dto/find-competition.dto';
 
 @ApiTags('Competition')
 @Controller('competition')
@@ -42,8 +44,10 @@ export class CompetitionController {
     description: 'Lista de las competencias',
     type: [CompetitionResponseDto],
   })
-  async findAll(): Promise<CompetitionResponseDto[]> {
-    return this.competitionService.findAll();
+  async findAll(
+    @Query() status: FindCompetitionDto,
+  ): Promise<CompetitionResponseDto[]> {
+    return this.competitionService.findAll(status);
   }
 
   @Get(':id')
