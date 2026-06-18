@@ -18,11 +18,16 @@ import {
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { FindCompetitionDto } from './dto/find-competition.dto';
+import { RegisterAthleteAtCompetitionUseCase } from './use-cases/register-athlete-at-competition.use-case';
+import { RegisterAthleteAtCompetitionDto } from './dto/register-athlete-at-competition.dto';
 
 @ApiTags('Competition')
 @Controller('competition')
 export class CompetitionController {
-  constructor(private readonly competitionService: CompetitionService) {}
+  constructor(
+    private readonly competitionService: CompetitionService,
+    private readonly registerAthleteAtCompetitionUseCase: RegisterAthleteAtCompetitionUseCase,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Crear una nueva competencia' })
@@ -35,6 +40,25 @@ export class CompetitionController {
     @Body() createCompetitionDto: CreateCompetitionDto,
   ): Promise<CompetitionResponseDto> {
     return this.competitionService.create(createCompetitionDto);
+  }
+
+  @Post(':competitionId/athletes/:athleteId/register')
+  @ApiOperation({ summary: 'Registrar atleta en una competencia' })
+  @ApiResponse({
+    status: 201,
+    description: 'Atleta registrado exitosamente',
+    type: RegisterAthleteAtCompetitionDto,
+  })
+  registerAthlete(
+    @Param('competitionId') competitionId: string,
+    @Param('athleteId') athleteId: string,
+    @Body() dto: RegisterAthleteAtCompetitionDto,
+  ) {
+    return this.registerAthleteAtCompetitionUseCase.execute(
+      dto,
+      competitionId,
+      athleteId,
+    );
   }
 
   @Get()
