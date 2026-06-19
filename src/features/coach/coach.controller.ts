@@ -89,6 +89,26 @@ export class CoachController {
     return this.coachService.findOne(id);
   }
 
+  @Get('gym/:gymId/coaches')
+  @ApiOperation({ summary: 'Obtener todos los coaches de un gimnasio' })
+  @ApiResponse({
+    status: 200,
+    description: 'Coaches del gimnasio ... obtenidos.',
+  })
+  async findCoachesByGym(@Param('gymId') gymId: string): Promise<any> {
+    return this.coachService.findAllCoachesByGym(gymId);
+  }
+
+  @Get('profile/:id')
+  @ApiOperation({ summary: 'Obtener el perfil de un coach' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil del coach... obtenido.',
+  })
+  async findCoachProfile(@Param('id') id: string): Promise<any> {
+    return this.coachService.findCoachProfile(id);
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar coach' })
   @ApiResponse({
