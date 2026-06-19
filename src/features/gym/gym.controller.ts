@@ -11,12 +11,12 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { GymService } from './gym.service';
-import { CreateGymDto, GymResponseDto } from './dto/create-gym.dto';
-import { UpdateGymDto } from './dto/update-gym.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateGymUseCase } from './use-cases/create-gym.use-case';
 import { JwtPayload } from '../auth/dto/request';
 import { GetUser } from '../auth/decorators/get-user.decorator';
+import { GymDto, RawGymDto } from './dto/response';
+import { CreateGymDto, UpdateGymDto } from './dto/request';
 
 @ApiTags('Gym')
 @Controller('gym')
@@ -31,12 +31,12 @@ export class GymController {
   @ApiResponse({
     status: 201,
     description: 'Crear un nuevo gimnasio exitosamente',
-    type: GymResponseDto,
+    type: RawGymDto,
   })
   async create(
     @Body(new ValidationPipe()) createGymDto: CreateGymDto,
     @GetUser() user: JwtPayload,
-  ): Promise<GymResponseDto> {
+  ): Promise<RawGymDto> {
     return this.gymUseCase.execute(user.sub, createGymDto);
   }
 
@@ -45,9 +45,9 @@ export class GymController {
   @ApiResponse({
     status: 200,
     description: 'Lista de gimnasios conseguida exitosamente',
-    type: [GymResponseDto],
+    type: [GymDto],
   })
-  async findAll(): Promise<GymResponseDto[]> {
+  async findAll(): Promise<GymDto[]> {
     return this.gymService.findAll();
   }
 
@@ -56,9 +56,9 @@ export class GymController {
   @ApiResponse({
     status: 200,
     description: 'Gimnasio conseguido exitosamente',
-    type: GymResponseDto,
+    type: GymDto,
   })
-  async findOne(@Param('id') id: string): Promise<GymResponseDto> {
+  async findOne(@Param('id') id: string): Promise<GymDto> {
     return this.gymService.findOne(id);
   }
 
@@ -67,12 +67,12 @@ export class GymController {
   @ApiResponse({
     status: 200,
     description: 'Gimnasio actualizado exitosamente',
-    type: GymResponseDto,
+    type: RawGymDto,
   })
   async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateGymDto: UpdateGymDto,
-  ): Promise<GymResponseDto> {
+  ): Promise<RawGymDto> {
     return this.gymService.update(id, updateGymDto);
   }
 
@@ -82,7 +82,7 @@ export class GymController {
   @ApiResponse({
     status: 204,
     description: 'Gimnasio eliminado exitosamente',
-    type: GymResponseDto,
+    type: RawGymDto,
   })
   async remove(@Param('id') id: string): Promise<void> {
     await this.gymService.remove(id);
