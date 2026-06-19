@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from 'src/generated/prisma/client';
+import { Prisma, User } from 'src/generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
 
+export type UserWithPerson = Prisma.UserGetPayload<{
+  include: { person: true };
+}>;
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -24,7 +27,7 @@ export class UserService {
     return user;
   }
 
-  async getProfile(id: string): Promise<User> {
+  async getProfile(id: string): Promise<UserWithPerson> {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: { person: true },
