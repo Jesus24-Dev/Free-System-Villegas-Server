@@ -1,11 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { AuthDto } from './dto/auth.dto';
-import { RegisterDto } from './dto/register-auth.dto';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
-import { User } from 'src/generated/prisma/client';
+import { Prisma } from 'src/generated/prisma/client';
+import { RegisterDto, SignInDto } from './dto/request';
+import { AuthDto } from './dto/responses';
+
+export type UserWithPerson = Prisma.UserGetPayload<{
+  include: { person: true };
+}>;
 
 @Injectable()
 export class AuthService {
@@ -16,10 +20,13 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async signIn(email: string, pass: string): Promise<AuthDto> {
-    const user = await this.userService.findByEmail(email);
+  async signIn(dto: SignInDto): Promise<AuthDto> {
+    const user = await this.userService.findByEmail(dto.email);
 
-    const isMatch = await this.passwordService.compare(pass, user.password);
+    const isMatch = await this.passwordService.compare(
+      dto.password,
+      user.password,
+    );
     if (!isMatch) {
       throw new UnauthorizedException(
         'La clave no coincide con el registro encontrado.',
@@ -35,7 +42,7 @@ export class AuthService {
     return { access_token };
   }
 
-  async profile(userId: string): Promise<User> {
+  async profile(userId: string): Promise<UserWithPerson> {
     return this.userService.getProfile(userId);
   }
 }
