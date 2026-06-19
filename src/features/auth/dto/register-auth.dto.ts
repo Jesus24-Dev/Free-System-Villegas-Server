@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
+  IsUUID,
   Length,
 } from 'class-validator';
 import { Gender, Roles } from 'src/generated/prisma/enums';
@@ -90,6 +91,14 @@ export class RegisterDto {
   })
   @IsNotEmpty({ message: 'Debes asignar un genero a la persona' })
   gender!: Gender;
+
+  @ApiProperty({
+    description: 'ID único de la persona a relacionar con el atleta',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsUUID('4', { message: 'Person id debe ser un UUID valido' })
+  @IsNotEmpty({ message: 'Person ID no debe estar vacio' })
+  person_id!: string;
 }
 
 export class PersonDto {

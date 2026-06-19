@@ -3,6 +3,7 @@ import { CreateCompetitionDto } from './dto/create-competition.dto';
 import { UpdateCompetitionDto } from './dto/update-competition.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Competition } from 'src/generated/prisma/client';
+import { FindCompetitionDto } from './dto/find-competition.dto';
 
 @Injectable()
 export class CompetitionService {
@@ -15,8 +16,11 @@ export class CompetitionService {
     });
   }
 
-  async findAll(): Promise<Competition[]> {
-    return this.prisma.competition.findMany();
+  async findAll(dto: FindCompetitionDto): Promise<Competition[]> {
+    const { status } = dto;
+    return this.prisma.competition.findMany({
+      where: { status },
+    });
   }
 
   async findOne(id: string): Promise<Competition> {

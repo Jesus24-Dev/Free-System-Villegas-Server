@@ -221,6 +221,8 @@ model CompetitionDivision {
   competition_id String 
 
   registrations CompetitionRegistration[] @relation("AthleteFightModes")
+
+  @@unique([competition_id, mode, category, gender, weight])
 }
 
 // Modelo para gestionar los pagos del gimnasio y mensualidades. 

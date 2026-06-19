@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Athlete } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -16,6 +20,13 @@ export class AssignAthleteToGymUseCase {
         `Atleta con id ${athleteId} no fue encontrado`,
       );
     }
+
+    if (athlete.gym_id !== null) {
+      throw new ConflictException(
+        `Atleta con id ${athleteId} ya está asignado a un gimnasio`,
+      );
+    }
+
     await this.prisma.athlete.update({
       where: { id: athlete.id },
       data: {

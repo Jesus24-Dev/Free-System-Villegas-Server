@@ -56,7 +56,7 @@ export class CoachController {
   @Patch(':idGym/athlete/:idAthlete')
   @ApiOperation({ summary: 'Asignar un atleta existente a un gimnasio' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Atleta registrado en el gym',
     type: AthleteResponseDto,
   })
@@ -65,6 +65,20 @@ export class CoachController {
     @Param('idAthlete') idAthlete: string,
   ): Promise<AthleteResponseDto> {
     return this.assignAthleteToGymUseCase.execute(idAthlete, idGym);
+  }
+
+  @Patch(':idGym/athlete/:idAthlete')
+  @ApiOperation({ summary: 'Asignar un coach existente a un gimnasio' })
+  @ApiResponse({
+    status: 200,
+    description: 'Coach asignado en el gym',
+    type: CoachResponseDto,
+  })
+  async assignCoachInGym(
+    @Param('idGym') idGym: string,
+    @Param('idAthlete') idCoach: string,
+  ): Promise<CoachResponseDto> {
+    return this.assignAthleteToGymUseCase.execute(idCoach, idGym);
   }
 
   @Get()
@@ -87,6 +101,26 @@ export class CoachController {
   })
   async findOne(@Param('id') id: string): Promise<CoachResponseDto> {
     return this.coachService.findOne(id);
+  }
+
+  @Get('gym/:gymId/coaches')
+  @ApiOperation({ summary: 'Obtener todos los coaches de un gimnasio' })
+  @ApiResponse({
+    status: 200,
+    description: 'Coaches del gimnasio ... obtenidos.',
+  })
+  async findCoachesByGym(@Param('gymId') gymId: string): Promise<any> {
+    return this.coachService.findAllCoachesByGym(gymId);
+  }
+
+  @Get('profile/:id')
+  @ApiOperation({ summary: 'Obtener el perfil de un coach' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil del coach... obtenido.',
+  })
+  async findCoachProfile(@Param('id') id: string): Promise<any> {
+    return this.coachService.findCoachProfile(id);
   }
 
   @Patch(':id')

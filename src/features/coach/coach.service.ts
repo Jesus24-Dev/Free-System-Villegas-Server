@@ -29,6 +29,47 @@ export class CoachService {
     return coach;
   }
 
+  async findCoachProfile(id: string): Promise<Coach> {
+    const coach = await this.prisma.coach.findUnique({
+      where: { id },
+      include: {
+        person: {
+          select: {
+            dni: true,
+            name: true,
+            surname: true,
+            gender: true,
+            birthday: true,
+            status: true,
+          },
+        },
+      },
+    });
+    if (!coach) {
+      throw new NotFoundException(`Coach con la ID ${id} no fue encontrado`);
+    }
+    return coach;
+  }
+
+  async findAllCoachesByGym(gymdId: string): Promise<Coach[]> {
+    const coaches = await this.prisma.coach.findMany({
+      where: { gym_id: gymdId },
+      include: {
+        person: {
+          select: {
+            dni: true,
+            name: true,
+            surname: true,
+            gender: true,
+            birthday: true,
+            status: true,
+          },
+        },
+      },
+    });
+    return coaches;
+  }
+
   async update(id: string, updateCoachDto: UpdateCoachDto): Promise<Coach> {
     return this.prisma.coach.update({
       where: { id },
