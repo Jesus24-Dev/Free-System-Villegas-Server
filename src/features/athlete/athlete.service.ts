@@ -1,9 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAthleteDto } from './dto/create-athlete.dto';
-import { UpdateAthleteDto } from './dto/update-athlete.dto';
+import { CreateAthleteDto } from './dto/request/create-athlete.dto';
+import { UpdateAthleteDto } from './dto/request/update-athlete.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Athlete } from 'src/generated/prisma/client';
+import { Athlete, Prisma } from 'src/generated/prisma/client';
+import { AthleteDto } from './dto/response';
+import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
 
+export type AthleteWithPerson = Prisma.AthleteGetPayload<{
+  include: { person: true };
+}>;
 @Injectable()
 export class AthleteService {
   constructor(private readonly prisma: PrismaService) {}
@@ -13,13 +18,16 @@ export class AthleteService {
     });
   }
 
-  async findAll(): Promise<Athlete[]> {
-    return this.prisma.athlete.findMany({});
+  async findAll(): Promise<AthleteWithPerson[]> {
+    return this.prisma.athlete.findMany({
+      include: { person: true },
+    });
   }
 
-  async findOne(id: string): Promise<Athlete> {
+  async findOne(id: string): Promise<AthleteWithPerson> {
     const athlete = await this.prisma.athlete.findUnique({
       where: { id },
+      include: { person: true },
     });
 
     if (!athlete) {
@@ -31,7 +39,7 @@ export class AthleteService {
     return athlete;
   }
 
-  async findAllAthletesByGym(gymId: string): Promise<Athlete[]> {
+  async findAllAthletesByGym(gymId: string): Promise<AthleteDto[]> {
     const athletes = await this.prisma.athlete.findMany({
       where: { gym_id: gymId },
       include: {
@@ -47,10 +55,14 @@ export class AthleteService {
         },
       },
     });
-    return athletes;
+
+    return athletes.map((athlete) => ({
+      id: athlete.id,
+      ...athlete.person,
+    }));
   }
 
-  async findAthleteProfile(id: string): Promise<Athlete> {
+  async findAthleteProfile(id: string): Promise<AthleteProfileResponseDto> {
     const athlete = await this.prisma.athlete.findUnique({
       where: { id },
       include: {
@@ -72,7 +84,37 @@ export class AthleteService {
     if (!athlete) {
       throw new NotFoundException(`Atletla con el ID ${id} no encontrado`);
     }
-    return athlete;
+    return {
+      id: athlete.id,
+      personal: {
+        dni: athlete.person.dni,
+        name: athlete.person.name,
+        surname: athlete.person.surname,
+        birthday: athlete.person.birthday,
+        gender: athlete.person.gender,
+      },
+      gym: {
+        name: athlete.gym?.name,
+        address: athlete.gym?.address,
+        state: athlete.gym?.state,
+        monthly_payment: athlete.gym?.monthly_payment,
+      },
+      payments: athlete.payments_gym.map((payment) => ({
+        date: payment.day_payed,
+        amount: payment.amount,
+        reference: payment.payment_reference,
+        confirmed: payment.isConfirmed,
+      })),
+      competitions: athlete.registrations.map((registration) => ({
+        competition: registration.division.competition.name,
+        status: registration.division.competition.status,
+        division: {
+          mode: registration.division.mode,
+          category: registration.division.category,
+          weight: registration.division.weight,
+        },
+      })),
+    };
   }
 
   async update(

@@ -10,9 +10,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AthleteService } from './athlete.service';
-import { CreateAthleteDto, AthleteResponseDto } from './dto/create-athlete.dto';
-import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { CreateAthleteDto, UpdateAthleteDto } from './dto/request';
+import { AthleteDto, RawAthleteDto } from './dto/response';
+import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
 
 @ApiTags('Athlete')
 @Controller('athlete')
@@ -24,11 +25,11 @@ export class AthleteController {
   @ApiResponse({
     status: 201,
     description: 'Crear un nuevo atleta exitosamente',
-    type: AthleteResponseDto,
+    type: RawAthleteDto,
   })
   async create(
     @Body() createAthleteDto: CreateAthleteDto,
-  ): Promise<AthleteResponseDto> {
+  ): Promise<RawAthleteDto> {
     return this.athleteService.create(createAthleteDto);
   }
 
@@ -37,10 +38,19 @@ export class AthleteController {
   @ApiResponse({
     status: 200,
     description: 'Obtener lista de atletas registrados',
-    type: [AthleteResponseDto],
+    type: [AthleteDto],
   })
-  async findAll(): Promise<AthleteResponseDto[]> {
-    return this.athleteService.findAll();
+  async findAll(): Promise<AthleteDto[]> {
+    const athletes = await this.athleteService.findAll();
+    return athletes.map((athlete) => ({
+      id: athlete.id,
+      dni: athlete.person.dni,
+      name: athlete.person.name,
+      surname: athlete.person.surname,
+      gender: athlete.person.gender,
+      birthday: athlete.person.birthday,
+      status: athlete.person.status,
+    }));
   }
 
   @Get(':id')
@@ -48,10 +58,19 @@ export class AthleteController {
   @ApiResponse({
     status: 200,
     description: 'Obtener solo un atleta por su identificador',
-    type: AthleteResponseDto,
+    type: AthleteDto,
   })
-  async findOne(@Param('id') id: string): Promise<AthleteResponseDto> {
-    return this.athleteService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<AthleteDto> {
+    const athlete = await this.athleteService.findOne(id);
+    return {
+      id: athlete.id,
+      dni: athlete.person.dni,
+      name: athlete.person.name,
+      surname: athlete.person.surname,
+      gender: athlete.person.gender,
+      birthday: athlete.person.birthday,
+      status: athlete.person.status,
+    };
   }
 
   @Get('gym/:gymId/athletes')
@@ -59,9 +78,13 @@ export class AthleteController {
   @ApiResponse({
     status: 200,
     description: 'Atletas del gimnasio ... obtenidos.',
+    type: [AthleteDto],
   })
-  async findAthletesByGym(@Param('gymId') gymId: string): Promise<any> {
-    return this.athleteService.findAllAthletesByGym(gymId);
+  async findAthletesByGym(
+    @Param('gymId') gymId: string,
+  ): Promise<AthleteDto[]> {
+    const athletes = await this.athleteService.findAllAthletesByGym(gymId);
+    return athletes;
   }
 
   @Get('profile/:id')
@@ -69,8 +92,11 @@ export class AthleteController {
   @ApiResponse({
     status: 200,
     description: 'Perfil del atleta... obtenido.',
+    type: AthleteProfileResponseDto,
   })
-  async findAthleteProfile(@Param('id') id: string): Promise<any> {
+  async findAthleteProfile(
+    @Param('id') id: string,
+  ): Promise<AthleteProfileResponseDto> {
     return this.athleteService.findAthleteProfile(id);
   }
   @Patch(':id')
@@ -78,12 +104,12 @@ export class AthleteController {
   @ApiResponse({
     status: 200,
     description: 'Actualizar datos del atleta',
-    type: AthleteResponseDto,
+    type: AthleteDto,
   })
   async update(
     @Param('id') id: string,
     @Body() updateAthleteDto: UpdateAthleteDto,
-  ): Promise<AthleteResponseDto> {
+  ): Promise<RawAthleteDto> {
     return this.athleteService.update(id, updateAthleteDto);
   }
 
@@ -93,7 +119,7 @@ export class AthleteController {
   @ApiResponse({
     status: 204,
     description: 'Eliminar un atleta de la base de datos',
-    type: AthleteResponseDto,
+    type: AthleteDto,
   })
   async remove(@Param('id') id: string): Promise<void> {
     await this.athleteService.remove(id);

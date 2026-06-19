@@ -37,6 +37,7 @@ export class PersonController {
       name: person.name,
       surname: person.surname,
       birthday: person.birthday,
+      gender: person.gender,
       status: person.status,
     };
   }
@@ -57,6 +58,7 @@ export class PersonController {
       name: person.name,
       surname: person.surname,
       birthday: person.birthday,
+      gender: person.gender,
       status: person.status,
     }));
   }
@@ -76,6 +78,7 @@ export class PersonController {
       name: person.name,
       surname: person.surname,
       birthday: person.birthday,
+      gender: person.gender,
       status: person.status,
     };
   }
@@ -98,6 +101,7 @@ export class PersonController {
       name: person.name,
       surname: person.surname,
       birthday: person.birthday,
+      gender: person.gender,
       status: person.status,
     };
   }

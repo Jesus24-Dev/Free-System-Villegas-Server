@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from 'src/generated/prisma/enums';
 
-export class PersonDto {
+export class AthleteDto {
   @ApiProperty({
-    description: 'ID único de la persona',
+    description: 'ID único del atleta',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id!: string;
+
   @ApiProperty({
     description: 'Cedula del usuario',
     example: '12345678',
@@ -26,17 +27,17 @@ export class PersonDto {
   surname!: string;
 
   @ApiProperty({
-    description: 'Fecha de nacimiento del usuario',
-    example: '1990-01-01',
-  })
-  birthday!: Date;
-
-  @ApiProperty({
     description: 'Genero del usuario',
     example: 'MALE',
     enum: Gender,
   })
   gender!: Gender;
+
+  @ApiProperty({
+    description: 'Fecha de nacimiento del usuario',
+    example: '1990-01-01',
+  })
+  birthday!: Date;
 
   @ApiProperty({
     description: 'Estado del usuario',

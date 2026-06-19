@@ -14,7 +14,7 @@ import { CreateCoachDto, CoachResponseDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreatePersonDto } from '../person/dto/request/create-person.dto';
-import { AthleteResponseDto } from '../athlete/dto/create-athlete.dto';
+import { CreateAthleteDto } from '../athlete/dto/request/create-athlete.dto';
 import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
 
@@ -44,12 +44,12 @@ export class CoachController {
   @ApiResponse({
     status: 201,
     description: 'Atleta registrado en el gym',
-    type: AthleteResponseDto,
+    type: CreateAthleteDto,
   })
   async registerAthleteInGym(
     @Param('idGym') idGym: string,
     @Body() createPerson: CreatePersonDto,
-  ): Promise<AthleteResponseDto> {
+  ): Promise<CreateAthleteDto> {
     return this.registerAthleteUseCase.execute(createPerson, idGym);
   }
 
@@ -58,12 +58,12 @@ export class CoachController {
   @ApiResponse({
     status: 200,
     description: 'Atleta registrado en el gym',
-    type: AthleteResponseDto,
+    type: CreateAthleteDto,
   })
   async assignAthleteInGym(
     @Param('idGym') idGym: string,
     @Param('idAthlete') idAthlete: string,
-  ): Promise<AthleteResponseDto> {
+  ): Promise<CreateAthleteDto> {
     return this.assignAthleteToGymUseCase.execute(idAthlete, idGym);
   }
 
