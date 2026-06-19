@@ -13,7 +13,7 @@ import { CoachService } from './coach.service';
 import { CreateCoachDto, CoachResponseDto } from './dto/create-coach.dto';
 import { UpdateCoachDto } from './dto/update-coach.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { CreatePersonDto } from '../person/dto/create-person.dto';
+import { CreatePersonDto } from '../person/dto/request/create-person.dto';
 import { AthleteResponseDto } from '../athlete/dto/create-athlete.dto';
 import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
