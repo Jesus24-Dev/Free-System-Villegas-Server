@@ -7,17 +7,13 @@ import {
   Param,
   Delete,
   ValidationPipe,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  SerializeOptions,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { CreateUserDto, UserResponseDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { plainToInstance } from 'class-transformer';
+import { CreateUserDto, UpdateUserDto } from './dto/request';
+import { UserDto } from './dto/response';
 
 @ApiTags('Users')
 @Controller('users')
@@ -29,15 +25,20 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'Crear un nuevo usuario exitosamente',
-    type: UserResponseDto,
+    type: UserDto,
   })
-  @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll' })
   async create(
     @Body(new ValidationPipe()) createUserDto: CreateUserDto,
-  ): Promise<UserResponseDto> {
+  ): Promise<UserDto> {
     const user = await this.userService.create(createUserDto);
-    return plainToInstance(UserResponseDto, user);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
   }
 
   @Get()
@@ -45,13 +46,18 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Los usuarios han sido encontrados exitosamente',
-    type: [UserResponseDto],
+    type: [UserDto],
   })
-  @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll' })
-  async findAll(): Promise<UserResponseDto[]> {
+  async findAll(): Promise<UserDto[]> {
     const users = await this.userService.findAll();
-    return plainToInstance(UserResponseDto, users);
+    return users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    }));
   }
 
   @Get(':id')
@@ -59,13 +65,18 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'El usuario ha sido encontrado exitosamente',
-    type: UserResponseDto,
+    type: UserDto,
   })
-  @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll' })
-  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
+  async findOne(@Param('id') id: string): Promise<UserDto> {
     const user = await this.userService.findOne(id);
-    return plainToInstance(UserResponseDto, user);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
   }
 
   @Patch(':id')
@@ -73,16 +84,21 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'El usuario ha sido actualizado exitosamente',
-    type: UserResponseDto,
+    type: UserDto,
   })
-  @UseInterceptors(ClassSerializerInterceptor)
-  @SerializeOptions({ strategy: 'excludeAll' })
   async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseDto> {
+  ): Promise<UserDto> {
     const user = await this.userService.update(id, updateUserDto);
-    return plainToInstance(UserResponseDto, user);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
   }
 
   @Delete(':id')
