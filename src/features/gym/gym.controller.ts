@@ -15,8 +15,8 @@ import { CreateGymDto, GymResponseDto } from './dto/create-gym.dto';
 import { UpdateGymDto } from './dto/update-gym.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateGymUseCase } from './use-cases/create-gym.use-case';
-import { GetUser } from '../auth/dto/decorators/get-user.decorator';
-import { JwtPayload } from '../auth/dto/auth.dto';
+import { JwtPayload } from '../auth/dto/request';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 
 @ApiTags('Gym')
 @Controller('gym')
