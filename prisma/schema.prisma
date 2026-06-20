@@ -129,6 +129,7 @@ model Gym {
   coaches Coach[]
   athletes Athlete[]
   payments GymPayment[] @relation("GymPayment")
+  pago_movil PagoMovilFields[] @relation("GymDataToPay")
 }
 
 // Modelo Coach para tener registro de coach. Permite crear gimnasios y gestionarlos, junto a la gestion de atletas.
@@ -242,4 +243,16 @@ model GymPayment {
 
   gym Gym @relation("GymPayment", fields: [gym_id], references: [id])
   gym_id String
+}
+
+model PagoMovilFields {
+  id String @id @default(uuid())
+  bank_to_pay String
+  dni String
+  phone String
+
+  gym Gym @relation("GymDataToPay", fields: [gym_id], references: [id])
+  gym_id String
+
+  @@unique([bank_to_pay, dni, phone])
 }
