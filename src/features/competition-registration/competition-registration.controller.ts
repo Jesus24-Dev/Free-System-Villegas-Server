@@ -17,8 +17,8 @@ import {
 import { UpdateCompetitionRegistrationDto } from './dto/update-competition-registration.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('Athlete Register')
-@Controller('athlete-register')
+@ApiTags('Competition Registration')
+@Controller('competition-registration')
 export class CompetitionRegistrationController {
   constructor(
     private readonly competitionRegistrationService: CompetitionRegistrationService,

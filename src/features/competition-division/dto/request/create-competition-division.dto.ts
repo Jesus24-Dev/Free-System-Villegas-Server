@@ -1,4 +1,4 @@
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID, IsNotEmpty, IsEnum, IsNumber, Min } from 'class-validator';
 import {
   Gender,
@@ -23,7 +23,7 @@ export class CreateCompetitionDivisionDto {
   @ApiProperty({
     description: 'Modalidad de combate del atleta a registrar',
     example: FightingMode.K1,
-    enum: FightingCategory,
+    enum: FightingMode,
   })
   @IsEnum(FightingMode, {
     each: true,
@@ -61,21 +61,3 @@ export class CreateCompetitionDivisionDto {
   @IsNotEmpty({ message: 'El id de la competencia es obligatorio' })
   competition_id!: string;
 }
-
-export class DatabaseGeneratedFields {
-  @ApiProperty({
-    description: 'ID único de la modalidad de pelea registrada',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  id!: string;
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  created_at!: Date;
-
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  updated_at!: Date;
-}
-
-export class CompetitionDivisionResponseDto extends IntersectionType(
-  CreateCompetitionDivisionDto,
-  DatabaseGeneratedFields,
-) {}
