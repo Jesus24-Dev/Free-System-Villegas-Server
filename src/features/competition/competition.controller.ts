@@ -11,15 +11,15 @@ import {
   Query,
 } from '@nestjs/common';
 import { CompetitionService } from './competition.service';
+import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { RegisterAthleteAtCompetitionUseCase } from './use-cases/register-athlete-at-competition.use-case';
 import {
   CreateCompetitionDto,
-  CompetitionResponseDto,
-} from './dto/create-competition.dto';
-import { UpdateCompetitionDto } from './dto/update-competition.dto';
-import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { FindCompetitionDto } from './dto/find-competition.dto';
-import { RegisterAthleteAtCompetitionUseCase } from './use-cases/register-athlete-at-competition.use-case';
-import { RegisterAthleteAtCompetitionDto } from './dto/register-athlete-at-competition.dto';
+  FindCompetitionDto,
+  RegisterAthleteAtCompetitionDto,
+  UpdateCompetitionDto,
+} from './dto/request';
+import { CompetitionDto } from './dto/response';
 
 @ApiTags('Competition')
 @Controller('competition')
@@ -34,11 +34,11 @@ export class CompetitionController {
   @ApiResponse({
     status: 201,
     description: 'Competencia creada exitosamente',
-    type: CompetitionResponseDto,
+    type: CompetitionDto,
   })
   async create(
     @Body() createCompetitionDto: CreateCompetitionDto,
-  ): Promise<CompetitionResponseDto> {
+  ): Promise<CompetitionDto> {
     return this.competitionService.create(createCompetitionDto);
   }
 
@@ -66,11 +66,11 @@ export class CompetitionController {
   @ApiResponse({
     status: 200,
     description: 'Lista de las competencias',
-    type: [CompetitionResponseDto],
+    type: [CompetitionDto],
   })
   async findAll(
     @Query() status: FindCompetitionDto,
-  ): Promise<CompetitionResponseDto[]> {
+  ): Promise<CompetitionDto[]> {
     return this.competitionService.findAll(status);
   }
 
@@ -80,9 +80,9 @@ export class CompetitionController {
   @ApiResponse({
     status: 200,
     description: 'Competencia encontrada',
-    type: CompetitionResponseDto,
+    type: CompetitionDto,
   })
-  async findOne(@Param('id') id: string): Promise<CompetitionResponseDto> {
+  async findOne(@Param('id') id: string): Promise<CompetitionDto> {
     return this.competitionService.findOne(id);
   }
 
@@ -91,12 +91,12 @@ export class CompetitionController {
   @ApiResponse({
     status: 200,
     description: 'Competencia actualizada con exito',
-    type: CompetitionResponseDto,
+    type: CompetitionDto,
   })
   async update(
     @Param('id') id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
-  ): Promise<CompetitionResponseDto> {
+  ): Promise<CompetitionDto> {
     return this.competitionService.update(id, updateCompetitionDto);
   }
 
@@ -106,7 +106,6 @@ export class CompetitionController {
   @ApiResponse({
     status: 204,
     description: 'Competencia eliminada',
-    type: CompetitionResponseDto,
   })
   async remove(@Param('id') id: string): Promise<void> {
     await this.competitionService.remove(id);
