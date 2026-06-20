@@ -17,6 +17,7 @@ import { JwtPayload } from '../auth/dto/request';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { GymDto, RawGymDto } from './dto/response';
 import { CreateGymDto, UpdateGymDto } from './dto/request';
+import { GymDetailsResponseDto } from './dto/response/gym-details-response.dto';
 
 @ApiTags('Gym')
 @Controller('gym')
@@ -60,6 +61,19 @@ export class GymController {
   })
   async findOne(@Param('id') id: string): Promise<GymDto> {
     return this.gymService.findOne(id);
+  }
+
+  @Get(':gymId/details')
+  @ApiOperation({ summary: 'Obtener un gimnasio por su ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Gimnasio conseguido exitosamente',
+    type: GymDetailsResponseDto,
+  })
+  async getGymDetails(
+    @Param('gymId') gymId: string,
+  ): Promise<GymDetailsResponseDto> {
+    return this.gymService.getGymDetails(gymId);
   }
 
   @Patch(':id')

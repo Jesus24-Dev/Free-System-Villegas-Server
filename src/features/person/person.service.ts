@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person } from 'src/generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
+import { PersonFoundedResponseDto } from './dto/response';
 
 @Injectable()
 export class PersonService {
@@ -21,6 +22,34 @@ export class PersonService {
       throw new NotFoundException(`Persona con ID ${id} no encontrada`);
     }
     return person;
+  }
+
+  async checkIfPersonByDnyExists(
+    dni: string,
+  ): Promise<PersonFoundedResponseDto | null> {
+    const person = await this.prisma.person.findUnique({
+      where: { dni },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!person) {
+      return null;
+    }
+
+    if (person.user) {
+      throw new ConflictException(
+        `Ya hay un usuario registrado con la cedula ${dni}`,
+      );
+    }
+
+    return {
+      id: person.id,
+      name: person.name,
+      surname: person.surname,
+      role: 'ATHLETE',
+    };
   }
 
   async update(id: string, updatePersonDto: UpdatePersonDto): Promise<Person> {

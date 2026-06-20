@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { PersonDto } from './dto/response';
+import { PersonDto, PersonFoundedResponseDto } from './dto/response';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 
 @ApiTags('Person')
@@ -81,6 +81,19 @@ export class PersonController {
       gender: person.gender,
       status: person.status,
     };
+  }
+
+  @Get('dni/:dni')
+  @ApiOperation({ summary: 'Comprueba si una persona existe para el registro' })
+  @ApiResponse({
+    status: 200,
+    description: 'Persona o no encontrada',
+    type: PersonFoundedResponseDto,
+  })
+  async checkIfPersonByDnyExists(
+    @Param('dni') dni: string,
+  ): Promise<PersonFoundedResponseDto | null> {
+    return this.personService.checkIfPersonByDnyExists(dni);
   }
 
   @Patch(':id')
