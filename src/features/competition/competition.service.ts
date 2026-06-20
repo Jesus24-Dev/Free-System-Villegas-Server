@@ -1,29 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCompetitionDto } from './dto/create-competition.dto';
-import { UpdateCompetitionDto } from './dto/update-competition.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Competition } from 'src/generated/prisma/client';
-import { FindCompetitionDto } from './dto/find-competition.dto';
+import {
+  CreateCompetitionDto,
+  FindCompetitionDto,
+  UpdateCompetitionDto,
+} from './dto/request';
+import { CompetitionDto } from './dto/response';
 
 @Injectable()
 export class CompetitionService {
   constructor(private readonly prisma: PrismaService) {}
   async create(
     createCompetitionDto: CreateCompetitionDto,
-  ): Promise<Competition> {
+  ): Promise<CompetitionDto> {
     return this.prisma.competition.create({
       data: createCompetitionDto,
     });
   }
 
-  async findAll(dto: FindCompetitionDto): Promise<Competition[]> {
+  async findAll(dto: FindCompetitionDto): Promise<CompetitionDto[]> {
     const { status } = dto;
-    return this.prisma.competition.findMany({
+    const competitions = await this.prisma.competition.findMany({
       where: { status },
     });
+
+    return competitions.map((competition) => ({
+      id: competition.id,
+      name: competition.name,
+      description: competition.description,
+      logo_url: competition.logo_url,
+      location: competition.location,
+      inscription_begin_at: competition.inscription_begin_at,
+      inscription_end_at: competition.inscription_end_at,
+      status: competition.status,
+    }));
   }
 
-  async findOne(id: string): Promise<Competition> {
+  async findOne(id: string): Promise<CompetitionDto> {
     const competition = await this.prisma.competition.findUnique({
       where: { id },
     });
@@ -34,13 +47,22 @@ export class CompetitionService {
       );
     }
 
-    return competition;
+    return {
+      id: competition.id,
+      name: competition.name,
+      description: competition.description,
+      logo_url: competition.logo_url,
+      location: competition.location,
+      inscription_begin_at: competition.inscription_begin_at,
+      inscription_end_at: competition.inscription_end_at,
+      status: competition.status,
+    };
   }
 
   async update(
     id: string,
     updateCompetitionDto: UpdateCompetitionDto,
-  ): Promise<Competition> {
+  ): Promise<CompetitionDto> {
     return this.prisma.competition.update({
       where: { id },
       data: updateCompetitionDto,

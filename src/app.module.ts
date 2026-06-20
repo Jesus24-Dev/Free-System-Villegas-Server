@@ -30,10 +30,10 @@ import { CompetitionDivisionModule } from './features/competition-division/compe
     GymPaymentModule,
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
   ],
   controllers: [],
 })

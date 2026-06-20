@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, AuthResponseDto, JwtPayload } from './dto/auth.dto';
-import { ProfileDto, RegisterDto } from './dto/register-auth.dto';
-import { GetUser } from './dto/decorators/get-user.decorator';
+import { GetUser } from './decorators/get-user.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { plainToInstance } from 'class-transformer';
+import { JwtPayload, RegisterDto, SignInDto } from './dto/request';
+import { AuthDto, ProfileDto } from './dto/responses';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,10 +29,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Usuario inicio sesion exitosamente',
-    type: AuthResponseDto,
+    type: AuthDto,
   })
-  async signIn(@Body() createAuthDto: CreateAuthDto): Promise<AuthResponseDto> {
-    return this.authService.signIn(createAuthDto.email, createAuthDto.password);
+  async signIn(@Body() dto: SignInDto): Promise<AuthDto> {
+    return this.authService.signIn(dto);
   }
 
   @Post('register')
@@ -42,10 +42,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Nuevo usuario registrado',
-    type: AuthResponseDto,
+    type: AuthDto,
   })
-  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-    return this.authService.register(registerDto);
+  async register(@Body() dto: RegisterDto): Promise<AuthDto> {
+    return this.authService.register(dto);
   }
 
   @Get('profile')
@@ -59,7 +59,20 @@ export class AuthController {
     type: ProfileDto,
   })
   async profile(@GetUser() user: JwtPayload): Promise<ProfileDto> {
-    const profile = await this.authService.profile(user.sub);
+    const rawProfile = await this.authService.profile(user.sub);
+
+    const profile: ProfileDto = {
+      id: rawProfile.id,
+      email: rawProfile.email,
+      role: rawProfile.role,
+      dni: rawProfile.person.dni,
+      name: rawProfile.person.name,
+      surname: rawProfile.person.surname,
+      birthday: rawProfile.person.birthday,
+      gender: rawProfile.person.gender,
+      status: rawProfile.person.status,
+    };
+
     return plainToInstance(ProfileDto, profile);
   }
 }

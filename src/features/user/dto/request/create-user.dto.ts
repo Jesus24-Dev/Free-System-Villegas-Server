@@ -1,4 +1,3 @@
-import { Roles } from 'src/generated/prisma/enums';
 import {
   IsEmail,
   IsStrongPassword,
@@ -9,7 +8,6 @@ import {
   IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
 
 export enum AllowedClientRoles {
   ATHLETE = 'ATHLETE',
@@ -62,33 +60,4 @@ export class CreateUserDto {
   @IsUUID('4', { message: 'El ID de la persona debe ser un UUID válido' })
   @IsOptional()
   person_id!: string;
-}
-
-export class UserResponseDto {
-  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
-  @Expose()
-  id!: string;
-
-  @ApiProperty({ example: 'user@example.com' })
-  @Expose()
-  email!: string;
-
-  @ApiProperty({ enum: Roles, isArray: true, example: ['ADMIN'] })
-  @Expose()
-  role!: Roles[];
-
-  @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    nullable: true,
-  })
-  @Expose()
-  person_id!: string | null;
-
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  @Expose()
-  created_at!: Date;
-
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  @Expose()
-  updated_at!: Date;
 }

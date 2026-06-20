@@ -8,11 +8,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import {
-  ApiProperty,
-  IntersectionType,
-  ApiPropertyOptional,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CompetitionStatus } from 'src/generated/prisma/enums';
 
 export class CreateCompetitionDto {
@@ -81,21 +77,3 @@ export class CreateCompetitionDto {
   @IsNotEmpty({ message: 'Debes asignar un estado a la competencia' })
   status!: CompetitionStatus;
 }
-
-export class DatabaseGeneratedFields {
-  @ApiProperty({
-    description: 'ID único de la competencia',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  id!: string;
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  created_at!: Date;
-
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  updated_at!: Date;
-}
-
-export class CompetitionResponseDto extends IntersectionType(
-  CreateCompetitionDto,
-  DatabaseGeneratedFields,
-) {}

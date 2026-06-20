@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePersonDto } from './dto/create-person.dto';
-import { UpdatePersonDto } from './dto/update-person.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person } from 'src/generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
+import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 
 @Injectable()
 export class PersonService {

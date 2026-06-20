@@ -10,15 +10,16 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { CompetitionRegistrationService } from './competition-registration.service';
+import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import {
   CreateCompetitionRegistrationDto,
-  CompetitionRegistrationResponseDto,
-} from './dto/create-competition-registration.dto';
-import { UpdateCompetitionRegistrationDto } from './dto/update-competition-registration.dto';
-import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+  UpdateCompetitionRegistrationDto,
+} from './dto/request';
+import { CompetitionRegistrationResponseDto } from './dto/response';
+import { RawCompetitionRegistrationDto } from './dto/response/raw-competition-response.dto';
 
-@ApiTags('Athlete Register')
-@Controller('athlete-register')
+@ApiTags('Competition Registration')
+@Controller('competition-registration')
 export class CompetitionRegistrationController {
   constructor(
     private readonly competitionRegistrationService: CompetitionRegistrationService,
@@ -29,11 +30,11 @@ export class CompetitionRegistrationController {
   @ApiResponse({
     status: 201,
     description: 'Crear un nuevo usuario exitosamente',
-    type: CompetitionRegistrationResponseDto,
+    type: RawCompetitionRegistrationDto,
   })
   async create(
     @Body() createCompetitionRegistrationDto: CreateCompetitionRegistrationDto,
-  ): Promise<CompetitionRegistrationResponseDto> {
+  ): Promise<RawCompetitionRegistrationDto> {
     return this.competitionRegistrationService.create(
       createCompetitionRegistrationDto,
     );
@@ -72,12 +73,12 @@ export class CompetitionRegistrationController {
   @ApiResponse({
     status: 200,
     description: 'Registro actualizado',
-    type: CompetitionRegistrationResponseDto,
+    type: RawCompetitionRegistrationDto,
   })
   async update(
     @Param('id') id: string,
     @Body() updateCompetitionRegistrationDto: UpdateCompetitionRegistrationDto,
-  ): Promise<CompetitionRegistrationResponseDto> {
+  ): Promise<RawCompetitionRegistrationDto> {
     return this.competitionRegistrationService.update(
       id,
       updateCompetitionRegistrationDto,
@@ -90,7 +91,6 @@ export class CompetitionRegistrationController {
   @ApiResponse({
     status: 204,
     description: 'Registro eliminado',
-    type: CompetitionRegistrationResponseDto,
   })
   async remove(@Param('id') id: string): Promise<void> {
     await this.competitionRegistrationService.remove(id);

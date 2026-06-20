@@ -9,7 +9,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { States } from 'src/generated/prisma/enums';
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGymDto {
   @ApiProperty({
@@ -58,21 +58,3 @@ export class CreateGymDto {
   @IsOptional()
   owner_id?: string;
 }
-
-export class DatabaseGeneratedFields {
-  @ApiProperty({
-    description: 'ID único del gimnasio',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  id!: string;
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  created_at!: Date;
-
-  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
-  updated_at!: Date;
-}
-
-export class GymResponseDto extends IntersectionType(
-  CreateGymDto,
-  DatabaseGeneratedFields,
-) {}

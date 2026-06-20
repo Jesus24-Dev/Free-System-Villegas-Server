@@ -1,7 +1,7 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateAuthDto {
+export class SignInDto {
   @ApiProperty({
     description: 'Email del usuario',
     example: 'user@example.com',
@@ -9,6 +9,7 @@ export class CreateAuthDto {
   @IsEmail({}, { message: 'El correo electrónico proporcionado no es válido' })
   @IsNotEmpty({ message: 'El correo electrónico es obligatorio' })
   email!: string;
+
   @ApiProperty({
     description: 'Clave del usuario',
     example: 'Password123#',
@@ -16,20 +17,4 @@ export class CreateAuthDto {
   @IsString({ message: 'La clave debe ser un texto valido.' })
   @IsNotEmpty({ message: 'La clave es obligatoria' })
   password!: string;
-}
-
-export class AuthDto {
-  access_token!: string;
-}
-
-export class AuthResponseDto {
-  @ApiProperty({
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIi...',
-  })
-  access_token!: string;
-}
-export class JwtPayload {
-  sub!: string;
-  role?: string[];
 }

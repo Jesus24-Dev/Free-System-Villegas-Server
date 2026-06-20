@@ -12,8 +12,7 @@ import {
 } from 'src/generated/prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
-
-import { RegisterAthleteAtCompetitionDto } from '../dto/register-athlete-at-competition.dto';
+import { RegisterAthleteAtCompetitionDto } from '../dto/request';
 
 @Injectable()
 export class RegisterAthleteAtCompetitionUseCase {

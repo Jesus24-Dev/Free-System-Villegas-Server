@@ -11,9 +11,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
-import { CreatePersonDto, PersonResponseDto } from './dto/create-person.dto';
-import { UpdatePersonDto } from './dto/update-person.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { PersonDto } from './dto/response';
+import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 
 @ApiTags('Person')
 @Controller('person')
@@ -25,12 +25,21 @@ export class PersonController {
   @ApiResponse({
     status: 201,
     description: 'La persona ha sido creada exitosamente',
-    type: PersonResponseDto,
+    type: PersonDto,
   })
   async create(
     @Body(new ValidationPipe()) createPersonDto: CreatePersonDto,
-  ): Promise<PersonResponseDto> {
-    return this.personService.create(createPersonDto);
+  ): Promise<PersonDto> {
+    const person = await this.personService.create(createPersonDto);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
   }
 
   @Get()
@@ -38,10 +47,20 @@ export class PersonController {
   @ApiResponse({
     status: 200,
     description: 'Lista de todas las personas',
-    type: [PersonResponseDto],
+    type: [PersonDto],
   })
-  async findAll(): Promise<PersonResponseDto[]> {
-    return this.personService.findAll();
+  async findAll(): Promise<PersonDto[]> {
+    const persons = await this.personService.findAll();
+
+    return persons.map((person) => ({
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    }));
   }
 
   @Get(':id')
@@ -49,10 +68,19 @@ export class PersonController {
   @ApiResponse({
     status: 200,
     description: 'Persona encontrada',
-    type: PersonResponseDto,
+    type: PersonDto,
   })
-  async findOne(@Param('id') id: string): Promise<PersonResponseDto> {
-    return this.personService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<PersonDto> {
+    const person = await this.personService.findOne(id);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
   }
 
   @Patch(':id')
@@ -60,13 +88,22 @@ export class PersonController {
   @ApiResponse({
     status: 200,
     description: 'Persona actualizada',
-    type: PersonResponseDto,
+    type: PersonDto,
   })
   async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
-  ): Promise<PersonResponseDto> {
-    return this.personService.update(id, updatePersonDto);
+  ): Promise<PersonDto> {
+    const person = await this.personService.update(id, updatePersonDto);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
   }
 
   @Delete(':id')
