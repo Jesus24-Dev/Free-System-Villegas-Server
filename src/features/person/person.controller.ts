@@ -84,16 +84,16 @@ export class PersonController {
   }
 
   @Get('dni/:dni')
-  @ApiOperation({ summary: 'Obtener una persona por su cedula' })
+  @ApiOperation({ summary: 'Comprueba si una persona existe para el registro' })
   @ApiResponse({
     status: 200,
-    description: 'Persona encontrada',
+    description: 'Persona o no encontrada',
     type: PersonFoundedResponseDto,
   })
-  async findByDni(
+  async checkIfPersonByDnyExists(
     @Param('dni') dni: string,
   ): Promise<PersonFoundedResponseDto | null> {
-    return this.personService.findPersonByDni(dni);
+    return this.personService.checkIfPersonByDnyExists(dni);
   }
 
   @Patch(':id')

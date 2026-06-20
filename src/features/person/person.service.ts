@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person } from 'src/generated/prisma/client';
 import { NotFoundException } from '@nestjs/common';
@@ -24,7 +24,9 @@ export class PersonService {
     return person;
   }
 
-  async findPersonByDni(dni: string): Promise<PersonFoundedResponseDto | null> {
+  async checkIfPersonByDnyExists(
+    dni: string,
+  ): Promise<PersonFoundedResponseDto | null> {
     const person = await this.prisma.person.findUnique({
       where: { dni },
       include: {
@@ -36,11 +38,17 @@ export class PersonService {
       return null;
     }
 
+    if (person.user) {
+      throw new ConflictException(
+        `Ya hay un usuario registrado con la cedula ${dni}`,
+      );
+    }
+
     return {
       id: person.id,
       name: person.name,
       surname: person.surname,
-      role: person.user?.role ? person.user?.role : [],
+      role: 'ATHLETE',
     };
   }
 

@@ -24,5 +24,5 @@ export class PersonFoundedResponseDto {
     description: 'Roles del usuario',
     example: [Roles.ADMIN],
   })
-  role!: Roles[];
+  role!: string;
 }
