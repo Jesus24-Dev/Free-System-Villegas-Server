@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCompetitionRegistrationDto } from './dto/create-competition-registration.dto';
-import { UpdateCompetitionRegistrationDto } from './dto/update-competition-registration.dto';
+import { CreateCompetitionRegistrationDto } from './dto/request/create-competition-registration.dto';
+import { UpdateCompetitionRegistrationDto } from './dto/request/update-competition-registration.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CompetitionRegistration } from 'src/generated/prisma/client';
+import { CompetitionRegistrationResponseDto } from './dto/response';
 
 @Injectable()
 export class CompetitionRegistrationService {
@@ -15,23 +16,69 @@ export class CompetitionRegistrationService {
     });
   }
 
-  async findAll(): Promise<CompetitionRegistration[]> {
-    return this.prisma.competitionRegistration.findMany();
-  }
-
-  async findOne(id: string): Promise<CompetitionRegistration> {
-    const athleteRegistration =
-      await this.prisma.competitionRegistration.findUnique({
-        where: { id },
+  async findAll(): Promise<CompetitionRegistrationResponseDto[]> {
+    const competitionRegistrations =
+      await this.prisma.competitionRegistration.findMany({
+        include: {
+          athlete: {
+            include: {
+              person: true,
+            },
+          },
+          division: true,
+        },
       });
 
-    if (!athleteRegistration) {
+    return competitionRegistrations.map((competitionRegistration) => ({
+      id: competitionRegistration.id,
+      athlete: {
+        id: competitionRegistration.athlete.id,
+        name: competitionRegistration.athlete.person.name,
+        surname: competitionRegistration.athlete.person.surname,
+        gender: competitionRegistration.athlete.person.gender,
+      },
+      division: {
+        mode: competitionRegistration.division.mode,
+        category: competitionRegistration.division.category,
+        weight: competitionRegistration.division.weight,
+      },
+    }));
+  }
+
+  async findOne(id: string): Promise<CompetitionRegistrationResponseDto> {
+    const competitionRegistration =
+      await this.prisma.competitionRegistration.findUnique({
+        where: { id },
+        include: {
+          athlete: {
+            include: {
+              person: true,
+            },
+          },
+          division: true,
+        },
+      });
+
+    if (!competitionRegistration) {
       throw new NotFoundException(
         `El registro del atleta con id ${id} no se pudo encontrar`,
       );
     }
 
-    return athleteRegistration;
+    return {
+      id: competitionRegistration.id,
+      athlete: {
+        id: competitionRegistration.athlete.id,
+        name: competitionRegistration.athlete.person.name,
+        surname: competitionRegistration.athlete.person.surname,
+        gender: competitionRegistration.athlete.person.gender,
+      },
+      division: {
+        mode: competitionRegistration.division.mode,
+        category: competitionRegistration.division.category,
+        weight: competitionRegistration.division.weight,
+      },
+    };
   }
 
   async update(
