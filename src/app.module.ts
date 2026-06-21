@@ -17,6 +17,7 @@ import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggerModule } from './common/logger/logger.module';
 import { AppController } from './app.controller';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -34,6 +35,12 @@ import { AppController } from './app.controller';
     GymPaymentModule,
     PagoMovilModule,
     LoggerModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 80,
+      },
+    ]),
   ],
   providers: [
     {
@@ -43,6 +50,10 @@ import { AppController } from './app.controller';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
   controllers: [AppController],

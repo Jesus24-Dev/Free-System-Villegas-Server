@@ -16,6 +16,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { plainToInstance } from 'class-transformer';
 import { JwtPayload, RegisterDto, SignInDto } from './dto/request';
 import { AuthDto, ProfileDto } from './dto/responses';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -23,6 +24,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Inicio de sesion del usuario' })
@@ -36,6 +38,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
