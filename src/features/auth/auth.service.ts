@@ -6,6 +6,7 @@ import { RegisterUserUseCase } from './use-cases/register-user.use-case';
 import { Prisma } from 'src/generated/prisma/client';
 import { RegisterDto, SignInDto } from './dto/request';
 import { AuthDto } from './dto/responses';
+import { LoggerService } from 'src/common/logger/logger.service';
 
 export type UserWithPerson = Prisma.UserGetPayload<{
   include: { person: true };
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
+    private readonly logger: LoggerService,
   ) {}
 
   async signIn(dto: SignInDto): Promise<AuthDto> {
@@ -28,6 +30,10 @@ export class AuthService {
       user.password,
     );
     if (!isMatch) {
+      this.logger.error('GYM_CREATION_FAILED', new Error('Coach not found'), {
+        email: dto.email,
+      });
+
       throw new UnauthorizedException(
         'La clave no coincide con el registro encontrado.',
       );
