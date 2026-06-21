@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGymDto } from '../dto/request';
 import { RawGymDto } from '../dto/response';
@@ -22,6 +26,13 @@ export class CreateGymUseCase {
         'Solo los entrenadores pueden crear gimnasios',
       );
     }
+
+    if (!createGym.payment_methods || createGym.payment_methods.length === 0) {
+      throw new BadRequestException(
+        'El gimnasio debe tener al menos un método de pago móvil',
+      );
+    }
+
     return this.prisma.gym.create({
       data: {
         owner_id: coach.id,

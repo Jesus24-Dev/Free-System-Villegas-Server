@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { States } from 'src/generated/prisma/enums';
 import { ApiProperty } from '@nestjs/swagger';
+import { CreatePagoMovilDto } from 'src/features/pago-movil/dto/request';
 
 export class CreateGymDto {
   @ApiProperty({
@@ -57,4 +58,12 @@ export class CreateGymDto {
   @IsUUID('4', { message: 'El ID del propietario debe ser un UUID válido' })
   @IsOptional()
   owner_id?: string;
+
+  @ApiProperty({
+    type: [CreatePagoMovilDto],
+  })
+  @IsNotEmpty({
+    message: 'Debes asignar al menos un método de pago al gimnasio',
+  })
+  payment_methods!: CreatePagoMovilDto[];
 }

@@ -5,6 +5,7 @@ import { GymDto } from './dto/response';
 import { CreateGymDto, UpdateGymDto } from './dto/request';
 import { GymDetailsResponseDto } from './dto/response/gym-details-response.dto';
 import { CoachDetailsDto } from './dto/response/coach-details-response.dto';
+import { PagoMovilDetailsDto } from './dto/response/pago-movil-details-response.dto';
 
 @Injectable()
 export class GymService {
@@ -105,6 +106,7 @@ export class GymService {
             person: true,
           },
         },
+        pago_movil: true,
       },
     });
 
@@ -135,6 +137,12 @@ export class GymService {
       },
     }));
 
+    const pagoMovil: PagoMovilDetailsDto[] = gym.pago_movil.map((pago) => ({
+      bank_to_pay: pago.bank_to_pay,
+      dni: pago.dni,
+      phone: pago.phone,
+    }));
+
     return {
       id: gym.id,
       name: gym.name,
@@ -142,6 +150,7 @@ export class GymService {
       state: gym.state,
       athletes,
       coaches,
+      pago_movil: pagoMovil,
     };
   }
 

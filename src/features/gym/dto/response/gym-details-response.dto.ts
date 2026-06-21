@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { States } from 'src/generated/prisma/enums';
 import { AthleteDetailsDto } from './athlete-details-response.dto';
 import { CoachDetailsDto } from './coach-details-response.dto';
+import { PagoMovilDetailsDto } from './pago-movil-details-response.dto';
 
 export class GymDetailsResponseDto {
   @ApiProperty({
@@ -38,4 +39,9 @@ export class GymDetailsResponseDto {
     type: [CoachDetailsDto],
   })
   coaches!: CoachDetailsDto[];
+
+  @ApiProperty({
+    type: [PagoMovilDetailsDto],
+  })
+  pago_movil!: PagoMovilDetailsDto[];
 }
