@@ -3,7 +3,7 @@ import { UserService } from '../user/user.service';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
-import { Prisma } from 'src/generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { RegisterDto, SignInDto } from './dto/request';
 import { AuthDto } from './dto/responses';
 import { LoggerService } from 'src/common/logger/logger.service';

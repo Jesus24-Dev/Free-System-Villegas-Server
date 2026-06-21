@@ -9,7 +9,7 @@ import {
   IsUUID,
   Length,
 } from 'class-validator';
-import { Gender } from 'src/generated/prisma/enums';
+import { Gender } from '@prisma/client';
 
 export enum AllowedClientRoles {
   ATHLETE = 'ATHLETE',

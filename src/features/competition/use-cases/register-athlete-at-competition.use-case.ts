@@ -9,7 +9,7 @@ import {
   CompetitionRegistration,
   CompetitionStatus,
   FightingMode,
-} from 'src/generated/prisma/client';
+} from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterAthleteAtCompetitionDto } from '../dto/request';

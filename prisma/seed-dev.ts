@@ -8,7 +8,7 @@ import {
   CompetitionStatus,
   FightingMode,
   FightingCategory,
-} from '../src/generated/prisma/client';
+} from '@prisma/client';
 
 import * as bcrypt from 'bcrypt';
 

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGymPaymentDto } from './dto/create-gym-payment.dto';
 import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GymPayment } from 'src/generated/prisma/client';
+import { GymPayment } from '@prisma/client';
 import { LoggerService } from 'src/common/logger/logger.service';
 
 @Injectable()

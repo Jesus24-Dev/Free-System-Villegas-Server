@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Person } from 'src/generated/prisma/client';
+import { Person } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 import { PersonFoundedResponseDto } from './dto/response';

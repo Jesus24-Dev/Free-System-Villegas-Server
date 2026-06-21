@@ -8,7 +8,7 @@ import {
   IsNumber,
   IsOptional,
 } from 'class-validator';
-import { States } from 'src/generated/prisma/enums';
+import { States } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreatePagoMovilDto } from 'src/features/pago-movil/dto/request';
 

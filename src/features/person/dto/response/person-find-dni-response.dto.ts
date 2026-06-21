@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Roles } from 'src/generated/prisma/enums';
+import { Roles } from '@prisma/client';
 
 export class PersonFoundedResponseDto {
   @ApiProperty({

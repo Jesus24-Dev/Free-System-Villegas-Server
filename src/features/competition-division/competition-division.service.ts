@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CompetitionDivision } from 'src/generated/prisma/client';
+import { CompetitionDivision } from '@prisma/client';
 import {
   CreateCompetitionDivisionDto,
   UpdateCompetitionDivisionDto,

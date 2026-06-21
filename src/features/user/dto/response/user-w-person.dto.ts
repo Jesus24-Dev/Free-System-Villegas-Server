@@ -1,4 +1,4 @@
-import { Gender, Roles } from 'src/generated/prisma/enums';
+import { Gender, Roles } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserPersonDto {

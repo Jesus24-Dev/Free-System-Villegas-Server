@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCompetitionRegistrationDto } from './dto/request/create-competition-registration.dto';
 import { UpdateCompetitionRegistrationDto } from './dto/request/update-competition-registration.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CompetitionRegistration } from 'src/generated/prisma/client';
+import { CompetitionRegistration } from '@prisma/client';
 import { CompetitionRegistrationResponseDto } from './dto/response';
 
 @Injectable()

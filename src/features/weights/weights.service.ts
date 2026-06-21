@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { WeightsFilterDto } from './dto/weights-filter.dto';
-import { FightingWeights } from 'src/generated/prisma/client';
+import { FightingWeights } from '@prisma/client';
 
 @Injectable()
 export class WeightsService {

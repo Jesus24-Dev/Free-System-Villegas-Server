@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FightingCategory, FightingMode } from 'src/generated/prisma/client';
+import { FightingCategory, FightingMode } from '@prisma/client';
 
 export class CompetitionDivisionDto {
   @ApiProperty({
