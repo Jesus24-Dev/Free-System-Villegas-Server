@@ -7,8 +7,21 @@ import { LoggerService } from './logger.service';
   imports: [
     PinoLoggerModule.forRoot({
       pinoHttp: {
-        level: 'info',
-
+        customProps() {
+          return {
+            environment: process.env.NODE_ENV,
+          };
+        },
+        autoLogging: {
+          ignore(req) {
+            return req.url === '/favicon.ico';
+          },
+        },
+        level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+        redact: {
+          paths: ['req.headers.authorization', 'req.headers.cookie'],
+          censor: '[REDACTED]',
+        },
         transport: {
           target: 'pino-pretty',
           options: {

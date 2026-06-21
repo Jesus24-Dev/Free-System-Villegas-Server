@@ -26,7 +26,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getResponse()
         : 'Internal server error';
 
-    // 1. Extraemos el mensaje de forma segura evitando el tipo 'any'
     let message: unknown = 'Internal server error';
 
     if (typeof exceptionResponse === 'string') {
@@ -36,11 +35,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = resObj.message || resObj.error || 'Internal server error';
     }
 
-    this.logger.error('HTTP_EXCEPTION', exception, {
-      method: request.method,
+    this.logger.error('HTTP_EXCEPTION', {
+      message,
       path: request.url,
+      method: request.method,
       statusCode: status,
     });
+
     response.status(status).json({
       success: false,
       statusCode: status,

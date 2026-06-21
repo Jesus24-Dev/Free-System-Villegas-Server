@@ -16,6 +16,7 @@ import { CompetitionDivisionModule } from './features/competition-division/compe
 import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggerModule } from './common/logger/logger.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -44,6 +45,6 @@ import { LoggerModule } from './common/logger/logger.module';
       useClass: HttpExceptionFilter,
     },
   ],
-  controllers: [],
+  controllers: [AppController],
 })
 export class AppModule {}
