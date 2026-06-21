@@ -14,6 +14,7 @@ import { AuthGuard } from './features/auth/auth.guard';
 import { CompetitionRegistrationModule } from './features/competition-registration/competition-registration.module';
 import { CompetitionDivisionModule } from './features/competition-division/competition-division.module';
 import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -30,12 +31,23 @@ import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
     CompetitionDivisionModule,
     GymPaymentModule,
     PagoMovilModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'info',
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
+        },
+      },
+    }),
   ],
   providers: [
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
   controllers: [],
 })

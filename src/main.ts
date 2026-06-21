@@ -5,9 +5,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -27,6 +28,8 @@ async function bootstrap() {
     new PrismaClientExceptionFilter(httpAdapter),
     new HttpExceptionFilter(),
   );
+
+  app.useLogger(app.get(Logger));
 
   const document = SwaggerModule.createDocument(app, config);
 
