@@ -26,6 +26,7 @@ export async function seedDev() {
   await prisma.person.deleteMany();
   await prisma.competitionDivision.deleteMany();
   await prisma.competition.deleteMany();
+  await prisma.pagoMovilFields.deleteMany();
 
   const password = await bcrypt.hash('123456', 10);
 
@@ -145,6 +146,37 @@ export async function seedDev() {
     where: { id: coach2.id },
     data: {
       gym_id: gym2.id,
+    },
+  });
+
+  // ==========================================
+  // PAGOS MOVILES
+  // ==========================================
+
+  await prisma.pagoMovilFields.create({
+    data: {
+      gym_id: gym1.id,
+      bank_to_pay: '0102 - Banco de Venezuela',
+      dni: 'V12345678',
+      phone: '04141234567',
+    },
+  });
+
+  await prisma.pagoMovilFields.create({
+    data: {
+      gym_id: gym1.id,
+      bank_to_pay: '0105 - Mercantil',
+      dni: 'V12345678',
+      phone: '04141234567',
+    },
+  });
+
+  await prisma.pagoMovilFields.create({
+    data: {
+      gym_id: gym2.id,
+      bank_to_pay: '0108 - Provincial',
+      dni: 'V12345678',
+      phone: '04141234567',
     },
   });
 
