@@ -13,6 +13,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './features/auth/auth.guard';
 import { CompetitionRegistrationModule } from './features/competition-registration/competition-registration.module';
 import { CompetitionDivisionModule } from './features/competition-division/competition-division.module';
+import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CompetitionDivisionModule } from './features/competition-division/compe
     CompetitionRegistrationModule,
     CompetitionDivisionModule,
     GymPaymentModule,
+    PagoMovilModule,
   ],
   providers: [
     // {
