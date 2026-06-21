@@ -47,7 +47,7 @@ export class RegisterUserUseCase {
         },
       });
 
-      this.logger.info('USER_REGISTERD', {
+      this.logger.info('USER_REGISTERED', {
         userId: user.id,
         role: user.role,
       });

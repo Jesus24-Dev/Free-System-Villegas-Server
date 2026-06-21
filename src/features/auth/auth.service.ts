@@ -30,7 +30,7 @@ export class AuthService {
       user.password,
     );
     if (!isMatch) {
-      this.logger.error('GYM_CREATION_FAILED', new Error('Coach not found'), {
+      this.logger.error('LOGIN_FAILED', new Error('Password does not match'), {
         email: dto.email,
       });
 

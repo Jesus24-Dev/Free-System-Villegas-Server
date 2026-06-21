@@ -9,12 +9,13 @@ import { CoachModule } from './features/coach/coach.module';
 import { CompetitionModule } from './features/competition/competition.module';
 import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
 import { AuthModule } from './features/auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './features/auth/auth.guard';
 import { CompetitionRegistrationModule } from './features/competition-registration/competition-registration.module';
 import { CompetitionDivisionModule } from './features/competition-division/competition-division.module';
 import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
-import { LoggerModule } from 'nestjs-pino';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [
@@ -31,22 +32,16 @@ import { LoggerModule } from 'nestjs-pino';
     CompetitionDivisionModule,
     GymPaymentModule,
     PagoMovilModule,
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level: 'info',
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-          },
-        },
-      },
-    }),
+    LoggerModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     },
   ],
   controllers: [],

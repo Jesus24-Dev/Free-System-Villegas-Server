@@ -36,9 +36,13 @@ export class CreateGymUseCase {
     }
 
     if (!createGym.payment_methods || createGym.payment_methods.length === 0) {
-      this.logger.error('GYM_CREATION_FAILED', new Error('Coach not found'), {
-        payload: createGym,
-      });
+      this.logger.error(
+        'GYM_CREATION_FAILED',
+        new Error('Payments methods not found'),
+        {
+          payload: createGym,
+        },
+      );
 
       throw new BadRequestException(
         'El gimnasio debe tener al menos un método de pago móvil',

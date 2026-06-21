@@ -8,6 +8,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
+import { LoggerService } from 'src/common/logger/logger.service';
 
 @Module({
   imports: [
@@ -20,7 +21,13 @@ import { RegisterUserUseCase } from './use-cases/register-user.use-case';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, PasswordService, TokenService, RegisterUserUseCase],
+  providers: [
+    AuthService,
+    PasswordService,
+    TokenService,
+    RegisterUserUseCase,
+    LoggerService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -8,17 +8,16 @@ export class LoggerService {
   info(event: string, data?: Record<string, any>) {
     this.logger.info({
       event,
-
       ...data,
     });
   }
 
-  error(event: string, error: any, data?: Record<string, unknown>) {
-    const isErrorInstance = error instanceof Error;
+  error(event: string, error: unknown, data?: Record<string, any>) {
     this.logger.error({
       event,
-      error: isErrorInstance ? error.message : String(error),
-      stack: isErrorInstance ? error.stack : undefined,
+
+      error: error instanceof Error ? error.message : error,
+
       ...data,
     });
   }
