@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { Gender, Roles } from 'src/generated/prisma/enums';
+import { Gender, Roles } from '@prisma/client';
 
 export class ProfileDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })

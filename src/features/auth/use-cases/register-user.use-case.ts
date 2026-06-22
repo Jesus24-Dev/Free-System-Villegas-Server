@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from 'src/generated/prisma/client';
+import { User } from '@prisma/client';
 import { PasswordService } from '../services/password.service';
 import { RegisterDto } from '../dto/request';
+import { LoggerService } from 'src/common/logger/logger.service';
 
 @Injectable()
 export class RegisterUserUseCase {
   constructor(
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
+    private readonly logger: LoggerService,
   ) {}
 
   async execute(dto: RegisterDto): Promise<User> {
@@ -36,7 +38,7 @@ export class RegisterUserUseCase {
           },
         });
       }
-      const user = tx.user.create({
+      const user = await tx.user.create({
         data: {
           email: dto.email,
           password: hashedPassword,
@@ -44,6 +46,12 @@ export class RegisterUserUseCase {
           person_id: person.id,
         },
       });
+
+      this.logger.info('USER_REGISTERED', {
+        userId: user.id,
+        role: user.role,
+      });
+
       return user;
     });
   }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { States } from 'src/generated/prisma/enums';
+import { States } from '@prisma/client';
 import { AthleteDetailsDto } from './athlete-details-response.dto';
 import { CoachDetailsDto } from './coach-details-response.dto';
 import { PagoMovilDetailsDto } from './pago-movil-details-response.dto';

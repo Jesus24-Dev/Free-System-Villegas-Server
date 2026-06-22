@@ -3,7 +3,7 @@ import {
   CompetitionStatus,
   FightingCategory,
   FightingMode,
-} from 'src/generated/prisma/client';
+} from '@prisma/client';
 
 class AthleteDivisionResponseDto {
   @ApiProperty({

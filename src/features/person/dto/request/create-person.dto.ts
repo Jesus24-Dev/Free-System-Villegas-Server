@@ -8,7 +8,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { Gender } from 'src/generated/prisma/enums';
+import { Gender } from '@prisma/client';
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
 
 export class CreatePersonDto {

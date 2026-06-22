@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
-import { CompetitionStatus } from 'src/generated/prisma/enums';
+import { CompetitionStatus } from '@prisma/client';
 
 export class FindCompetitionDto {
   @ApiPropertyOptional({

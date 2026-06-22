@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreatePagoMovilDto } from './dto/request';
-import { PagoMovilFields } from 'src/generated/prisma/client';
+import { PagoMovilFields } from '@prisma/client';
 import { PagoMovilResponseDto } from './dto/responses/pago-movil-response.dto';
 
 @Injectable()

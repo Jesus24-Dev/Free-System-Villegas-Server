@@ -3,7 +3,7 @@ import {
   FightingCategory,
   FightingMode,
   Gender,
-} from 'src/generated/prisma/enums';
+} from '@prisma/client';
 
 export class CompetitionDivisionWithoutCompetitionDto {
   @ApiProperty({

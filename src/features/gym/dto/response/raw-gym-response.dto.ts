@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { States } from 'src/generated/prisma/enums';
+import { States } from '@prisma/client';
 
 export class RawGymDto {
   @ApiProperty({

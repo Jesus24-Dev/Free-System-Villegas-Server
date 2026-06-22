@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAthleteDto } from './dto/request/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/request/update-athlete.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Athlete, Prisma } from 'src/generated/prisma/client';
+import { Athlete, Prisma } from '@prisma/client';
 import { AthleteDto } from './dto/response';
 import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
 

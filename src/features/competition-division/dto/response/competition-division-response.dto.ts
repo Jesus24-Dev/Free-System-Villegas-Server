@@ -3,7 +3,7 @@ import {
   FightingCategory,
   FightingMode,
   Gender,
-} from 'src/generated/prisma/enums';
+} from '@prisma/client';
 import { CompetitionDivisionCompetitionDto } from './competition-division-competition.dto';
 
 export class CompetitionDivisionDto {

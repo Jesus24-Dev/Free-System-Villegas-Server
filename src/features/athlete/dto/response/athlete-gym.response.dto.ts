@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { States } from 'src/generated/prisma/client';
+import { States } from '@prisma/client';
 
 export class AthleteGymResponseDto {
   @ApiProperty({

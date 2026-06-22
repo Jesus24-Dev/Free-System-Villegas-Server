@@ -4,7 +4,7 @@ import {
   Gender,
   FightingMode,
   FightingCategory,
-} from 'src/generated/prisma/enums';
+} from '@prisma/client';
 
 export class CreateCompetitionDivisionDto {
   @ApiProperty({

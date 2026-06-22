@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CompetitionStatus } from 'src/generated/prisma/enums';
+import { CompetitionStatus } from '@prisma/client';
 
 export class CompetitionDto {
   @ApiProperty({

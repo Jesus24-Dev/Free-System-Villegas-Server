@@ -5,31 +5,32 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  CompetitionRegistration,
-  CompetitionStatus,
-  FightingMode,
-} from 'src/generated/prisma/client';
+import { CompetitionStatus, FightingMode } from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterAthleteAtCompetitionDto } from '../dto/request';
+import { LoggerService } from 'src/common/logger/logger.service';
+import { RegistrationResponseDto } from '../dto/response/registration-response.dto';
 
 @Injectable()
 export class RegisterAthleteAtCompetitionUseCase {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly logger: LoggerService,
+  ) {}
 
   async execute(
     dto: RegisterAthleteAtCompetitionDto,
     competitionId: string,
     athleteId: string,
-  ): Promise<CompetitionRegistration> {
+  ): Promise<RegistrationResponseDto> {
     const RING_MODES = new Set<FightingMode>([
       FightingMode.K1,
       FightingMode.LOW_KICK,
       FightingMode.FULL_CONTACT,
     ]);
 
-    return this.prisma.$transaction(async (tx) => {
+    const registration = await this.prisma.$transaction(async (tx) => {
       // =====================================================
       // Competition validation
       // =====================================================
@@ -47,6 +48,14 @@ export class RegisterAthleteAtCompetitionUseCase {
       }
 
       if (competition.status !== CompetitionStatus.OPEN) {
+        this.logger.error(
+          'ATHLETE_REGISTER_FAILED',
+          new Error('Competition status is not open'),
+          {
+            competitionId,
+          },
+        );
+
         throw new BadRequestException(
           'La competencia no esta abierta para inscripciones',
         );
@@ -70,6 +79,14 @@ export class RegisterAthleteAtCompetitionUseCase {
       }
 
       if (!athlete.person) {
+        this.logger.error(
+          'ATHLETE_REGISTER_FAILED',
+          new Error('Athlete has not a associated profile'),
+          {
+            athleteId,
+          },
+        );
+
         throw new BadRequestException('El atleta no tiene un perfil asociado');
       }
 
@@ -87,6 +104,17 @@ export class RegisterAthleteAtCompetitionUseCase {
       });
 
       if (!officialDivision) {
+        this.logger.error(
+          'ATHLETE_REGISTER_FAILED',
+          new Error('Category not exists'),
+          {
+            mode: dto.mode,
+            category: dto.category,
+            gender: athlete.person.gender,
+            weight: dto.weight,
+          },
+        );
+
         throw new BadRequestException(
           'La division seleccionada no existe en las categorias oficiales de WAKO',
         );
@@ -167,12 +195,24 @@ export class RegisterAthleteAtCompetitionUseCase {
       // Registration
       // =====================================================
 
-      return tx.competitionRegistration.create({
+      const competitionRegistration = await tx.competitionRegistration.create({
         data: {
           athlete_id: athleteId,
           division_id: division.id,
         },
       });
+
+      this.logger.info('GYM_CREATED', {
+        competition: competition.id,
+        athlete: athleteId,
+        division_id: division.id,
+      });
+      return competitionRegistration;
     });
+    return {
+      id: registration.id,
+      athlete_id: registration.athlete_id,
+      division_id: registration.division_id,
+    };
   }
 }

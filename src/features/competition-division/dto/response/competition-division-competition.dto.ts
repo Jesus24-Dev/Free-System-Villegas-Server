@@ -1,4 +1,4 @@
-import { CompetitionStatus } from 'src/generated/prisma/enums';
+import { CompetitionStatus } from '@prisma/client';
 
 export class CompetitionDivisionCompetitionDto {
   name!: string;

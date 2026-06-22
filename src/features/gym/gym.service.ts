@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Gym } from 'src/generated/prisma/client';
+import { Gym } from '@prisma/client';
 import { GymDto } from './dto/response';
 import { CreateGymDto, UpdateGymDto } from './dto/request';
 import { GymDetailsResponseDto } from './dto/response/gym-details-response.dto';

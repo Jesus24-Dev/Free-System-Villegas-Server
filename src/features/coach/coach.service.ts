@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Coach, Prisma } from 'src/generated/prisma/client';
+import { Coach, Prisma } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { CoachDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';

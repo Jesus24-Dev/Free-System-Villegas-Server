@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
-import { FightingCategory, FightingMode } from 'src/generated/prisma/enums';
+import { FightingCategory, FightingMode } from '@prisma/client';
 
 export class RegisterAthleteAtCompetitionDto {
   @ApiProperty({

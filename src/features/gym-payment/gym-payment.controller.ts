@@ -71,6 +71,16 @@ export class GymPaymentController {
     return this.gymPaymentService.update(id, updateGymPaymentDto);
   }
 
+  @Post(':id/confirm')
+  @ApiOperation({ summary: 'Confirmar un pago por su ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Pago confirmado',
+  })
+  async confirmPayment(@Param('id') id: string): Promise<void> {
+    await this.gymPaymentService.confirmPayment(id);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un pago por su ID' })

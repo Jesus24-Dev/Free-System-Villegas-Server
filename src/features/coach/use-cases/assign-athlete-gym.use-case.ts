@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Athlete } from 'src/generated/prisma/client';
+import { Athlete } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -27,13 +27,13 @@ export class AssignAthleteToGymUseCase {
       );
     }
 
-    await this.prisma.athlete.update({
+    const updatedAthlete = await this.prisma.athlete.update({
       where: { id: athlete.id },
       data: {
         gym_id: gymId,
       },
     });
 
-    return athlete;
+    return updatedAthlete;
   }
 }
