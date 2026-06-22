@@ -5,15 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  CompetitionRegistration,
-  CompetitionStatus,
-  FightingMode,
-} from '@prisma/client';
+import { CompetitionStatus, FightingMode } from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterAthleteAtCompetitionDto } from '../dto/request';
 import { LoggerService } from 'src/common/logger/logger.service';
+import { RegistrationResponseDto } from '../dto/response/registration-response.dto';
 
 @Injectable()
 export class RegisterAthleteAtCompetitionUseCase {
@@ -26,14 +23,14 @@ export class RegisterAthleteAtCompetitionUseCase {
     dto: RegisterAthleteAtCompetitionDto,
     competitionId: string,
     athleteId: string,
-  ): Promise<CompetitionRegistration> {
+  ): Promise<RegistrationResponseDto> {
     const RING_MODES = new Set<FightingMode>([
       FightingMode.K1,
       FightingMode.LOW_KICK,
       FightingMode.FULL_CONTACT,
     ]);
 
-    return this.prisma.$transaction(async (tx) => {
+    const registration = await this.prisma.$transaction(async (tx) => {
       // =====================================================
       // Competition validation
       // =====================================================
@@ -212,5 +209,10 @@ export class RegisterAthleteAtCompetitionUseCase {
       });
       return competitionRegistration;
     });
+    return {
+      id: registration.id,
+      athlete_id: registration.athlete_id,
+      division_id: registration.division_id,
+    };
   }
 }
