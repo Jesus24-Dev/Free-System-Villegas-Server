@@ -27,13 +27,13 @@ export class AssignAthleteToGymUseCase {
       );
     }
 
-    await this.prisma.athlete.update({
+    const updatedAthlete = await this.prisma.athlete.update({
       where: { id: athlete.id },
       data: {
         gym_id: gymId,
       },
     });
 
-    return athlete;
+    return updatedAthlete;
   }
 }
