@@ -30,12 +30,17 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
   app.useLogger(logger);
 
+  const corsOrigin = configService.get<string>('CORS_ORIGIN');
+
+  if (!corsOrigin) {
+    throw new Error('JWT_SECRET missing');
+  }
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? '*',
+    origin: corsOrigin.split(','),
     credentials: true,
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (configService.get<string>('NODE_ENV') !== 'production') {
     const document = SwaggerModule.createDocument(app, config);
 
     SwaggerModule.setup('docs', app, document);
