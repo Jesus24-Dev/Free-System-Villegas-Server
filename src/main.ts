@@ -33,9 +33,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const document = SwaggerModule.createDocument(app, config);
+  if (process.env.NODE_ENV !== 'production') {
+    const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('docs', app, document);
+    SwaggerModule.setup('docs', app, document);
+  }
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();
