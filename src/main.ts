@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 import { LoggerService } from './common/logger/logger.service';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -24,8 +25,9 @@ async function bootstrap() {
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   const logger = app.get(LoggerService);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  const configService = app.get(ConfigService);
 
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
   app.useLogger(logger);
 
   app.enableCors({
@@ -38,6 +40,6 @@ async function bootstrap() {
 
     SwaggerModule.setup('docs', app, document);
   }
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(configService.get<number>('PORT') ?? 3000);
 }
 void bootstrap();

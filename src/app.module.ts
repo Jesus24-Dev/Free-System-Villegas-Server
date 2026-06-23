@@ -20,6 +20,7 @@ import { AppController } from './app.controller';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from './features/admin/admin.module';
 import { RolesGuard } from './common/guards/roles.guard';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -44,6 +45,10 @@ import { RolesGuard } from './common/guards/roles.guard';
       },
     ]),
     AdminModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
   ],
   providers: [
     {
