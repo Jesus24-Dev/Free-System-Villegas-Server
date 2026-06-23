@@ -19,9 +19,12 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const expireTime = configService.get<string>('JWT_EXPIRES_IN');
-
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret) {
+          throw new Error('JWT_SECRET missing');
+        }
         return {
-          secret: configService.get<string>('JWT_SECRET'),
+          secret,
           signOptions: {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             expiresIn: expireTime as any,

@@ -4,18 +4,22 @@ import {
   OnApplicationBootstrap,
   OnApplicationShutdown,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class LoggerService
   implements NestLoggerService, OnApplicationBootstrap, OnApplicationShutdown
 {
-  constructor(private readonly logger: PinoLogger) {}
+  constructor(
+    private readonly logger: PinoLogger,
+    private readonly configService: ConfigService,
+  ) {}
 
   onApplicationBootstrap() {
     this.logger.info({
       event: 'SERVER_STARTED',
-      environment: process.env.NODE_ENV,
+      environment: this.configService.get<string>('NODE_ENV'),
     });
   }
 
