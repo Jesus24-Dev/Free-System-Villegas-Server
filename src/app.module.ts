@@ -18,7 +18,8 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggerModule } from './common/logger/logger.module';
 import { AppController } from './app.controller';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './features/admin/admin.module';
+import { RolesGuard } from './common/guards/roles.guard';
 
 @Module({
   imports: [
@@ -56,6 +57,10 @@ import { AdminModule } from './admin/admin.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
   controllers: [AppController],
