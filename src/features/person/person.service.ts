@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePersonDto } from './dto/create-person.dto';
-import { UpdatePersonDto } from './dto/update-person.dto';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Person } from 'src/generated/prisma/client';
+import { Person } from '@prisma/client';
+import { NotFoundException } from '@nestjs/common';
+import { CreatePersonDto, UpdatePersonDto } from './dto/request';
+import { PersonFoundedResponseDto } from './dto/response';
 
 @Injectable()
 export class PersonService {
@@ -11,22 +12,54 @@ export class PersonService {
     return this.prisma.person.create({ data: createPersonDto });
   }
 
-  async findAll() {
+  async findAll(): Promise<Person[]> {
     return this.prisma.person.findMany();
   }
 
-  async findOne(id: string) {
-    return this.prisma.person.findUnique({ where: { id } });
+  async findOne(id: string): Promise<Person> {
+    const person = await this.prisma.person.findUnique({ where: { id } });
+    if (!person) {
+      throw new NotFoundException(`Persona con ID ${id} no encontrada`);
+    }
+    return person;
   }
 
-  async update(id: string, updatePersonDto: UpdatePersonDto) {
+  async checkIfPersonByDnyExists(
+    dni: string,
+  ): Promise<PersonFoundedResponseDto | null> {
+    const person = await this.prisma.person.findUnique({
+      where: { dni },
+      include: {
+        user: true,
+      },
+    });
+
+    if (!person) {
+      return null;
+    }
+
+    if (person.user) {
+      throw new ConflictException(
+        `Ya hay un usuario registrado con la cedula ${dni}`,
+      );
+    }
+
+    return {
+      id: person.id,
+      name: person.name,
+      surname: person.surname,
+      role: 'ATHLETE',
+    };
+  }
+
+  async update(id: string, updatePersonDto: UpdatePersonDto): Promise<Person> {
     return this.prisma.person.update({
       where: { id },
       data: updatePersonDto,
     });
   }
 
-  remove(id: string) {
-    return this.prisma.person.delete({ where: { id } });
+  async remove(id: string): Promise<void> {
+    await this.prisma.person.delete({ where: { id } });
   }
 }

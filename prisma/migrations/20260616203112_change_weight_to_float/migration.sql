@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "CompetitionDivision" ALTER COLUMN "weight" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "FightingWeights" ALTER COLUMN "weight" SET DATA TYPE DOUBLE PRECISION;

@@ -7,40 +7,114 @@ import {
   Param,
   Delete,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/request';
+import { UserDto } from './dto/response';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles('ADMIN')
   @Post()
-  create(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiResponse({
+    status: 201,
+    description: 'Crear un nuevo usuario exitosamente',
+    type: UserDto,
+  })
+  async create(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<UserDto> {
+    const user = await this.userService.create(createUserDto);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
   }
 
+  @Roles('ADMIN')
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiResponse({
+    status: 200,
+    description: 'Los usuarios han sido encontrados exitosamente',
+    type: [UserDto],
+  })
+  async findAll(): Promise<UserDto[]> {
+    const users = await this.userService.findAll();
+    return users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    }));
   }
 
+  @Roles('ADMIN')
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
+  @ApiOperation({ summary: 'Obtener un usuario por su ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'El usuario ha sido encontrado exitosamente',
+    type: UserDto,
+  })
+  async findOne(@Param('id') id: string): Promise<UserDto> {
+    const user = await this.userService.findOne(id);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
-  update(
+  @ApiOperation({ summary: 'Actualizar un usuario existente' })
+  @ApiResponse({
+    status: 200,
+    description: 'El usuario ha sido actualizado exitosamente',
+    type: UserDto,
+  })
+  async update(
     @Param('id') id: string,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
-  ) {
-    return this.userService.update(id, updateUserDto);
+  ): Promise<UserDto> {
+    const user = await this.userService.update(id, updateUserDto);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar un usuario existente' })
+  @ApiResponse({
+    status: 204,
+    description: 'El usuario ha sido eliminado exitosamente',
+  })
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.userService.remove(id);
   }
 }

@@ -4,8 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
   moduleFormat = "cjs"
 }
 
@@ -13,13 +12,15 @@ datasource db {
   provider = "postgresql"
 }
 
+//Roles permitidos en la aplicacion. Cada uno tiene distintas funcionalidades.
 enum Roles {
   ATHLETE
   COACH
   ADMIN
 }
 
-enum Fighting_Mode {
+// Estilos de pelea WAKO y posibilidad de agregar boxeo
+enum FightingMode {
   POINT_FIGHTING
   KICK_LIGHT 
   LIGHT_CONTACT
@@ -29,7 +30,8 @@ enum Fighting_Mode {
   BOXING
 }
 
-enum Fighting_Category {
+// Cateogria por edad WAKO
+enum FightingCategory {
   CH
   YC
   OC
@@ -38,11 +40,13 @@ enum Fighting_Category {
   M
 }
 
+// Genero para usuarios y competencias
 enum Gender {
   MALE
   FEMALE
 }
 
+// Estados de Venezuela
 enum States {
   AMAZONAS
   ANZOATEGUI
@@ -70,6 +74,14 @@ enum States {
   ZULIA
 }
 
+enum CompetitionStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  FINISHED
+}
+
+// Modelo usuario. Utilizado para autenticacion y autorizacion del sistema. Crea la cuenta
 model User {
   id String @id @default(uuid())
   email String @unique
@@ -79,10 +91,12 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  person Person? @relation(fields: [person_id], references: [id])
-  person_id String? @unique
+  person Person @relation(fields: [person_id], references: [id])
+  person_id String @unique
 }
 
+// Modelo person se encarga de los datos personales del usuario. Encargada de gestionar las entidades de rol 
+// y perfiles de usuario
 model Person {
   id String @id @default(uuid())
   dni String @unique
@@ -99,6 +113,7 @@ model Person {
   athlete Athlete?
 }
 
+// Modelo Gym encargado de la creacion y gestion de gimnasios del sistema. 
 model Gym {
   id String @id @default(uuid())
   name String @unique
@@ -112,9 +127,11 @@ model Gym {
 
   coaches Coach[]
   athletes Athlete[]
-  payments Gym_Payment[] @relation("GymPayment")
+  payments GymPayment[] @relation("GymPayment")
+  pago_movil PagoMovilFields[] @relation("GymDataToPay")
 }
 
+// Modelo Coach para tener registro de coach. Permite crear gimnasios y gestionarlos, junto a la gestion de atletas.
 model Coach {
   id String @id @default(uuid())
   created_at DateTime @default(now())
@@ -125,10 +142,11 @@ model Coach {
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
 
-  gym Gym @relation(fields: [gym_id], references: [id])
-  gym_id String
+  gym Gym? @relation(fields: [gym_id], references: [id])
+  gym_id String?
 }
 
+// Modelo atleta para los atletas en los gimnasios. Pueden participar en competencia
 model Athlete {
   id String @id @default(uuid())
   created_at DateTime @default(now())
@@ -137,39 +155,43 @@ model Athlete {
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
 
-  gym Gym @relation(fields: [gym_id], references: [id])
-  gym_id String
+  gym Gym? @relation(fields: [gym_id], references: [id])
+  gym_id String?
 
-  registrations Athlete_Registration[] @relation("AthleteRegistrations")
-  payments_gym Gym_Payment[] @relation("AthleteGymPayment")
+  registrations CompetitionRegistration[] @relation("AthleteRegistrations")
+  payments_gym GymPayment[] @relation("AthleteGymPayment")
 }
 
-model Fighting_Weights {
+// Tabla de pesos WAKO por categoria, modalidad y genero. Tabla rellenada por seeder.
+model FightingWeights {
   id String @id @default(uuid())
-  mode Fighting_Mode
-  category Fighting_Category
+
+  mode FightingMode
+  category FightingCategory
   gender Gender
-  weights Int[]
+
+  weight Float
 }
 
-// Models for competitions
+// Modelo de competencia. Los administradores crean la competencia y los coaches pueden registrar a sus alumnos.
 
 model Competition {
   id String @id @default(uuid())
-  name String
+  name String @unique
   description String?
   logo_url String?
   location String
   inscription_begin_at DateTime
   inscription_end_at DateTime
+  status CompetitionStatus
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  athletes_registered Athlete_Registration[] @relation("CompetitionRegistrations")
-  fight_modes Fight_Mode[] @relation("FightModeForAthletes")
+  competition_division CompetitionDivision[] @relation("FightModeForAthletes")
 }
 
-model Athlete_Registration {
+// Modelo para guardar el atleta registrado por competencia.
+model CompetitionRegistration {
   id String @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -177,37 +199,40 @@ model Athlete_Registration {
   athlete Athlete @relation("AthleteRegistrations", fields: [athlete_id], references: [id])
   athlete_id String
 
-  fighting_modes Fight_Mode[] @relation("AthleteFightModes")
+  division CompetitionDivision @relation("AthleteFightModes",fields: [division_id], references: [id])
+  division_id String
 
-  competition Competition @relation("CompetitionRegistrations", fields: [competition_id], references: [id])
-  competition_id String
+  @@unique([athlete_id, division_id])
 }
 
-model Fight_Mode {
+// Modelo fight mode por si algun atleta desea registrar mas de una modalidad.
+model CompetitionDivision {
   id String @id @default(uuid())
+
+  mode FightingMode
+  category FightingCategory
   gender Gender
-  mode Fighting_Mode
-  category Fighting_Category
-  weight Int
+  weight Float
+  
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   competition Competition @relation("FightModeForAthletes", fields: [competition_id], references: [id])
   competition_id String 
 
-  athlete_registration Athlete_Registration @relation("AthleteFightModes", fields: [athlete_registration_id], references: [id])
-  athlete_registration_id String
+  registrations CompetitionRegistration[] @relation("AthleteFightModes")
 
+  @@unique([competition_id, mode, category, gender, weight])
 }
 
-// Models for payments
+// Modelo para gestionar los pagos del gimnasio y mensualidades. 
 
-model Gym_Payment {
+model GymPayment {
   id String @id @default(uuid())
   day_payed DateTime
   amount Float
   evidence_url String?
-  payment_reference String
+  payment_reference String @unique
   isConfirmed Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -217,4 +242,16 @@ model Gym_Payment {
 
   gym Gym @relation("GymPayment", fields: [gym_id], references: [id])
   gym_id String
+}
+
+model PagoMovilFields {
+  id String @id @default(uuid())
+  bank_to_pay String
+  dni String
+  phone String
+
+  gym Gym @relation("GymDataToPay", fields: [gym_id], references: [id])
+  gym_id String
+
+  @@unique([bank_to_pay, dni, phone])
 }

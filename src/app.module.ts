@@ -7,13 +7,25 @@ import { GymModule } from './features/gym/gym.module';
 import { AthleteModule } from './features/athlete/athlete.module';
 import { CoachModule } from './features/coach/coach.module';
 import { CompetitionModule } from './features/competition/competition.module';
-import { AthleteRegisterModule } from './features/athlete-register/athlete-register.module';
-import { FightModeModule } from './features/fight-mode/fight-mode.module';
 import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
+import { AuthModule } from './features/auth/auth.module';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './features/auth/auth.guard';
+import { CompetitionRegistrationModule } from './features/competition-registration/competition-registration.module';
+import { CompetitionDivisionModule } from './features/competition-division/competition-division.module';
+import { PagoMovilModule } from './features/pago-movil/pago-movil.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { LoggerModule } from './common/logger/logger.module';
+import { AppController } from './app.controller';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AdminModule } from './features/admin/admin.module';
+import { RolesGuard } from './common/guards/roles.guard';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     PrismaModule,
+    AuthModule,
     UserModule,
     WeightsModule,
     PersonModule,
@@ -21,11 +33,41 @@ import { GymPaymentModule } from './features/gym-payment/gym-payment.module';
     AthleteModule,
     CoachModule,
     CompetitionModule,
-    AthleteRegisterModule,
-    FightModeModule,
+    CompetitionRegistrationModule,
+    CompetitionDivisionModule,
     GymPaymentModule,
+    PagoMovilModule,
+    LoggerModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 80,
+      },
+    ]),
+    AdminModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
   ],
-  controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
+  controllers: [AppController],
 })
 export class AppModule {}
