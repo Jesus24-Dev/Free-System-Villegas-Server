@@ -6,14 +6,24 @@ import {
   FightingCategory,
   Gender,
 } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
+import pino from 'pino';
 
-const connectionString = `${process.env.DATABASE_URL}`;
-const adapter = new PrismaPg({ connectionString });
-const prisma = new PrismaClient({ adapter });
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      ignore: 'pid,hostname',
+      translateTime: 'SYS:standard',
+    },
+  },
+});
 
-export async function seedWako() {
-  console.log('🌱 Starting the seeding WAKO weights');
+export async function seedWako(prisma: PrismaClient) {
+  logger.info(
+    { context: 'SeedWakoWeights' },
+    '🌱 Starting the seeding WAKO weights',
+  );
   await prisma.fightingWeights.deleteMany();
   const wakoWeights = [
     // =========================================================
@@ -312,6 +322,9 @@ export async function seedWako() {
     data: rows,
   });
 
-  console.log('✅ Official WAKO weights charged succesfully!');
+  logger.info(
+    { context: 'SeedWakoWeights' },
+    '✅ Official WAKO weights charged succesfully!',
+  );
   await prisma.$disconnect();
 }
