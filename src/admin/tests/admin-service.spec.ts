@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import { Test } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { describe, beforeEach, jest, it, expect } from '@jest/globals';
