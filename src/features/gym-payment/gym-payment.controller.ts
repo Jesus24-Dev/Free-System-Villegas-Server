@@ -16,12 +16,14 @@ import {
 } from './dto/create-gym-payment.dto';
 import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Gym Payment')
 @Controller('gym-payment')
 export class GymPaymentController {
   constructor(private readonly gymPaymentService: GymPaymentService) {}
 
+  @Roles('ADMIN', 'ATHLETE')
   @Post()
   @ApiOperation({ summary: 'Registrar un nuevo pago por un atleta' })
   @ApiResponse({
@@ -35,6 +37,7 @@ export class GymPaymentController {
     return this.gymPaymentService.create(createGymPaymentDto);
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los pagos de todos los gimnasios' })
   @ApiResponse({
@@ -46,6 +49,7 @@ export class GymPaymentController {
     return this.gymPaymentService.findAll();
   }
 
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un pago en especifico' })
   @ApiResponse({
@@ -57,6 +61,7 @@ export class GymPaymentController {
     return this.gymPaymentService.findOne(id);
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un pago por su ID' })
   @ApiResponse({
@@ -71,7 +76,8 @@ export class GymPaymentController {
     return this.gymPaymentService.update(id, updateGymPaymentDto);
   }
 
-  @Post(':id/confirm')
+  @Roles('ADMIN', 'COACH')
+  @Patch(':id/confirm')
   @ApiOperation({ summary: 'Confirmar un pago por su ID' })
   @ApiResponse({
     status: 200,
@@ -81,6 +87,7 @@ export class GymPaymentController {
     await this.gymPaymentService.confirmPayment(id);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un pago por su ID' })

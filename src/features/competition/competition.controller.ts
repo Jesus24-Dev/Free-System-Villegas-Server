@@ -20,6 +20,7 @@ import {
   UpdateCompetitionDto,
 } from './dto/request';
 import { CompetitionDto } from './dto/response';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Competition')
 @Controller('competition')
@@ -29,6 +30,7 @@ export class CompetitionController {
     private readonly registerAthleteAtCompetitionUseCase: RegisterAthleteAtCompetitionUseCase,
   ) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Crear una nueva competencia' })
   @ApiResponse({
@@ -42,6 +44,7 @@ export class CompetitionController {
     return this.competitionService.create(createCompetitionDto);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Post(':competitionId/athletes/:athleteId/register')
   @ApiOperation({ summary: 'Registrar atleta en una competencia' })
   @ApiResponse({
@@ -61,6 +64,7 @@ export class CompetitionController {
     );
   }
 
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get()
   @ApiOperation({ summary: 'Obtener todas las competencias' })
   @ApiResponse({
@@ -74,8 +78,8 @@ export class CompetitionController {
     return this.competitionService.findAll(status);
   }
 
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get(':id')
-  @Get()
   @ApiOperation({ summary: 'Obtener competencia por ID' })
   @ApiResponse({
     status: 200,
@@ -86,6 +90,7 @@ export class CompetitionController {
     return this.competitionService.findOne(id);
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar competencia por ID' })
   @ApiResponse({
@@ -100,6 +105,7 @@ export class CompetitionController {
     return this.competitionService.update(id, updateCompetitionDto);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar competencia por ID' })

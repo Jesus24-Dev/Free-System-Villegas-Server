@@ -17,6 +17,7 @@ import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
 import { CoachDto, RawCoachDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Coach')
 @Controller('coach')
@@ -33,11 +34,13 @@ export class CoachController {
     description: 'Crear un nuevo coach exitosamente',
     type: RawCoachDto,
   })
+  @Roles('ADMIN')
   @Post()
   async create(@Body() createCoachDto: CreateCoachDto): Promise<RawCoachDto> {
     return this.coachService.create(createCoachDto);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Post(':idGym/athlete')
   @ApiOperation({ summary: 'Registrar nuevo atleta en un gimnasio' })
   @ApiResponse({
@@ -52,6 +55,7 @@ export class CoachController {
     return this.registerAthleteUseCase.execute(createPerson, idGym);
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los coaches' })
   @ApiResponse({
@@ -72,6 +76,7 @@ export class CoachController {
     }));
   }
 
+  @Roles('ADMIN')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un coach por su ID' })
   @ApiResponse({
@@ -92,6 +97,7 @@ export class CoachController {
     };
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get('gym/:gymId/coaches')
   @ApiOperation({ summary: 'Obtener todos los coaches de un gimnasio' })
   @ApiResponse({
@@ -103,6 +109,7 @@ export class CoachController {
     return this.coachService.findAllCoachesByGym(gymId);
   }
 
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get('profile/:id')
   @ApiOperation({ summary: 'Obtener el perfil de un coach' })
   @ApiResponse({
@@ -114,6 +121,7 @@ export class CoachController {
     return this.coachService.findCoachProfile(id);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar coach' })
   @ApiResponse({
@@ -128,6 +136,7 @@ export class CoachController {
     return this.coachService.update(id, updateCoachDto);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Patch(':idGym/athlete/:idAthlete')
   @ApiOperation({ summary: 'Asignar un atleta existente a un gimnasio' })
   @ApiResponse({
@@ -142,6 +151,7 @@ export class CoachController {
     return this.assignAthleteToGymUseCase.execute(idAthlete, idGym);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Patch(':idGym/athlete/:idAthlete')
   @ApiOperation({ summary: 'Asignar un coach existente a un gimnasio' })
   @ApiResponse({
@@ -156,6 +166,7 @@ export class CoachController {
     return this.assignAthleteToGymUseCase.execute(idCoach, idGym);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar coach' })

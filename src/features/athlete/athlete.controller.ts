@@ -14,12 +14,14 @@ import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { CreateAthleteDto, UpdateAthleteDto } from './dto/request';
 import { AthleteDto, RawAthleteDto } from './dto/response';
 import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Athlete')
 @Controller('athlete')
 export class AthleteController {
   constructor(private readonly athleteService: AthleteService) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo atleta' })
   @ApiResponse({
@@ -33,6 +35,7 @@ export class AthleteController {
     return this.athleteService.create(createAthleteDto);
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los atletas' })
   @ApiResponse({
@@ -53,6 +56,7 @@ export class AthleteController {
     }));
   }
 
+  @Roles('ADMIN')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un atleta por su ID' })
   @ApiResponse({
@@ -73,6 +77,7 @@ export class AthleteController {
     };
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get('gym/:gymId/athletes')
   @ApiOperation({ summary: 'Obtener todos los atletas de un gimnasio' })
   @ApiResponse({
@@ -87,6 +92,7 @@ export class AthleteController {
     return athletes;
   }
 
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get('profile/:id')
   @ApiOperation({ summary: 'Obtener el perfil de un atleta' })
   @ApiResponse({
@@ -99,6 +105,8 @@ export class AthleteController {
   ): Promise<AthleteProfileResponseDto> {
     return this.athleteService.findAthleteProfile(id);
   }
+
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar atleta' })
   @ApiResponse({
@@ -113,6 +121,7 @@ export class AthleteController {
     return this.athleteService.update(id, updateAthleteDto);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar atleta' })

@@ -14,12 +14,14 @@ import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/request';
 import { UserDto } from './dto/response';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiResponse({
@@ -41,6 +43,7 @@ export class UserController {
     };
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({
@@ -60,6 +63,7 @@ export class UserController {
     }));
   }
 
+  @Roles('ADMIN')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por su ID' })
   @ApiResponse({
@@ -79,6 +83,7 @@ export class UserController {
     };
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un usuario existente' })
   @ApiResponse({
@@ -101,6 +106,7 @@ export class UserController {
     };
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un usuario existente' })

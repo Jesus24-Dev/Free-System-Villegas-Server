@@ -19,6 +19,7 @@ import {
   CreateCompetitionDivisionDto,
   UpdateCompetitionDivisionDto,
 } from './dto/request';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Competition Division')
 @Controller('competition-division')
@@ -27,6 +28,7 @@ export class CompetitionDivisionController {
     private readonly competitionDivisionService: CompetitionDivisionService,
   ) {}
 
+  @Roles('ADMIN', 'COACH')
   @Post()
   @ApiOperation({
     summary: 'Registrar una modalidad del atleta en la competencia',
@@ -42,6 +44,7 @@ export class CompetitionDivisionController {
     return this.competitionDivisionService.create(createCompetitionDivisionDto);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({
     summary:
@@ -56,6 +59,7 @@ export class CompetitionDivisionController {
     return this.competitionDivisionService.findAll();
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener una modalidad registrada en especifico por su ID',
@@ -69,6 +73,7 @@ export class CompetitionDivisionController {
     return this.competitionDivisionService.findOne(id);
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({
     summary: 'Actualizar una modalidad registrada por su ID',
@@ -88,6 +93,7 @@ export class CompetitionDivisionController {
     );
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({

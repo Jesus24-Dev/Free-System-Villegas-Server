@@ -14,12 +14,15 @@ import { PersonService } from './person.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { PersonDto, PersonFoundedResponseDto } from './dto/response';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @ApiTags('Person')
 @Controller('person')
 export class PersonController {
   constructor(private readonly personService: PersonService) {}
 
+  @Roles('ADMIN')
   @Post()
   @ApiOperation({ summary: 'Crear una nueva persona' })
   @ApiResponse({
@@ -42,6 +45,7 @@ export class PersonController {
     };
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todas las personas' })
   @ApiResponse({
@@ -63,6 +67,7 @@ export class PersonController {
     }));
   }
 
+  @Roles('ADMIN')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una persona por su ID' })
   @ApiResponse({
@@ -83,6 +88,7 @@ export class PersonController {
     };
   }
 
+  @Public()
   @Get('dni/:dni')
   @ApiOperation({ summary: 'Comprueba si una persona existe para el registro' })
   @ApiResponse({
@@ -96,6 +102,7 @@ export class PersonController {
     return this.personService.checkIfPersonByDnyExists(dni);
   }
 
+  @Roles('ADMIN')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar una persona por su ID' })
   @ApiResponse({
@@ -119,6 +126,7 @@ export class PersonController {
     };
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar una persona por su ID' })

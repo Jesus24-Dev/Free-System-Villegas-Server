@@ -18,6 +18,7 @@ import { GetUser } from '../auth/decorators/get-user.decorator';
 import { GymDto, RawGymDto } from './dto/response';
 import { CreateGymDto, UpdateGymDto } from './dto/request';
 import { GymDetailsResponseDto } from './dto/response/gym-details-response.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Gym')
 @Controller('gym')
@@ -27,6 +28,7 @@ export class GymController {
     private readonly gymUseCase: CreateGymUseCase,
   ) {}
 
+  @Roles('ADMIN', 'COACH')
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo gimnasio' })
   @ApiResponse({
@@ -41,6 +43,7 @@ export class GymController {
     return this.gymUseCase.execute(user.sub, createGymDto);
   }
 
+  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los gimnasios' })
   @ApiResponse({
@@ -52,6 +55,7 @@ export class GymController {
     return this.gymService.findAll();
   }
 
+  @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un gimnasio por su ID' })
   @ApiResponse({
@@ -63,6 +67,7 @@ export class GymController {
     return this.gymService.findOne(id);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get(':gymId/details')
   @ApiOperation({ summary: 'Obtener un gimnasio por su ID' })
   @ApiResponse({
@@ -76,6 +81,7 @@ export class GymController {
     return this.gymService.getGymDetails(gymId);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un gimnasio por su ID' })
   @ApiResponse({
@@ -90,6 +96,7 @@ export class GymController {
     return this.gymService.update(id, updateGymDto);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un gimnasio por su ID' })

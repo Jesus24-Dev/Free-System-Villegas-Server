@@ -17,6 +17,7 @@ import {
 } from './dto/request';
 import { CompetitionRegistrationResponseDto } from './dto/response';
 import { RawCompetitionRegistrationDto } from './dto/response/raw-competition-response.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('Competition Registration')
 @Controller('competition-registration')
@@ -25,6 +26,7 @@ export class CompetitionRegistrationController {
     private readonly competitionRegistrationService: CompetitionRegistrationService,
   ) {}
 
+  @Roles('ADMIN', 'COACH')
   @Post()
   @ApiOperation({ summary: 'Registrar un atleta en una competencia' })
   @ApiResponse({
@@ -40,6 +42,7 @@ export class CompetitionRegistrationController {
     );
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({
     summary: 'Obtener todos los registros de competencia',
@@ -53,6 +56,7 @@ export class CompetitionRegistrationController {
     return this.competitionRegistrationService.findAll();
   }
 
+  @Roles('ADMIN', 'COACH')
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener un registro de competencia especifico por ID',
@@ -68,6 +72,7 @@ export class CompetitionRegistrationController {
     return this.competitionRegistrationService.findOne(id);
   }
 
+  @Roles('ADMIN', 'COACH')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un registro por ID' })
   @ApiResponse({
@@ -85,6 +90,7 @@ export class CompetitionRegistrationController {
     );
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Eliminar un registro por ID' })
