@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { LoggerService } from './logger.service';
+import { IncomingMessage } from 'http';
 
 @Global()
 @Module({
@@ -25,8 +26,14 @@ import { LoggerService } from './logger.service';
                 return req.url === '/favicon.ico';
               },
             },
-            // Configuramos el nivel dinámicamente con nuestra variable local
             level: nodeEnv === 'production' ? 'info' : 'debug',
+            serializers: {
+              req: (req: IncomingMessage & { id?: string | number }) => ({
+                id: req.id,
+                method: req.method,
+                url: req.url,
+              }),
+            },
             redact: {
               paths: ['req.headers.authorization', 'req.headers.cookie'],
               censor: '[REDACTED]',
@@ -35,6 +42,8 @@ import { LoggerService } from './logger.service';
               target: 'pino-pretty',
               options: {
                 colorize: true,
+                singleLine: true,
+                ignore: 'req,res,environment,context',
               },
             },
           },

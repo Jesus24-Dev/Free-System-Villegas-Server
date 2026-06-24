@@ -21,6 +21,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from './features/admin/admin.module';
 import { RolesGuard } from './common/guards/roles.guard';
 import { ConfigModule } from '@nestjs/config';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { ConfigModule } from '@nestjs/config';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    AppService,
   ],
   controllers: [AppController],
 })

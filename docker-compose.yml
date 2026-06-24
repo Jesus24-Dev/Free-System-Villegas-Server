@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # SERVICIO DE BASE DE DATOS (POSTGRESQL)
+  # ==========================================
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: kickbox_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123456}
+      POSTGRES_DB: kickbox_villegas
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kickbox_villegas"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # SERVICIO DEL API BACKEND (NESTJS)
+  # ==========================================
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kickbox_api_server
+    restart: always
+    ports:
+      - "${PORT:-3004}:${PORT:-3004}"
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      PORT: ${PORT:-3004}
+      NODE_ENV: ${NODE_ENV:-production}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      DATABASE_URL: "postgresql://postgres:${DB_PASSWORD:-123456}@postgres-db:5432/kickbox_villegas?schema=public"
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      SEED_DEV: ${SEED_DEV:-false}
+      RESET_DB: ${RESET_DB:-false}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_DNI: ${ADMIN_DNI}
+      ADMIN_NAME: ${ADMIN_NAME}
+      ADMIN_SURNAME: ${ADMIN_SURNAME}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/src/main"
+
+volumes:
+  postgres_data:
