@@ -1,44 +1,48 @@
-# =====================
-# BUILD STAGE
-# =====================
-
-FROM node:22-alpine AS builder
-
+# ==========================================
+# ETAPA 1: Dependencias de desarrollo
+# ==========================================
+FROM node:22-alpine AS dependencies
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma ./prisma/
+COPY prisma.config.ts ./
 
 RUN npm ci
 
-COPY . .
+RUN npm run prisma:generate
 
-RUN npx prisma generate
+# ==========================================
+# ETAPA 2: Construcción de la App (Build)
+# ==========================================
 
-RUN npm run build
-
-
-
-# =====================
-# PRODUCTION STAGE
-# =====================
-
-FROM node:22-alpine
-
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/prisma ./prisma
+COPY . .
 
-RUN npm ci --omit=dev
+RUN npm run build
 
+RUN rm -rf node_modules
+RUN npm ci --only=production
+RUN npm run prisma:generate
 
+# ==========================================
+# ETAPA 3: Imagen de Ejecución (Producción)
+# ==========================================
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+COPY package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+COPY --from=dependencies /app/prisma.config.ts ./prisma.config.ts
 
-# Copiar Prisma generado
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-EXPOSE 3000
-
-
-CMD ["node", "dist/src/main.js"]
+EXPOSE 3004
+CMD ["node", "dist/src/main"]
