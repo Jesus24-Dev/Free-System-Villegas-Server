@@ -32,6 +32,7 @@ export class LoggerService
 
   log(message: unknown, ...optionalParams: any[]) {
     this.logger.info({
+      msg: message,
       message,
       ...optionalParams,
     });
@@ -39,15 +40,22 @@ export class LoggerService
 
   info(event: string, data?: Record<string, any>) {
     this.logger.info({
+      msg: event,
       event,
       ...data,
     });
   }
 
   error(event: string, error?: unknown, data?: Record<string, any>) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : error && typeof error === 'object' && 'message' in error
+          ? String((error as Record<string, unknown>).message)
+          : 'Error';
     this.logger.error({
+      msg: `${event} -> ${errorMessage}`,
       event,
-
       error:
         error instanceof Error
           ? {
@@ -55,13 +63,13 @@ export class LoggerService
               stack: error.stack,
             }
           : error,
-
       ...data,
     });
   }
 
   warn(message: unknown, ...optionalParams: any[]) {
     this.logger.warn({
+      msg: message,
       message,
       ...optionalParams,
     });
@@ -69,6 +77,7 @@ export class LoggerService
 
   debug(message: unknown, ...optionalParams: any[]) {
     this.logger.debug({
+      msg: message,
       message,
       ...optionalParams,
     });
