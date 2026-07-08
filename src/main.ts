@@ -6,9 +6,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 import { LoggerService } from './common/logger/logger.service';
 import { ConfigService } from '@nestjs/config';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.use(helmet());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
