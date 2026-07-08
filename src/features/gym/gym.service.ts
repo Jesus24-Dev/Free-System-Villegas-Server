@@ -6,6 +6,7 @@ import { CreateGymDto, UpdateGymDto } from './dto/request';
 import { GymDetailsResponseDto } from './dto/response/gym-details-response.dto';
 import { CoachDetailsDto } from './dto/response/coach-details-response.dto';
 import { PagoMovilDetailsDto } from './dto/response/pago-movil-details-response.dto';
+import { AthleteDetailsDto } from './dto/response/athlete-details-response.dto';
 
 @Injectable()
 export class GymService {
@@ -126,7 +127,7 @@ export class GymService {
       },
     }));
 
-    const athletes: CoachDetailsDto[] = gym?.athletes.map((athlete) => ({
+    const athletes: AthleteDetailsDto[] = gym?.athletes.map((athlete) => ({
       id: athlete.id,
       person: {
         dni: athlete.person.dni,

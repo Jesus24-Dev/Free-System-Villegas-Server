@@ -62,7 +62,7 @@ export class CreateGymUseCase {
       const payments = createGym.payment_methods.map((pay) => ({
         bank_to_pay: pay.bank_to_pay,
         dni: pay.dni,
-        phone: pay.dni,
+        phone: pay.phone,
         gym_id: gym.id,
       }));
 
