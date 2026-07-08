@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  Res,
 } from '@nestjs/common';
 import { CompetitionService } from './competition.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -21,6 +22,7 @@ import {
 } from './dto/request';
 import { CompetitionDto } from './dto/response';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import type { Response } from 'express';
 
 @ApiTags('Competition')
 @Controller('competition')
@@ -76,6 +78,28 @@ export class CompetitionController {
     @Query() status: FindCompetitionDto,
   ): Promise<CompetitionDto[]> {
     return this.competitionService.findAll(status);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get(':competitionId/export/:gymId')
+  @ApiOperation({
+    summary:
+      'Exportar atletas inscritos de un gimnasio en una competencia (Excel)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Archivo Excel con la lista de atletas inscritos',
+  })
+  async exportAthletesByGym(
+    @Param('competitionId') competitionId: string,
+    @Param('gymId') gymId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    return this.competitionService.exportAthletesByGym(
+      competitionId,
+      gymId,
+      res,
+    );
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
