@@ -7,6 +7,7 @@ export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
+      where: { deleted_at: null },
       include: {
         coach_owner: {
           include: {
@@ -33,6 +34,7 @@ export class AdminService {
 
   async getAllUsers(): Promise<UserResponseDto[]> {
     const users = await this.prisma.user.findMany({
+      where: { deleted_at: null },
       include: {
         person: true,
       },
@@ -54,8 +56,8 @@ export class AdminService {
   }
 
   async changeUserStatus(id: string): Promise<void> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
+    const user = await this.prisma.user.findFirst({
+      where: { id, deleted_at: null },
       include: {
         person: true,
       },

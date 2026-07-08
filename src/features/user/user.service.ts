@@ -15,11 +15,15 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      where: { deleted_at: null },
+    });
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findFirst({
+      where: { id, deleted_at: null },
+    });
     if (!user) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
@@ -27,8 +31,8 @@ export class UserService {
   }
 
   async getProfile(id: string): Promise<UserWithPerson> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
+    const user = await this.prisma.user.findFirst({
+      where: { id, deleted_at: null },
       include: { person: true },
     });
     if (!user) {
@@ -38,7 +42,9 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findFirst({
+      where: { email, deleted_at: null },
+    });
     if (!user) {
       throw new NotFoundException(`Usuario con email ${email} no encontrado`);
     }
@@ -53,6 +59,9 @@ export class UserService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.user.delete({ where: { id } });
+    await this.prisma.user.update({
+      where: { id },
+      data: { deleted_at: new Date() },
+    });
   }
 }

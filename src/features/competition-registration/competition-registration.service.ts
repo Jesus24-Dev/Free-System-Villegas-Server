@@ -19,6 +19,7 @@ export class CompetitionRegistrationService {
   async findAll(): Promise<CompetitionRegistrationResponseDto[]> {
     const competitionRegistrations =
       await this.prisma.competitionRegistration.findMany({
+        where: { deleted_at: null },
         include: {
           athlete: {
             include: {
@@ -47,8 +48,8 @@ export class CompetitionRegistrationService {
 
   async findOne(id: string): Promise<CompetitionRegistrationResponseDto> {
     const competitionRegistration =
-      await this.prisma.competitionRegistration.findUnique({
-        where: { id },
+      await this.prisma.competitionRegistration.findFirst({
+        where: { id, deleted_at: null },
         include: {
           athlete: {
             include: {
@@ -92,8 +93,9 @@ export class CompetitionRegistrationService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.competitionRegistration.delete({
+    await this.prisma.competitionRegistration.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

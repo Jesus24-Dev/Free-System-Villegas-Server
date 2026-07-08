@@ -24,6 +24,7 @@ export class PagoMovilService {
     const pagoMovilFields = await this.prisma.pagoMovilFields.findMany({
       where: {
         gym_id: gymId,
+        deleted_at: null,
       },
       select: {
         id: true,
@@ -43,8 +44,8 @@ export class PagoMovilService {
   }
 
   async findOne(id: string): Promise<PagoMovilResponseDto> {
-    const pagoMovilField = await this.prisma.pagoMovilFields.findUnique({
-      where: { id },
+    const pagoMovilField = await this.prisma.pagoMovilFields.findFirst({
+      where: { id, deleted_at: null },
       select: {
         id: true,
         bank_to_pay: true,
@@ -62,10 +63,11 @@ export class PagoMovilService {
     return pagoMovilField;
   }
   async remove(id: string): Promise<void> {
-    await this.prisma.pagoMovilFields.delete({
+    await this.prisma.pagoMovilFields.update({
       where: {
         id,
       },
+      data: { deleted_at: new Date() },
     });
   }
 }

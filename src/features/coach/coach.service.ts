@@ -20,13 +20,14 @@ export class CoachService {
 
   async findAll(): Promise<CoachWithPerson[]> {
     return this.prisma.coach.findMany({
+      where: { deleted_at: null },
       include: { person: true },
     });
   }
 
   async findOne(id: string): Promise<CoachWithPerson> {
-    const coach = await this.prisma.coach.findUnique({
-      where: { id },
+    const coach = await this.prisma.coach.findFirst({
+      where: { id, deleted_at: null },
       include: { person: true },
     });
 
@@ -37,8 +38,8 @@ export class CoachService {
   }
 
   async findCoachProfile(id: string): Promise<CoachDto> {
-    const coach = await this.prisma.coach.findUnique({
-      where: { id },
+    const coach = await this.prisma.coach.findFirst({
+      where: { id, deleted_at: null },
       include: {
         person: {
           select: {
@@ -68,7 +69,7 @@ export class CoachService {
 
   async findAllCoachesByGym(gymdId: string): Promise<CoachDto[]> {
     const coaches = await this.prisma.coach.findMany({
-      where: { gym_id: gymdId },
+      where: { gym_id: gymdId, deleted_at: null },
       include: {
         person: {
           select: {
@@ -96,8 +97,9 @@ export class CoachService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.coach.delete({
+    await this.prisma.coach.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

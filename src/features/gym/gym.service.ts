@@ -22,6 +22,7 @@ export class GymService {
 
   async findAll(): Promise<GymDto[]> {
     const gyms = await this.prisma.gym.findMany({
+      where: { deleted_at: null },
       include: {
         coach_owner: {
           include: {
@@ -54,8 +55,8 @@ export class GymService {
   }
 
   async findOne(id: string): Promise<GymDto> {
-    const gym = await this.prisma.gym.findUnique({
-      where: { id },
+    const gym = await this.prisma.gym.findFirst({
+      where: { id, deleted_at: null },
       include: {
         coach_owner: {
           include: {
@@ -95,7 +96,7 @@ export class GymService {
 
   async getGymDetails(gymId: string): Promise<GymDetailsResponseDto> {
     const gym = await this.prisma.gym.findFirst({
-      where: { id: gymId },
+      where: { id: gymId, deleted_at: null },
       include: {
         coaches: {
           include: {
@@ -163,6 +164,9 @@ export class GymService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.gym.delete({ where: { id } });
+    await this.prisma.gym.update({
+      where: { id },
+      data: { deleted_at: new Date() },
+    });
   }
 }

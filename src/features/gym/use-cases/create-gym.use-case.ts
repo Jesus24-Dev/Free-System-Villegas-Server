@@ -23,6 +23,7 @@ export class CreateGymUseCase {
               id: userId,
             },
           },
+          deleted_at: null,
         },
       });
       if (!coach) {

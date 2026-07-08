@@ -13,11 +13,15 @@ export class PersonService {
   }
 
   async findAll(): Promise<Person[]> {
-    return this.prisma.person.findMany();
+    return this.prisma.person.findMany({
+      where: { deleted_at: null },
+    });
   }
 
   async findOne(id: string): Promise<Person> {
-    const person = await this.prisma.person.findUnique({ where: { id } });
+    const person = await this.prisma.person.findFirst({
+      where: { id, deleted_at: null },
+    });
     if (!person) {
       throw new NotFoundException(`Persona con ID ${id} no encontrada`);
     }
@@ -27,8 +31,8 @@ export class PersonService {
   async checkIfPersonByDnyExists(
     dni: string,
   ): Promise<PersonFoundedResponseDto | null> {
-    const person = await this.prisma.person.findUnique({
-      where: { dni },
+    const person = await this.prisma.person.findFirst({
+      where: { dni, deleted_at: null },
       include: {
         user: true,
       },
@@ -60,6 +64,9 @@ export class PersonService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.person.delete({ where: { id } });
+    await this.prisma.person.update({
+      where: { id },
+      data: { deleted_at: new Date() },
+    });
   }
 }

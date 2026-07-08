@@ -20,13 +20,14 @@ export class AthleteService {
 
   async findAll(): Promise<AthleteWithPerson[]> {
     return this.prisma.athlete.findMany({
+      where: { deleted_at: null },
       include: { person: true },
     });
   }
 
   async findOne(id: string): Promise<AthleteWithPerson> {
-    const athlete = await this.prisma.athlete.findUnique({
-      where: { id },
+    const athlete = await this.prisma.athlete.findFirst({
+      where: { id, deleted_at: null },
       include: { person: true },
     });
 
@@ -41,7 +42,7 @@ export class AthleteService {
 
   async findAllAthletesByGym(gymId: string): Promise<AthleteDto[]> {
     const athletes = await this.prisma.athlete.findMany({
-      where: { gym_id: gymId },
+      where: { gym_id: gymId, deleted_at: null },
       include: {
         person: {
           select: {
@@ -63,8 +64,8 @@ export class AthleteService {
   }
 
   async findAthleteProfile(id: string): Promise<AthleteProfileResponseDto> {
-    const athlete = await this.prisma.athlete.findUnique({
-      where: { id },
+    const athlete = await this.prisma.athlete.findFirst({
+      where: { id, deleted_at: null },
       include: {
         person: true,
         gym: true,
@@ -128,8 +129,9 @@ export class AthleteService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.athlete.delete({
+    await this.prisma.athlete.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

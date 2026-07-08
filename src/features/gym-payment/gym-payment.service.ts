@@ -18,12 +18,14 @@ export class GymPaymentService {
   }
 
   async findAll(): Promise<GymPayment[]> {
-    return this.prisma.gymPayment.findMany();
+    return this.prisma.gymPayment.findMany({
+      where: { deleted_at: null },
+    });
   }
 
   async findOne(id: string): Promise<GymPayment> {
-    const gymPayment = await this.prisma.gymPayment.findUnique({
-      where: { id },
+    const gymPayment = await this.prisma.gymPayment.findFirst({
+      where: { id, deleted_at: null },
     });
 
     if (!gymPayment) {
@@ -59,8 +61,9 @@ export class GymPaymentService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.gymPayment.delete({
+    await this.prisma.gymPayment.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

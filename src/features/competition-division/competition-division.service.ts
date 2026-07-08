@@ -21,6 +21,7 @@ export class CompetitionDivisionService {
   async findAll(): Promise<CompetitionDivisionDto[]> {
     const competitionDivisions = await this.prisma.competitionDivision.findMany(
       {
+        where: { deleted_at: null },
         include: { competition: true },
       },
     );
@@ -39,11 +40,12 @@ export class CompetitionDivisionService {
   }
 
   async findOne(id: string): Promise<CompetitionDivisionDto> {
-    const competitionDivision =
-      await this.prisma.competitionDivision.findUnique({
-        where: { id },
+    const competitionDivision = await this.prisma.competitionDivision.findFirst(
+      {
+        where: { id, deleted_at: null },
         include: { competition: true },
-      });
+      },
+    );
 
     if (!competitionDivision) {
       throw new NotFoundException(
@@ -75,8 +77,9 @@ export class CompetitionDivisionService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.competitionDivision.delete({
+    await this.prisma.competitionDivision.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }
