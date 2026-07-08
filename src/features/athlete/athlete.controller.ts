@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { AthleteService } from './athlete.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -15,6 +16,8 @@ import { CreateAthleteDto, UpdateAthleteDto } from './dto/request';
 import { AthleteDto, RawAthleteDto } from './dto/response';
 import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Athlete')
 @Controller('athlete')
@@ -43,17 +46,24 @@ export class AthleteController {
     description: 'Obtener lista de atletas registrados',
     type: [AthleteDto],
   })
-  async findAll(): Promise<AthleteDto[]> {
-    const athletes = await this.athleteService.findAll();
-    return athletes.map((athlete) => ({
-      id: athlete.id,
-      dni: athlete.person.dni,
-      name: athlete.person.name,
-      surname: athlete.person.surname,
-      gender: athlete.person.gender,
-      birthday: athlete.person.birthday,
-      status: athlete.person.status,
-    }));
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<AthleteDto>> {
+    const result = await this.athleteService.findAll(pagination);
+    return new PaginatedResponseDto(
+      result.data.map((athlete) => ({
+        id: athlete.id,
+        dni: athlete.person.dni,
+        name: athlete.person.name,
+        surname: athlete.person.surname,
+        gender: athlete.person.gender,
+        birthday: athlete.person.birthday,
+        status: athlete.person.status,
+      })),
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   @Roles('ADMIN')

@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Athlete, Prisma } from '@prisma/client';
 import { AthleteDto } from './dto/response';
 import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 export type AthleteWithPerson = Prisma.AthleteGetPayload<{
   include: { person: true };
@@ -18,11 +20,14 @@ export class AthleteService {
     });
   }
 
-  async findAll(): Promise<AthleteWithPerson[]> {
-    return this.prisma.athlete.findMany({
-      where: { deleted_at: null },
-      include: { person: true },
-    });
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<AthleteWithPerson>> {
+    const { skip, limit, page } = pagination;
+    const where = { deleted_at: null };
+    const [data, total] = await Promise.all([
+      this.prisma.athlete.findMany({ where, include: { person: true }, skip, take: limit }),
+      this.prisma.athlete.count({ where }),
+    ]);
+    return new PaginatedResponseDto(data, total, page!, limit!);
   }
 
   async findOne(id: string): Promise<AthleteWithPerson> {

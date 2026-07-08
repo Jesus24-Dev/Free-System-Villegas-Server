@@ -4,6 +4,8 @@ import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GymPayment } from '@prisma/client';
 import { LoggerService } from 'src/common/logger/logger.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @Injectable()
 export class GymPaymentService {
@@ -17,10 +19,14 @@ export class GymPaymentService {
     });
   }
 
-  async findAll(): Promise<GymPayment[]> {
-    return this.prisma.gymPayment.findMany({
-      where: { deleted_at: null },
-    });
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<GymPayment>> {
+    const { skip, limit, page } = pagination;
+    const where = { deleted_at: null };
+    const [data, total] = await Promise.all([
+      this.prisma.gymPayment.findMany({ where, skip, take: limit }),
+      this.prisma.gymPayment.count({ where }),
+    ]);
+    return new PaginatedResponseDto(data, total, page!, limit!);
   }
 
   async findOne(id: string): Promise<GymPayment> {

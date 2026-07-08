@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CompetitionRegistrationService } from './competition-registration.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -18,6 +19,8 @@ import {
 import { CompetitionRegistrationResponseDto } from './dto/response';
 import { RawCompetitionRegistrationDto } from './dto/response/raw-competition-response.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Competition Registration')
 @Controller('competition-registration')
@@ -52,8 +55,10 @@ export class CompetitionRegistrationController {
     description: 'Lista de registros encontrada',
     type: [CompetitionRegistrationResponseDto],
   })
-  async findAll(): Promise<CompetitionRegistrationResponseDto[]> {
-    return this.competitionRegistrationService.findAll();
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    return this.competitionRegistrationService.findAll(pagination);
   }
 
   @Roles('ADMIN', 'COACH')

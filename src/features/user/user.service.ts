@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dto/request';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 export type UserWithPerson = Prisma.UserGetPayload<{
   include: { person: true };
@@ -14,10 +16,17 @@ export class UserService {
     return this.prisma.user.create({ data: createUserDto });
   }
 
-  async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany({
-      where: { deleted_at: null },
-    });
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<User>> {
+    const { skip, limit, page } = pagination;
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where: { deleted_at: null },
+        skip,
+        take: limit,
+      }),
+      this.prisma.user.count({ where: { deleted_at: null } }),
+    ]);
+    return new PaginatedResponseDto(data, total, page!, limit!);
   }
 
   async findOne(id: string): Promise<User> {

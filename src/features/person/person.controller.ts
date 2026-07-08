@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -16,6 +17,8 @@ import { PersonDto, PersonFoundedResponseDto } from './dto/response';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Person')
 @Controller('person')
@@ -53,18 +56,24 @@ export class PersonController {
     description: 'Lista de todas las personas',
     type: [PersonDto],
   })
-  async findAll(): Promise<PersonDto[]> {
-    const persons = await this.personService.findAll();
-
-    return persons.map((person) => ({
-      id: person.id,
-      dni: person.dni,
-      name: person.name,
-      surname: person.surname,
-      birthday: person.birthday,
-      gender: person.gender,
-      status: person.status,
-    }));
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<PersonDto>> {
+    const result = await this.personService.findAll(pagination);
+    return new PaginatedResponseDto(
+      result.data.map((person) => ({
+        id: person.id,
+        dni: person.dni,
+        name: person.name,
+        surname: person.surname,
+        birthday: person.birthday,
+        gender: person.gender,
+        status: person.status,
+      })),
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   @Roles('ADMIN')

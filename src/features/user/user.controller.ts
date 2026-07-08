@@ -9,12 +9,15 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/request';
 import { UserDto } from './dto/response';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -51,16 +54,23 @@ export class UserController {
     description: 'Los usuarios han sido encontrados exitosamente',
     type: [UserDto],
   })
-  async findAll(): Promise<UserDto[]> {
-    const users = await this.userService.findAll();
-    return users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-      person_id: user.person_id,
-    }));
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<UserDto>> {
+    const result = await this.userService.findAll(pagination);
+    return new PaginatedResponseDto(
+      result.data.map((user) => ({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        person_id: user.person_id,
+      })),
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   @Roles('ADMIN')

@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CoachService } from './coach.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -18,6 +19,8 @@ import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-ca
 import { CoachDto, RawCoachDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Coach')
 @Controller('coach')
@@ -63,17 +66,24 @@ export class CoachController {
     description: 'Obtener lista de coaches registrados',
     type: [CoachDto],
   })
-  async findAll(): Promise<CoachDto[]> {
-    const coaches = await this.coachService.findAll();
-    return coaches.map((coach) => ({
-      id: coach.id,
-      dni: coach.person.dni,
-      name: coach.person.name,
-      surname: coach.person.surname,
-      gender: coach.person.gender,
-      birthday: coach.person.birthday,
-      status: coach.person.status,
-    }));
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CoachDto>> {
+    const result = await this.coachService.findAll(pagination);
+    return new PaginatedResponseDto(
+      result.data.map((coach) => ({
+        id: coach.id,
+        dni: coach.person.dni,
+        name: coach.person.name,
+        surname: coach.person.surname,
+        gender: coach.person.gender,
+        birthday: coach.person.birthday,
+        status: coach.person.status,
+      })),
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   @Roles('ADMIN')

@@ -4,6 +4,8 @@ import { Person } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 import { PersonFoundedResponseDto } from './dto/response';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @Injectable()
 export class PersonService {
@@ -12,10 +14,14 @@ export class PersonService {
     return this.prisma.person.create({ data: createPersonDto });
   }
 
-  async findAll(): Promise<Person[]> {
-    return this.prisma.person.findMany({
-      where: { deleted_at: null },
-    });
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<Person>> {
+    const { skip, limit, page } = pagination;
+    const where = { deleted_at: null };
+    const [data, total] = await Promise.all([
+      this.prisma.person.findMany({ where, skip, take: limit }),
+      this.prisma.person.count({ where }),
+    ]);
+    return new PaginatedResponseDto(data, total, page!, limit!);
   }
 
   async findOne(id: string): Promise<Person> {

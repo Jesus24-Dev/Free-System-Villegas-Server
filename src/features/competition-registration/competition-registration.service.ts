@@ -4,6 +4,8 @@ import { UpdateCompetitionRegistrationDto } from './dto/request/update-competiti
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CompetitionRegistration } from '@prisma/client';
 import { CompetitionRegistrationResponseDto } from './dto/response';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @Injectable()
 export class CompetitionRegistrationService {
@@ -16,34 +18,41 @@ export class CompetitionRegistrationService {
     });
   }
 
-  async findAll(): Promise<CompetitionRegistrationResponseDto[]> {
-    const competitionRegistrations =
-      await this.prisma.competitionRegistration.findMany({
-        where: { deleted_at: null },
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = { deleted_at: null };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
         include: {
-          athlete: {
-            include: {
-              person: true,
-            },
-          },
+          athlete: { include: { person: true } },
           division: true,
         },
-      });
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
 
-    return competitionRegistrations.map((competitionRegistration) => ({
-      id: competitionRegistration.id,
-      athlete: {
-        id: competitionRegistration.athlete.id,
-        name: competitionRegistration.athlete.person.name,
-        surname: competitionRegistration.athlete.person.surname,
-        gender: competitionRegistration.athlete.person.gender,
-      },
-      division: {
-        mode: competitionRegistration.division.mode,
-        category: competitionRegistration.division.category,
-        weight: competitionRegistration.division.weight,
-      },
-    }));
+    return new PaginatedResponseDto(
+      data.map((competitionRegistration) => ({
+        id: competitionRegistration.id,
+        athlete: {
+          id: competitionRegistration.athlete.id,
+          name: competitionRegistration.athlete.person.name,
+          surname: competitionRegistration.athlete.person.surname,
+          gender: competitionRegistration.athlete.person.gender,
+        },
+        division: {
+          mode: competitionRegistration.division.mode,
+          category: competitionRegistration.division.category,
+          weight: competitionRegistration.division.weight,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
   }
 
   async findOne(id: string): Promise<CompetitionRegistrationResponseDto> {

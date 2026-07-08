@@ -5,6 +5,8 @@ import { Coach, Prisma } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import { CoachDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 export type CoachWithPerson = Prisma.CoachGetPayload<{
   include: { person: true };
@@ -18,11 +20,14 @@ export class CoachService {
     });
   }
 
-  async findAll(): Promise<CoachWithPerson[]> {
-    return this.prisma.coach.findMany({
-      where: { deleted_at: null },
-      include: { person: true },
-    });
+  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<CoachWithPerson>> {
+    const { skip, limit, page } = pagination;
+    const where = { deleted_at: null };
+    const [data, total] = await Promise.all([
+      this.prisma.coach.findMany({ where, include: { person: true }, skip, take: limit }),
+      this.prisma.coach.count({ where }),
+    ]);
+    return new PaginatedResponseDto(data, total, page!, limit!);
   }
 
   async findOne(id: string): Promise<CoachWithPerson> {

@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { GymPaymentService } from './gym-payment.service';
 import {
@@ -17,6 +18,8 @@ import {
 import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Gym Payment')
 @Controller('gym-payment')
@@ -45,8 +48,10 @@ export class GymPaymentController {
     description: 'Lista de pagos',
     type: [GymPaymentResponseDto],
   })
-  async findAll(): Promise<GymPaymentResponseDto[]> {
-    return this.gymPaymentService.findAll();
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<GymPaymentResponseDto>> {
+    return this.gymPaymentService.findAll(pagination);
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
