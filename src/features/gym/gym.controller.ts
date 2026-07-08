@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   HttpStatus,
   HttpCode,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { GymService } from './gym.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -63,7 +64,7 @@ export class GymController {
     description: 'Gimnasio conseguido exitosamente',
     type: GymDto,
   })
-  async findOne(@Param('id') id: string): Promise<GymDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<GymDto> {
     return this.gymService.findOne(id);
   }
 
@@ -76,7 +77,7 @@ export class GymController {
     type: GymDetailsResponseDto,
   })
   async getGymDetails(
-    @Param('gymId') gymId: string,
+    @Param('gymId', ParseUUIDPipe) gymId: string,
   ): Promise<GymDetailsResponseDto> {
     return this.gymService.getGymDetails(gymId);
   }
@@ -90,7 +91,7 @@ export class GymController {
     type: RawGymDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body(new ValidationPipe()) updateGymDto: UpdateGymDto,
   ): Promise<RawGymDto> {
     return this.gymService.update(id, updateGymDto);
@@ -105,7 +106,7 @@ export class GymController {
     description: 'Gimnasio eliminado exitosamente',
     type: RawGymDto,
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymService.remove(id);
   }
 }

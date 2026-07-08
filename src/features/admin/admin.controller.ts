@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch, ParseUUIDPipe } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { GymResponseDto, UserResponseDto } from './dto/response';
 import { JwtPayload } from 'src/features/auth/dto/request';
@@ -21,7 +21,7 @@ export class AdminController {
   }
 
   @Patch('/users/:id/status')
-  async changeUserStatus(@Param('id') id: string): Promise<void> {
+  async changeUserStatus(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.changeUserStatus(id);
   }
 

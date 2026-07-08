@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CompetitionDivisionService } from './competition-division.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -69,7 +70,7 @@ export class CompetitionDivisionController {
     description: 'Modalidad obtenida con exito',
     type: CompetitionDivisionDto,
   })
-  async findOne(@Param('id') id: string): Promise<CompetitionDivisionDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CompetitionDivisionDto> {
     return this.competitionDivisionService.findOne(id);
   }
 
@@ -84,7 +85,7 @@ export class CompetitionDivisionController {
     type: CompetitionDivisionWithoutCompetitionDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionDivisionDto: UpdateCompetitionDivisionDto,
   ): Promise<CompetitionDivisionWithoutCompetitionDto> {
     return this.competitionDivisionService.update(
@@ -103,7 +104,7 @@ export class CompetitionDivisionController {
     status: 200,
     description: 'Modalidad eliminar con exito',
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionDivisionService.remove(id);
   }
 }

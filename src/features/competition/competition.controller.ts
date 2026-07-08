@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Query,
   Res,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CompetitionService } from './competition.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -55,8 +56,8 @@ export class CompetitionController {
     type: RegisterAthleteAtCompetitionDto,
   })
   registerAthlete(
-    @Param('competitionId') competitionId: string,
-    @Param('athleteId') athleteId: string,
+    @Param('competitionId', ParseUUIDPipe) competitionId: string,
+    @Param('athleteId', ParseUUIDPipe) athleteId: string,
     @Body() dto: RegisterAthleteAtCompetitionDto,
   ) {
     return this.registerAthleteAtCompetitionUseCase.execute(
@@ -91,8 +92,8 @@ export class CompetitionController {
     description: 'Archivo Excel con la lista de atletas inscritos',
   })
   async exportAthletesByGym(
-    @Param('competitionId') competitionId: string,
-    @Param('gymId') gymId: string,
+    @Param('competitionId', ParseUUIDPipe) competitionId: string,
+    @Param('gymId', ParseUUIDPipe) gymId: string,
     @Res() res: Response,
   ): Promise<void> {
     return this.competitionService.exportAthletesByGym(
@@ -110,7 +111,7 @@ export class CompetitionController {
     description: 'Competencia encontrada',
     type: CompetitionDto,
   })
-  async findOne(@Param('id') id: string): Promise<CompetitionDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CompetitionDto> {
     return this.competitionService.findOne(id);
   }
 
@@ -123,7 +124,7 @@ export class CompetitionController {
     type: CompetitionDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
   ): Promise<CompetitionDto> {
     return this.competitionService.update(id, updateCompetitionDto);
@@ -137,7 +138,7 @@ export class CompetitionController {
     status: 204,
     description: 'Competencia eliminada',
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionService.remove(id);
   }
 }

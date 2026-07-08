@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { GymPaymentService } from './gym-payment.service';
 import {
@@ -62,7 +63,7 @@ export class GymPaymentController {
     description: 'Pago obtenido',
     type: GymPaymentResponseDto,
   })
-  async findOne(@Param('id') id: string): Promise<GymPaymentResponseDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.findOne(id);
   }
 
@@ -75,7 +76,7 @@ export class GymPaymentController {
     type: GymPaymentResponseDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateGymPaymentDto: UpdateGymPaymentDto,
   ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.update(id, updateGymPaymentDto);
@@ -88,7 +89,7 @@ export class GymPaymentController {
     status: 200,
     description: 'Pago confirmado',
   })
-  async confirmPayment(@Param('id') id: string): Promise<void> {
+  async confirmPayment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymPaymentService.confirmPayment(id);
   }
 
@@ -101,7 +102,7 @@ export class GymPaymentController {
     description: 'Pago eliminado',
     type: GymPaymentResponseDto,
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymPaymentService.remove(id);
   }
 }

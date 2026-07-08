@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CompetitionRegistrationService } from './competition-registration.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -72,7 +73,7 @@ export class CompetitionRegistrationController {
     type: CompetitionRegistrationResponseDto,
   })
   async findOne(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionRegistrationResponseDto> {
     return this.competitionRegistrationService.findOne(id);
   }
@@ -86,7 +87,7 @@ export class CompetitionRegistrationController {
     type: RawCompetitionRegistrationDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionRegistrationDto: UpdateCompetitionRegistrationDto,
   ): Promise<RawCompetitionRegistrationDto> {
     return this.competitionRegistrationService.update(
@@ -103,7 +104,7 @@ export class CompetitionRegistrationController {
     status: 204,
     description: 'Registro eliminado',
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionRegistrationService.remove(id);
   }
 }

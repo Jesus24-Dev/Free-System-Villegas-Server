@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { PagoMovilService } from './pago-movil.service';
 import { CreatePagoMovilDto } from './dto/request/create-pago-movil.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -21,7 +21,7 @@ export class PagoMovilController {
     type: PagoMovilResponseDto,
   })
   create(
-    @Param('gymId') gymId: string,
+    @Param('gymId', ParseUUIDPipe) gymId: string,
     @Body() createPagoMovilDto: CreatePagoMovilDto,
   ): Promise<PagoMovilResponseDto> {
     return this.pagoMovilService.create(gymId, createPagoMovilDto);
@@ -37,7 +37,7 @@ export class PagoMovilController {
     description: 'Los datos han sido devueltos.',
     type: [PagoMovilResponseDto],
   })
-  findByGym(@Param('gymId') gymId: string): Promise<PagoMovilResponseDto[]> {
+  findByGym(@Param('gymId', ParseUUIDPipe) gymId: string): Promise<PagoMovilResponseDto[]> {
     return this.pagoMovilService.findByGym(gymId);
   }
 
@@ -51,13 +51,13 @@ export class PagoMovilController {
     description: 'El dato ha sido devuelto.',
     type: PagoMovilResponseDto,
   })
-  findOne(@Param('id') id: string): Promise<PagoMovilResponseDto> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<PagoMovilResponseDto> {
     return this.pagoMovilService.findOne(id);
   }
 
   @Roles('ADMIN', 'COACH')
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.pagoMovilService.remove(id);
   }
 }

@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AthleteService } from './athlete.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -74,7 +75,7 @@ export class AthleteController {
     description: 'Obtener solo un atleta por su identificador',
     type: AthleteDto,
   })
-  async findOne(@Param('id') id: string): Promise<AthleteDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<AthleteDto> {
     const athlete = await this.athleteService.findOne(id);
     return {
       id: athlete.id,
@@ -111,7 +112,7 @@ export class AthleteController {
     type: AthleteProfileResponseDto,
   })
   async findAthleteProfile(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AthleteProfileResponseDto> {
     return this.athleteService.findAthleteProfile(id);
   }
@@ -125,7 +126,7 @@ export class AthleteController {
     type: AthleteDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAthleteDto: UpdateAthleteDto,
   ): Promise<RawAthleteDto> {
     return this.athleteService.update(id, updateAthleteDto);
@@ -140,7 +141,7 @@ export class AthleteController {
     description: 'Eliminar un atleta de la base de datos',
     type: AthleteDto,
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.athleteService.remove(id);
   }
 }

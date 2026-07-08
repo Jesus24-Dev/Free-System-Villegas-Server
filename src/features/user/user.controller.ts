@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
@@ -81,7 +82,7 @@ export class UserController {
     description: 'El usuario ha sido encontrado exitosamente',
     type: UserDto,
   })
-  async findOne(@Param('id') id: string): Promise<UserDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
     const user = await this.userService.findOne(id);
     return {
       id: user.id,
@@ -102,7 +103,7 @@ export class UserController {
     type: UserDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
   ): Promise<UserDto> {
     const user = await this.userService.update(id, updateUserDto);
@@ -124,7 +125,7 @@ export class UserController {
     status: 204,
     description: 'El usuario ha sido eliminado exitosamente',
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.userService.remove(id);
   }
 }

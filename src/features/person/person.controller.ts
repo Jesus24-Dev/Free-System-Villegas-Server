@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -84,7 +85,7 @@ export class PersonController {
     description: 'Persona encontrada',
     type: PersonDto,
   })
-  async findOne(@Param('id') id: string): Promise<PersonDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<PersonDto> {
     const person = await this.personService.findOne(id);
     return {
       id: person.id,
@@ -120,7 +121,7 @@ export class PersonController {
     type: PersonDto,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
   ): Promise<PersonDto> {
     const person = await this.personService.update(id, updatePersonDto);
@@ -143,7 +144,7 @@ export class PersonController {
     status: 204,
     description: 'Persona eliminada',
   })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.personService.remove(id);
   }
 }
