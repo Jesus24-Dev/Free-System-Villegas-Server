@@ -72,14 +72,47 @@ export class AthleteService {
     const athlete = await this.prisma.athlete.findFirst({
       where: { id, deleted_at: null },
       include: {
-        person: true,
-        gym: true,
-        payments_gym: true,
+        person: {
+          select: {
+            dni: true,
+            name: true,
+            surname: true,
+            birthday: true,
+            gender: true,
+          },
+        },
+        gym: {
+          where: { deleted_at: null },
+          select: {
+            name: true,
+            address: true,
+            state: true,
+            monthly_payment: true,
+          },
+        },
+        payments_gym: {
+          where: { deleted_at: null },
+          select: {
+            day_payed: true,
+            amount: true,
+            payment_reference: true,
+            isConfirmed: true,
+          },
+        },
         registrations: {
+          where: { deleted_at: null },
           include: {
             division: {
-              include: {
-                competition: true,
+              select: {
+                mode: true,
+                category: true,
+                weight: true,
+                competition: {
+                  select: {
+                    name: true,
+                    status: true,
+                  },
+                },
               },
             },
           },
@@ -88,7 +121,7 @@ export class AthleteService {
     });
 
     if (!athlete) {
-      throw new NotFoundException(`Atletla con el ID ${id} no encontrado`);
+      throw new NotFoundException(`Atleta con el ID ${id} no encontrado`);
     }
     return {
       id: athlete.id,

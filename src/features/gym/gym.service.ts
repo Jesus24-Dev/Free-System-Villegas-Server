@@ -99,16 +99,41 @@ export class GymService {
       where: { id: gymId, deleted_at: null },
       include: {
         coaches: {
+          where: { deleted_at: null },
           include: {
-            person: true,
+            person: {
+              select: {
+                dni: true,
+                name: true,
+                surname: true,
+                gender: true,
+                status: true,
+              },
+            },
           },
         },
         athletes: {
+          where: { deleted_at: null },
           include: {
-            person: true,
+            person: {
+              select: {
+                dni: true,
+                name: true,
+                surname: true,
+                gender: true,
+                status: true,
+              },
+            },
           },
         },
-        pago_movil: true,
+        pago_movil: {
+          where: { deleted_at: null },
+          select: {
+            bank_to_pay: true,
+            dni: true,
+            phone: true,
+          },
+        },
       },
     });
 
@@ -117,7 +142,7 @@ export class GymService {
         `El gimnasio con la ID ${gymId} no fue encontrado.`,
       );
     }
-    const coaches: CoachDetailsDto[] = gym?.coaches.map((coach) => ({
+    const coaches: CoachDetailsDto[] = gym.coaches.map((coach) => ({
       id: coach.id,
       person: {
         dni: coach.person.dni,
@@ -128,7 +153,7 @@ export class GymService {
       },
     }));
 
-    const athletes: AthleteDetailsDto[] = gym?.athletes.map((athlete) => ({
+    const athletes: AthleteDetailsDto[] = gym.athletes.map((athlete) => ({
       id: athlete.id,
       person: {
         dni: athlete.person.dni,

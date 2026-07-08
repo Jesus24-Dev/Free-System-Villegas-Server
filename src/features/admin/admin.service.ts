@@ -11,11 +11,22 @@ export class AdminService {
       include: {
         coach_owner: {
           include: {
-            person: true,
+            person: {
+              select: {
+                name: true,
+                surname: true,
+              },
+            },
           },
         },
-        coaches: true,
-        athletes: true,
+        coaches: {
+          where: { deleted_at: null },
+          select: { id: true },
+        },
+        athletes: {
+          where: { deleted_at: null },
+          select: { id: true },
+        },
       },
     });
 
@@ -36,7 +47,16 @@ export class AdminService {
     const users = await this.prisma.user.findMany({
       where: { deleted_at: null },
       include: {
-        person: true,
+        person: {
+          select: {
+            dni: true,
+            name: true,
+            surname: true,
+            birthday: true,
+            gender: true,
+            status: true,
+          },
+        },
       },
     });
 
