@@ -7,6 +7,8 @@ import {
   IsNotEmpty,
   IsString,
   Length,
+  Matches,
+  MinLength,
 } from 'class-validator';
 import { Gender } from '@prisma/client';
 
@@ -29,6 +31,17 @@ export class RegisterDto {
   })
   @IsString({ message: 'La clave debe ser un texto valido.' })
   @IsNotEmpty({ message: 'La clave es obligatoria' })
+  @MinLength(8, { message: 'La clave debe tener al menos 8 caracteres' })
+  @Matches(/^(?=.*[A-Z])/, {
+    message: 'La clave debe contener al menos una letra mayúscula',
+  })
+  @Matches(/^(?=.*\d)/, {
+    message: 'La clave debe contener al menos un número',
+  })
+  @Matches(/^(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/, {
+    message:
+      'La clave debe contener al menos un carácter especial (!@#$%^&*...)',
+  })
   password!: string;
 
   @ApiProperty({
@@ -49,7 +62,10 @@ export class RegisterDto {
   })
   @IsString({ message: 'La cédula debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La cédula no puede estar vacío' })
-  @Length(6, 9, { message: 'La cédula debe tener entre 8 y 9 caracteres' })
+  @Matches(/^[VEve]\d{6,9}$/, {
+    message:
+      'La cédula debe seguir el formato venezolano: V/E seguido de 6 a 9 dígitos (ej: V12345678)',
+  })
   dni!: string;
 
   @ApiProperty({
