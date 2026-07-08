@@ -9,6 +9,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { IS_PUBLIC_KEY } from 'src/common/decorators/public.decorator';
 
+interface AuthenticatedRequest extends Request {
+  user?: Record<string, unknown>;
+}
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
@@ -25,7 +29,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
@@ -36,7 +40,7 @@ export class AuthGuard implements CanActivate {
     try {
       const payload =
         await this.jwtService.verifyAsync<Record<string, unknown>>(token);
-      request['user'] = payload;
+      request.user = payload;
     } catch {
       throw new UnauthorizedException(
         'No tienes permiso de estar en esta pagina.',
