@@ -21,7 +21,9 @@ export class AdminController {
   }
 
   @Patch('/users/:id/status')
-  async changeUserStatus(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  async changeUserStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
     await this.adminService.changeUserStatus(id);
   }
 

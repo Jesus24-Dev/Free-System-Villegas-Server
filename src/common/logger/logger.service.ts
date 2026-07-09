@@ -31,7 +31,10 @@ export class LoggerService
   }
 
   log(message: unknown, ...optionalParams: unknown[]) {
-    const data = optionalParams[0] && typeof optionalParams[0] === 'object' ? optionalParams[0] : {};
+    const data =
+      optionalParams[0] && typeof optionalParams[0] === 'object'
+        ? optionalParams[0]
+        : {};
     this.logger.info({ msg: message, ...data });
   }
 
@@ -58,12 +61,18 @@ export class LoggerService
   }
 
   warn(message: unknown, ...optionalParams: unknown[]) {
-    const data = optionalParams[0] && typeof optionalParams[0] === 'object' ? optionalParams[0] : {};
+    const data =
+      optionalParams[0] && typeof optionalParams[0] === 'object'
+        ? optionalParams[0]
+        : {};
     this.logger.warn({ msg: message, ...data });
   }
 
   debug(message: unknown, ...optionalParams: unknown[]) {
-    const data = optionalParams[0] && typeof optionalParams[0] === 'object' ? optionalParams[0] : {};
+    const data =
+      optionalParams[0] && typeof optionalParams[0] === 'object'
+        ? optionalParams[0]
+        : {};
     this.logger.debug({ msg: message, ...data });
   }
 }

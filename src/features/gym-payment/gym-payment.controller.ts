@@ -63,7 +63,9 @@ export class GymPaymentController {
     description: 'Pago obtenido',
     type: GymPaymentResponseDto,
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<GymPaymentResponseDto> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.findOne(id);
   }
 

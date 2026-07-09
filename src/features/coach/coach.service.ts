@@ -20,11 +20,18 @@ export class CoachService {
     });
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<CoachWithPerson>> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CoachWithPerson>> {
     const { skip, limit, page } = pagination;
     const where = { deleted_at: null };
     const [data, total] = await Promise.all([
-      this.prisma.coach.findMany({ where, include: { person: true }, skip, take: limit }),
+      this.prisma.coach.findMany({
+        where,
+        include: { person: true },
+        skip,
+        take: limit,
+      }),
       this.prisma.coach.count({ where }),
     ]);
     return new PaginatedResponseDto(data, total, page!, limit!);

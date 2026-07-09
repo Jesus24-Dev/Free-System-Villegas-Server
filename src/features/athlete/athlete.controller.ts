@@ -54,6 +54,7 @@ export class AthleteController {
     return new PaginatedResponseDto(
       result.data.map((athlete) => ({
         id: athlete.id,
+        person_id: athlete.person_id,
         dni: athlete.person.dni,
         name: athlete.person.name,
         surname: athlete.person.surname,
@@ -69,16 +70,17 @@ export class AthleteController {
 
   @Roles('ADMIN')
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener un atleta por su ID' })
+  @ApiOperation({ summary: 'Obtener un atleta por su ID de persona' })
   @ApiResponse({
     status: 200,
-    description: 'Obtener solo un atleta por su identificador',
+    description: 'Obtener solo un atleta por su identificador de persona',
     type: AthleteDto,
   })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<AthleteDto> {
     const athlete = await this.athleteService.findOne(id);
     return {
       id: athlete.id,
+      person_id: athlete.person_id,
       dni: athlete.person.dni,
       name: athlete.person.name,
       surname: athlete.person.surname,
@@ -105,7 +107,11 @@ export class AthleteController {
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get('profile/:id')
-  @ApiOperation({ summary: 'Obtener el perfil de un atleta' })
+  @ApiOperation({
+    summary: 'Obtener el perfil de un atleta',
+    description:
+      'Acepta el ID de usuario (para atletas logueados) o el ID de atleta (desde admin/coach/gimnasio)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Perfil del atleta... obtenido.',
@@ -119,7 +125,7 @@ export class AthleteController {
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar atleta' })
+  @ApiOperation({ summary: 'Actualizar atleta por ID de persona' })
   @ApiResponse({
     status: 200,
     description: 'Actualizar datos del atleta',
@@ -135,7 +141,7 @@ export class AthleteController {
   @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar atleta' })
+  @ApiOperation({ summary: 'Eliminar atleta por ID de persona' })
   @ApiResponse({
     status: 204,
     description: 'Eliminar un atleta de la base de datos',

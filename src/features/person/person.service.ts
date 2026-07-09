@@ -14,7 +14,9 @@ export class PersonService {
     return this.prisma.person.create({ data: createPersonDto });
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<Person>> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<Person>> {
     const { skip, limit, page } = pagination;
     const where = { deleted_at: null };
     const [data, total] = await Promise.all([

@@ -111,7 +111,9 @@ export class CompetitionController {
     description: 'Competencia encontrada',
     type: CompetitionDto,
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CompetitionDto> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CompetitionDto> {
     return this.competitionService.findOne(id);
   }
 

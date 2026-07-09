@@ -9,6 +9,12 @@ export class AthleteDto {
   id!: string;
 
   @ApiProperty({
+    description: 'ID único de la persona asociada al atleta',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  person_id!: string;
+
+  @ApiProperty({
     description: 'Cedula del usuario',
     example: '12345678',
   })

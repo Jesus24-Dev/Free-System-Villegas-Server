@@ -128,7 +128,9 @@ export class CoachController {
     description: 'Perfil del coach... obtenido.',
     type: CoachDto,
   })
-  async findCoachProfile(@Param('id', ParseUUIDPipe) id: string): Promise<CoachDto> {
+  async findCoachProfile(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CoachDto> {
     return this.coachService.findCoachProfile(id);
   }
 

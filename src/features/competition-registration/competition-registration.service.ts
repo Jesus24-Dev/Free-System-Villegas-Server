@@ -18,7 +18,9 @@ export class CompetitionRegistrationService {
     });
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
     const { skip, limit, page } = pagination;
     const where = { deleted_at: null };
     const [data, total] = await Promise.all([

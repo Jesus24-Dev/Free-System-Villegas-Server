@@ -19,7 +19,9 @@ export class GymPaymentService {
     });
   }
 
-  async findAll(pagination: PaginationDto): Promise<PaginatedResponseDto<GymPayment>> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<GymPayment>> {
     const { skip, limit, page } = pagination;
     const where = { deleted_at: null };
     const [data, total] = await Promise.all([

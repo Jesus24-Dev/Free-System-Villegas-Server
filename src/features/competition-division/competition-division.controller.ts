@@ -70,7 +70,9 @@ export class CompetitionDivisionController {
     description: 'Modalidad obtenida con exito',
     type: CompetitionDivisionDto,
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CompetitionDivisionDto> {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CompetitionDivisionDto> {
     return this.competitionDivisionService.findOne(id);
   }
 
