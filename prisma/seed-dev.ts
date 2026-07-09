@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import {
   PrismaClient,
-  Prisma,
   Roles,
   Gender,
   States,
@@ -24,19 +23,8 @@ const logger = pino({
   },
 });
 
-const VENEZUELAN_DNI = () => `V${faker.number.int({ min: 10000000, max: 30000000 })}`;
-
-const randomGender = (): Gender =>
-  faker.helpers.arrayElement([Gender.MALE, Gender.FEMALE]);
-
-const VENEZUELAN_STATES = [
-  States.DISTRITO_CAPITAL,
-  States.ARAGUA,
-  States.LARA,
-  States.ZULIA,
-  States.MIRANDA,
-  States.CARABOBO,
-];
+const VENEZUELAN_DNI = () =>
+  `V${faker.number.int({ min: 10000000, max: 30000000 })}`;
 
 export async function seedDev(prisma: PrismaClient) {
   if (process.env.NODE_ENV === 'production') {
@@ -47,8 +35,14 @@ export async function seedDev(prisma: PrismaClient) {
     return;
   }
 
-  if (process.env.RESET_DB === 'true' && process.env.NODE_ENV === 'development') {
-    logger.warn({ context: 'SeedDev' }, '⚠️ Flag RESET_DB detectado. Limpiando tablas de prueba...');
+  if (
+    process.env.RESET_DB === 'true' &&
+    process.env.NODE_ENV === 'development'
+  ) {
+    logger.warn(
+      { context: 'SeedDev' },
+      '⚠️ Flag RESET_DB detectado. Limpiando tablas de prueba...',
+    );
     try {
       await prisma.gymPayment.deleteMany();
       await prisma.competitionRegistration.deleteMany();
@@ -60,23 +54,37 @@ export async function seedDev(prisma: PrismaClient) {
       await prisma.person.deleteMany();
       await prisma.competitionDivision.deleteMany();
       await prisma.competition.deleteMany();
-      logger.info({ context: 'SeedDev' }, '🧹 Base de datos de prueba limpia con éxito.');
+      logger.info(
+        { context: 'SeedDev' },
+        '🧹 Base de datos de prueba limpia con éxito.',
+      );
     } catch (error) {
-      logger.error({ context: 'SeedDev', error }, '❌ Error al limpiar las tablas de la base de datos.');
+      logger.error(
+        { context: 'SeedDev', error },
+        '❌ Error al limpiar las tablas de la base de datos.',
+      );
       throw error;
     }
   } else {
-    logger.info({ context: 'SeedDev' }, 'ℹ️ Ejecutando semillas de desarrollo en modo seguro (Sin destrucción de datos).');
+    logger.info(
+      { context: 'SeedDev' },
+      'ℹ️ Ejecutando semillas de desarrollo en modo seguro (Sin destrucción de datos).',
+    );
   }
 
   try {
-    const password = await bcrypt.hash('123456', 10);
+    const password = await bcrypt.hash('12345678', 10);
 
     // ==========================================
     // ADMIN
     // ==========================================
-    logger.info({ context: 'SeedDev' }, '👥 Insertando registros de Administrador...');
-    let adminPerson = await prisma.person.findUnique({ where: { dni: 'V10000000' } });
+    logger.info(
+      { context: 'SeedDev' },
+      '👥 Insertando registros de Administrador...',
+    );
+    let adminPerson = await prisma.person.findUnique({
+      where: { dni: 'V10000000' },
+    });
     if (!adminPerson) {
       adminPerson = await prisma.person.create({
         data: {
@@ -91,24 +99,67 @@ export async function seedDev(prisma: PrismaClient) {
     await prisma.user.upsert({
       where: { email: 'admin@test.com' },
       update: {},
-      create: { email: 'admin@test.com', password, role: [Roles.ADMIN], person_id: adminPerson.id },
+      create: {
+        email: 'admin@test.com',
+        password,
+        role: [Roles.ADMIN],
+        person_id: adminPerson.id,
+      },
     });
 
     // ==========================================
     // COACHES
     // ==========================================
-    logger.info({ context: 'SeedDev' }, '👥 Insertando Entrenadores y Gimnasios...');
+    logger.info(
+      { context: 'SeedDev' },
+      '👥 Insertando Entrenadores y Gimnasios...',
+    );
 
-    const createCoach = async (email: string, dni: string, name: string, surname: string, gender: Gender) => {
+    const createCoach = async (
+      email: string,
+      dni: string,
+      name: string,
+      surname: string,
+      gender: Gender,
+    ) => {
       const person = await prisma.person.create({
-        data: { dni, name, surname, birthday: faker.date.birthdate({ min: 1980, max: 1995, mode: 'year' }), gender },
+        data: {
+          dni,
+          name,
+          surname,
+          birthday: faker.date.birthdate({
+            min: 1980,
+            max: 1995,
+            mode: 'year',
+          }),
+          gender,
+        },
       });
-      await prisma.user.create({ data: { email, password, role: [Roles.COACH], person_id: person.id } });
+      await prisma.user.create({
+        data: {
+          email,
+          password,
+          role: [Roles.COACH],
+          person_id: person.id,
+        },
+      });
       return prisma.coach.create({ data: { person_id: person.id } });
     };
 
-    const coach1 = await createCoach('coach1@test.com', 'V20000001', 'Carlos', 'Mendoza', Gender.MALE);
-    const coach2 = await createCoach('coach2@test.com', 'V20000002', 'Ana', 'Rodriguez', Gender.FEMALE);
+    const coach1 = await createCoach(
+      'coach1@test.com',
+      'V20000001',
+      'Carlos',
+      'Mendoza',
+      Gender.MALE,
+    );
+    const coach2 = await createCoach(
+      'coach2@test.com',
+      'V20000002',
+      'Ana',
+      'Rodriguez',
+      Gender.FEMALE,
+    );
 
     // ==========================================
     // GYMS
@@ -118,7 +169,11 @@ export async function seedDev(prisma: PrismaClient) {
         name: faker.company.name(),
         address: `${faker.location.city()}, Venezuela`,
         state: States.DISTRITO_CAPITAL,
-        monthly_payment: faker.number.float({ min: 15, max: 50, fractionDigits: 0 }),
+        monthly_payment: faker.number.float({
+          min: 15,
+          max: 50,
+          fractionDigits: 0,
+        }),
         owner_id: coach1.id,
       },
     });
@@ -128,44 +183,99 @@ export async function seedDev(prisma: PrismaClient) {
         name: faker.company.name(),
         address: `${faker.location.city()}, Venezuela`,
         state: States.ARAGUA,
-        monthly_payment: faker.number.float({ min: 15, max: 50, fractionDigits: 0 }),
+        monthly_payment: faker.number.float({
+          min: 15,
+          max: 50,
+          fractionDigits: 0,
+        }),
         owner_id: coach2.id,
       },
     });
 
-    await prisma.coach.update({ where: { id: coach1.id }, data: { gym_id: gym1.id } });
-    await prisma.coach.update({ where: { id: coach2.id }, data: { gym_id: gym2.id } });
+    await prisma.coach.update({
+      where: { id: coach1.id },
+      data: { gym_id: gym1.id },
+    });
+    await prisma.coach.update({
+      where: { id: coach2.id },
+      data: { gym_id: gym2.id },
+    });
 
     // ==========================================
     // PAGOS MOVILES
     // ==========================================
-    logger.info({ context: 'SeedDev' }, '💳 Insertando campos de Pago Móvil...');
-    const banks = ['0102 - Banco de Venezuela', '0105 - Mercantil', '0108 - Provincial'];
-    const gym1Phone = faker.phone.number({ style: 'national' }).replace(/\D/g, '').slice(0, 11);
-    const gym2Phone = faker.phone.number({ style: 'national' }).replace(/\D/g, '').slice(0, 11);
+    logger.info(
+      { context: 'SeedDev' },
+      '💳 Insertando campos de Pago Móvil...',
+    );
+    const banks = [
+      '0102 - Banco de Venezuela',
+      '0105 - Mercantil',
+      '0108 - Provincial',
+    ];
+    const gym1Phone = faker.phone
+      .number({ style: 'national' })
+      .replace(/\D/g, '')
+      .slice(0, 11);
+    const gym2Phone = faker.phone
+      .number({ style: 'national' })
+      .replace(/\D/g, '')
+      .slice(0, 11);
 
-    await prisma.pagoMovilFields.create({ data: { gym_id: gym1.id, bank_to_pay: banks[0], dni: VENEZUELAN_DNI(), phone: gym1Phone } });
-    await prisma.pagoMovilFields.create({ data: { gym_id: gym1.id, bank_to_pay: banks[1], dni: VENEZUELAN_DNI(), phone: gym1Phone } });
-    await prisma.pagoMovilFields.create({ data: { gym_id: gym2.id, bank_to_pay: banks[2], dni: VENEZUELAN_DNI(), phone: gym2Phone } });
+    await prisma.pagoMovilFields.create({
+      data: {
+        gym_id: gym1.id,
+        bank_to_pay: banks[0],
+        dni: VENEZUELAN_DNI(),
+        phone: gym1Phone,
+      },
+    });
+    await prisma.pagoMovilFields.create({
+      data: {
+        gym_id: gym1.id,
+        bank_to_pay: banks[1],
+        dni: VENEZUELAN_DNI(),
+        phone: gym1Phone,
+      },
+    });
+    await prisma.pagoMovilFields.create({
+      data: {
+        gym_id: gym2.id,
+        bank_to_pay: banks[2],
+        dni: VENEZUELAN_DNI(),
+        phone: gym2Phone,
+      },
+    });
 
     // ==========================================
     // ATHLETES
     // ==========================================
     logger.info({ context: 'SeedDev' }, '🥊 Creando Atletas de prueba...');
-    const athletes: Prisma.AthleteGetPayload<{}>[] = [];
+    const athletes: { id: string }[] = [];
     for (let i = 0; i < 6; i++) {
       const gender = i % 2 === 0 ? Gender.MALE : Gender.FEMALE;
       const person = await prisma.person.create({
         data: {
           dni: VENEZUELAN_DNI(),
-          name: faker.person.firstName(gender === Gender.MALE ? 'male' : 'female'),
+          name: faker.person.firstName(
+            gender === Gender.MALE ? 'male' : 'female',
+          ),
           surname: faker.person.lastName(),
-          birthday: faker.date.birthdate({ min: 1995, max: 2005, mode: 'year' }),
+          birthday: faker.date.birthdate({
+            min: 1995,
+            max: 2005,
+            mode: 'year',
+          }),
           gender,
         },
       });
       await prisma.user.create({
-        data: { email: `athlete${i + 1}@test.com`, password, role: [Roles.ATHLETE], person_id: person.id },
+        data: {
+          email: `athlete${i + 1}@test.com`,
+          password,
+          role: [Roles.ATHLETE],
+          person_id: person.id,
+        },
       });
       const athlete = await prisma.athlete.create({
         data: { person_id: person.id, gym_id: i < 3 ? gym1.id : gym2.id },
@@ -176,7 +286,10 @@ export async function seedDev(prisma: PrismaClient) {
     // ==========================================
     // COMPETITION
     // ==========================================
-    logger.info({ context: 'SeedDev' }, '🏆 Configurando Competencia Nacional...');
+    logger.info(
+      { context: 'SeedDev' },
+      '🏆 Configurando Competencia Nacional...',
+    );
     const competition = await prisma.competition.create({
       data: {
         name: 'Copa Nacional WAKO 2026',
@@ -193,7 +306,13 @@ export async function seedDev(prisma: PrismaClient) {
     // ==========================================
     const createDivision = (mode: FightingMode, weight: number) =>
       prisma.competitionDivision.create({
-        data: { competition_id: competition.id, mode, category: FightingCategory.S, gender: Gender.MALE, weight },
+        data: {
+          competition_id: competition.id,
+          mode,
+          category: FightingCategory.S,
+          gender: Gender.MALE,
+          weight,
+        },
       });
 
     const divisionPF69 = await createDivision(FightingMode.POINT_FIGHTING, 69);
@@ -204,7 +323,10 @@ export async function seedDev(prisma: PrismaClient) {
     // ==========================================
     // REGISTRATIONS
     // ==========================================
-    logger.info({ context: 'SeedDev' }, '📝 Registrando atletas en divisiones...');
+    logger.info(
+      { context: 'SeedDev' },
+      '📝 Registrando atletas en divisiones...',
+    );
     const registrations = [
       { athlete_id: athletes[0].id, division_id: divisionPF69.id },
       { athlete_id: athletes[0].id, division_id: divisionKL69.id },
@@ -218,18 +340,45 @@ export async function seedDev(prisma: PrismaClient) {
     // ==========================================
     // PAYMENTS
     // ==========================================
-    logger.info({ context: 'SeedDev' }, '💰 Generando historial de pagos ficticios...');
+    logger.info(
+      { context: 'SeedDev' },
+      '💰 Generando historial de pagos ficticios...',
+    );
     await prisma.gymPayment.createMany({
       data: [
-        { athlete_id: athletes[0].id, gym_id: gym1.id, amount: gym1.monthly_payment, payment_reference: `REF-${faker.string.numeric(4)}`, day_payed: faker.date.recent({ days: 30 }), isConfirmed: true },
-        { athlete_id: athletes[1].id, gym_id: gym1.id, amount: gym1.monthly_payment, payment_reference: `REF-${faker.string.numeric(4)}`, day_payed: faker.date.recent({ days: 15 }), isConfirmed: true },
-        { athlete_id: athletes[3].id, gym_id: gym2.id, amount: gym2.monthly_payment, payment_reference: `REF-${faker.string.numeric(4)}`, day_payed: faker.date.recent({ days: 5 }), isConfirmed: false },
+        {
+          athlete_id: athletes[0].id,
+          gym_id: gym1.id,
+          amount: gym1.monthly_payment,
+          payment_reference: `REF-${faker.string.numeric(4)}`,
+          day_payed: faker.date.recent({ days: 30 }),
+          isConfirmed: true,
+        },
+        {
+          athlete_id: athletes[1].id,
+          gym_id: gym1.id,
+          amount: gym1.monthly_payment,
+          payment_reference: `REF-${faker.string.numeric(4)}`,
+          day_payed: faker.date.recent({ days: 15 }),
+          isConfirmed: true,
+        },
+        {
+          athlete_id: athletes[3].id,
+          gym_id: gym2.id,
+          amount: gym2.monthly_payment,
+          payment_reference: `REF-${faker.string.numeric(4)}`,
+          day_payed: faker.date.recent({ days: 5 }),
+          isConfirmed: false,
+        },
       ],
     });
 
     logger.info({ context: 'SeedDev' }, '✅ Seed dev completed successfully.');
   } catch (error) {
-    logger.error({ context: 'SeedDev', error }, '❌ Error crítico inesperado durante la ejecución de seedDev.');
+    logger.error(
+      { context: 'SeedDev', error },
+      '❌ Error crítico inesperado durante la ejecución de seedDev.',
+    );
     throw error;
   }
 }
