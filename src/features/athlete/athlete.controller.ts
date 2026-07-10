@@ -39,7 +39,7 @@ export class AthleteController {
     return this.athleteService.create(createAthleteDto);
   }
 
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los atletas' })
   @ApiResponse({
@@ -68,7 +68,7 @@ export class AthleteController {
     );
   }
 
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'COACH')
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un atleta por su ID de persona' })
   @ApiResponse({
