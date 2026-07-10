@@ -30,6 +30,7 @@ interface AthleteProfileData {
     gender: Gender;
   };
   gym: {
+    id: string;
     name: string;
     address: string;
     state: States;
@@ -86,6 +87,7 @@ export class AthleteService {
         gym: {
           where: { deleted_at: null },
           select: {
+            id: true,
             name: true,
             address: true,
             state: true,
@@ -231,6 +233,7 @@ export class AthleteService {
         gym: {
           where: { deleted_at: null },
           select: {
+            id: true,
             name: true,
             address: true,
             state: true,
@@ -296,6 +299,7 @@ export class AthleteService {
         gender: athlete.person.gender,
       },
       gym: {
+        id_gym: athlete.gym?.id,
         name: athlete.gym?.name,
         address: athlete.gym?.address,
         state: athlete.gym?.state,
