@@ -175,6 +175,7 @@ export class GymService {
       name: gym.name,
       address: gym.address,
       state: gym.state,
+      monthly_payment: gym.monthly_payment,
       athletes,
       coaches,
       pago_movil: pagoMovil,

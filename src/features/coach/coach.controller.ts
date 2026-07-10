@@ -76,12 +76,16 @@ export class CoachController {
     return new PaginatedResponseDto(
       result.data.map((coach) => ({
         id: coach.id,
+        person_id: coach.person_id,
+        gym_id: coach.gym_id,
         dni: coach.person.dni,
         name: coach.person.name,
         surname: coach.person.surname,
         gender: coach.person.gender,
         birthday: coach.person.birthday,
         status: coach.person.status,
+        created_at: coach.created_at,
+        updated_at: coach.updated_at,
       })),
       result.total,
       result.page,
@@ -115,12 +119,16 @@ export class CoachController {
     const coach = await this.coachService.findOne(id);
     return {
       id: coach.id,
+      person_id: coach.person_id,
+      gym_id: coach.gym_id,
       dni: coach.person.dni,
       name: coach.person.name,
       surname: coach.person.surname,
       gender: coach.person.gender,
       birthday: coach.person.birthday,
       status: coach.person.status,
+      created_at: coach.created_at,
+      updated_at: coach.updated_at,
     };
   }
 

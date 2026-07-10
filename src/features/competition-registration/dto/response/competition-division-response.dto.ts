@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FightingCategory, FightingMode } from '@prisma/client';
+import { FightingCategory, FightingMode, Gender } from '@prisma/client';
 
 export class CompetitionDivisionDto {
   @ApiProperty({
@@ -13,6 +13,12 @@ export class CompetitionDivisionDto {
     example: FightingCategory.S,
   })
   category!: FightingCategory;
+
+  @ApiProperty({
+    enum: Gender,
+    example: Gender.MALE,
+  })
+  gender!: Gender;
 
   @ApiProperty({
     example: 75,

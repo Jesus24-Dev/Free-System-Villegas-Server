@@ -48,6 +48,7 @@ export class CompetitionRegistrationService {
         division: {
           mode: competitionRegistration.division.mode,
           category: competitionRegistration.division.category,
+          gender: competitionRegistration.division.gender,
           weight: competitionRegistration.division.weight,
         },
       })),
@@ -88,6 +89,7 @@ export class CompetitionRegistrationService {
       division: {
         mode: competitionRegistration.division.mode,
         category: competitionRegistration.division.category,
+        gender: competitionRegistration.division.gender,
         weight: competitionRegistration.division.weight,
       },
     };

@@ -20,4 +20,10 @@ export class PagoMovilResponseDto {
     example: '04141234567',
   })
   phone!: string;
+
+  @ApiProperty({
+    description: 'ID del gimnasio al que pertenece',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  gym_id!: string;
 }

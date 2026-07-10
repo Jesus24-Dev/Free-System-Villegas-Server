@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
 
 export class AthleteDto {
@@ -13,6 +13,12 @@ export class AthleteDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   person_id!: string;
+
+  @ApiPropertyOptional({
+    description: 'ID del gimnasio al que pertenece el atleta',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  gym_id!: string | null;
 
   @ApiProperty({
     description: 'Cedula del usuario',
@@ -50,4 +56,10 @@ export class AthleteDto {
     example: 'true',
   })
   status!: boolean;
+
+  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
+  created_at!: Date;
+
+  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
+  updated_at!: Date;
 }

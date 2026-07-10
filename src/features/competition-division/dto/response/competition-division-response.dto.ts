@@ -19,7 +19,7 @@ export class CompetitionDivisionDto {
   @ApiProperty({
     description: 'Modalidad de combate del atleta a registrar',
     example: FightingMode.K1,
-    enum: FightingCategory,
+    enum: FightingMode,
   })
   mode!: FightingMode;
 

@@ -31,6 +31,7 @@ export class PagoMovilService {
         bank_to_pay: true,
         dni: true,
         phone: true,
+        gym_id: true,
       },
     });
 
@@ -51,6 +52,7 @@ export class PagoMovilService {
         bank_to_pay: true,
         dni: true,
         phone: true,
+        gym_id: true,
       },
     });
 

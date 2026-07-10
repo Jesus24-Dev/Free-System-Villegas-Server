@@ -55,12 +55,15 @@ export class AthleteController {
       result.data.map((athlete) => ({
         id: athlete.id,
         person_id: athlete.person_id,
+        gym_id: athlete.gym_id,
         dni: athlete.person.dni,
         name: athlete.person.name,
         surname: athlete.person.surname,
         gender: athlete.person.gender,
         birthday: athlete.person.birthday,
         status: athlete.person.status,
+        created_at: athlete.created_at,
+        updated_at: athlete.updated_at,
       })),
       result.total,
       result.page,
@@ -81,12 +84,15 @@ export class AthleteController {
     return {
       id: athlete.id,
       person_id: athlete.person_id,
+      gym_id: athlete.gym_id,
       dni: athlete.person.dni,
       name: athlete.person.name,
       surname: athlete.person.surname,
       gender: athlete.person.gender,
       birthday: athlete.person.birthday,
       status: athlete.person.status,
+      created_at: athlete.created_at,
+      updated_at: athlete.updated_at,
     };
   }
 

@@ -51,7 +51,12 @@ export class CoachService {
   async findCoachProfile(id: string): Promise<CoachDto> {
     const coach = await this.prisma.coach.findFirst({
       where: { id, deleted_at: null },
-      include: {
+      select: {
+        id: true,
+        person_id: true,
+        gym_id: true,
+        created_at: true,
+        updated_at: true,
         person: {
           select: {
             dni: true,
@@ -69,12 +74,16 @@ export class CoachService {
     }
     return {
       id: coach.id,
+      person_id: coach.person_id,
+      gym_id: coach.gym_id,
       dni: coach.person.dni,
       name: coach.person.name,
       surname: coach.person.surname,
       gender: coach.person.gender,
       birthday: coach.person.birthday,
       status: coach.person.status,
+      created_at: coach.created_at,
+      updated_at: coach.updated_at,
     };
   }
 
@@ -119,7 +128,12 @@ export class CoachService {
   async findAllCoachesByGym(gymdId: string): Promise<CoachDto[]> {
     const coaches = await this.prisma.coach.findMany({
       where: { gym_id: gymdId, deleted_at: null },
-      include: {
+      select: {
+        id: true,
+        person_id: true,
+        gym_id: true,
+        created_at: true,
+        updated_at: true,
         person: {
           select: {
             dni: true,
@@ -134,7 +148,16 @@ export class CoachService {
     });
     return coaches.map((coach) => ({
       id: coach.id,
-      ...coach.person,
+      person_id: coach.person_id,
+      gym_id: coach.gym_id,
+      dni: coach.person.dni,
+      name: coach.person.name,
+      surname: coach.person.surname,
+      gender: coach.person.gender,
+      birthday: coach.person.birthday,
+      status: coach.person.status,
+      created_at: coach.created_at,
+      updated_at: coach.updated_at,
     }));
   }
 

@@ -178,7 +178,12 @@ export class AthleteService {
   async findAllAthletesByGym(gymId: string): Promise<AthleteDto[]> {
     const athletes = await this.prisma.athlete.findMany({
       where: { gym_id: gymId, deleted_at: null },
-      include: {
+      select: {
+        id: true,
+        person_id: true,
+        gym_id: true,
+        created_at: true,
+        updated_at: true,
         person: {
           select: {
             dni: true,
@@ -195,7 +200,15 @@ export class AthleteService {
     return athletes.map((athlete) => ({
       id: athlete.id,
       person_id: athlete.person_id,
-      ...athlete.person,
+      gym_id: athlete.gym_id,
+      dni: athlete.person.dni,
+      name: athlete.person.name,
+      surname: athlete.person.surname,
+      gender: athlete.person.gender,
+      birthday: athlete.person.birthday,
+      status: athlete.person.status,
+      created_at: athlete.created_at,
+      updated_at: athlete.updated_at,
     }));
   }
 
