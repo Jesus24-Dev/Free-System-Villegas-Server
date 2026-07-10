@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Coach, Prisma } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
-import { CoachDto } from './dto/response';
+import { CoachDto, CoachMeResponseDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
@@ -77,6 +76,44 @@ export class CoachService {
       birthday: coach.person.birthday,
       status: coach.person.status,
     };
+  }
+
+  async findCoachByUserId(userId: string): Promise<CoachMeResponseDto> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { person_id: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${userId} no fue encontrado`);
+    }
+
+    const coach = await this.prisma.coach.findFirst({
+      where: { person_id: user.person_id, deleted_at: null },
+      select: {
+        id: true,
+        person_id: true,
+        gym_id: true,
+        person: {
+          select: {
+            dni: true,
+            name: true,
+            surname: true,
+            gender: true,
+            birthday: true,
+            status: true,
+          },
+        },
+      },
+    });
+
+    if (!coach) {
+      throw new NotFoundException(
+        `Coach associado al usuario ${userId} no fue encontrado`,
+      );
+    }
+
+    return coach;
   }
 
   async findAllCoachesByGym(gymdId: string): Promise<CoachDto[]> {

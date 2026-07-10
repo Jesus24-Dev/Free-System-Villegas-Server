@@ -17,9 +17,11 @@ import { CreatePersonDto } from '../person/dto/request/create-person.dto';
 import { CreateAthleteDto } from '../athlete/dto/request/create-athlete.dto';
 import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
-import { CoachDto, RawCoachDto } from './dto/response';
+import { CoachDto, CoachMeResponseDto, RawCoachDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { JwtPayload } from '../auth/dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -85,6 +87,20 @@ export class CoachController {
       result.page,
       result.limit,
     );
+  }
+
+  @Roles('COACH')
+  @Get('me')
+  @ApiOperation({ summary: 'Obtener perfil del coach autenticado' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil del coach autenticado obtenido exitosamente',
+    type: CoachMeResponseDto,
+  })
+  async findMyProfile(
+    @GetUser() user: JwtPayload,
+  ): Promise<CoachMeResponseDto> {
+    return this.coachService.findCoachByUserId(user.sub);
   }
 
   @Roles('ADMIN')
