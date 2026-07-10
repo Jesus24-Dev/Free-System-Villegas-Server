@@ -12,12 +12,10 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { GymPaymentService } from './gym-payment.service';
-import {
-  CreateGymPaymentDto,
-  GymPaymentResponseDto,
-} from './dto/create-gym-payment.dto';
-import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
-import { FilterGymPaymentDto } from './dto/filter-gym-payment.dto';
+import { CreateGymPaymentDto } from './dto/request';
+import { UpdateGymPaymentDto } from './dto/request';
+import { FilterGymPaymentDto } from './dto/request';
+import { GymPaymentResponseDto } from './dto/response';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
