@@ -6,10 +6,15 @@ import {
   IsOptional,
   Length,
   IsEnum,
+  Matches,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { Gender } from '@prisma/client';
-import { ApiProperty, IntersectionType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  IntersectionType,
+} from '@nestjs/swagger';
 
 export class CreatePersonDto {
   @ApiProperty({
@@ -18,7 +23,10 @@ export class CreatePersonDto {
   })
   @IsString({ message: 'La cédula debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La cédula no puede estar vacío' })
-  @Length(6, 9, { message: 'La cédula debe tener entre 8 y 9 caracteres' })
+  @Matches(/^[VEve]\d{6,9}$/, {
+    message:
+      'La cédula debe seguir el formato venezolano: V/E seguido de 6 a 9 dígitos (ej: V12345678)',
+  })
   dni!: string;
 
   @ApiProperty({
@@ -60,7 +68,7 @@ export class CreatePersonDto {
   @IsNotEmpty({ message: 'Debes asignar un genero a la persona' })
   gender!: Gender;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Estado del usuario',
     example: true,
   })
