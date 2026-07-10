@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGymPaymentDto } from './dto/create-gym-payment.dto';
 import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
+import { FilterGymPaymentDto } from './dto/filter-gym-payment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GymPayment } from '@prisma/client';
 import { LoggerService } from 'src/common/logger/logger.service';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @Injectable()
@@ -20,10 +20,10 @@ export class GymPaymentService {
   }
 
   async findAll(
-    pagination: PaginationDto,
+    filter: FilterGymPaymentDto,
   ): Promise<PaginatedResponseDto<GymPayment>> {
-    const { skip, limit, page } = pagination;
-    const where = { deleted_at: null };
+    const { skip, limit, page, gym_id } = filter;
+    const where = { deleted_at: null, ...(gym_id && { gym_id }) };
     const [data, total] = await Promise.all([
       this.prisma.gymPayment.findMany({ where, skip, take: limit }),
       this.prisma.gymPayment.count({ where }),

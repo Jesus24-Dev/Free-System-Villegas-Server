@@ -17,9 +17,9 @@ import {
   GymPaymentResponseDto,
 } from './dto/create-gym-payment.dto';
 import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
+import { FilterGymPaymentDto } from './dto/filter-gym-payment.dto';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Gym Payment')
@@ -41,7 +41,7 @@ export class GymPaymentController {
     return this.gymPaymentService.create(createGymPaymentDto);
   }
 
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los pagos de todos los gimnasios' })
   @ApiResponse({
@@ -50,9 +50,9 @@ export class GymPaymentController {
     type: [GymPaymentResponseDto],
   })
   async findAll(
-    @Query() pagination: PaginationDto,
+    @Query() filter: FilterGymPaymentDto,
   ): Promise<PaginatedResponseDto<GymPaymentResponseDto>> {
-    return this.gymPaymentService.findAll(pagination);
+    return this.gymPaymentService.findAll(filter);
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
