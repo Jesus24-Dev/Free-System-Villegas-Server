@@ -23,7 +23,7 @@ export class CreatePersonDto {
   })
   @IsString({ message: 'La cédula debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La cédula no puede estar vacío' })
-  @Matches(/^[VEve]\d{6,9}$/, {
+  @Matches(/^[VEJvej]\d{6,9}$/, {
     message:
       'La cédula debe seguir el formato venezolano: V/E seguido de 6 a 9 dígitos (ej: V12345678)',
   })

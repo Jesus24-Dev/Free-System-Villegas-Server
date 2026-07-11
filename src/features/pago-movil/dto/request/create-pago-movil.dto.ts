@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsPhoneNumber, IsString, Matches } from 'class-validator';
 
 export class CreatePagoMovilDto {
   @ApiProperty({
@@ -11,11 +11,15 @@ export class CreatePagoMovilDto {
   bank_to_pay!: string;
 
   @ApiProperty({
-    example: 'V12345678',
-    description: 'Cedula asociada al pago móvil',
+    description: 'Cedula del usuario',
+    example: '12345678',
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'La cédula debe ser una cadena de texto' })
+  @IsNotEmpty({ message: 'La cédula no puede estar vacío' })
+  @Matches(/^[VEJvej]\d{6,9}$/, {
+    message:
+      'La cédula debe seguir el formato venezolano: V/E/J seguido de 6 a 9 dígitos (ej: V12345678)',
+  })
   dni!: string;
 
   @ApiProperty({
