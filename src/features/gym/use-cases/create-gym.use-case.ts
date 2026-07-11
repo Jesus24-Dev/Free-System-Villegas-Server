@@ -55,8 +55,13 @@ export class CreateGymUseCase {
 
       const gym = await tx.gym.create({
         data: {
-          owner_id: coach.id,
-          ...createGym,
+          name: createGym.name,
+          address: createGym.address,
+          state: createGym.state,
+          monthly_payment: createGym.monthly_payment,
+          coach_owner: {
+            connect: { id: coach.id },
+          },
         },
       });
 
@@ -68,6 +73,11 @@ export class CreateGymUseCase {
       }));
 
       await tx.pagoMovilFields.createMany({ data: payments });
+
+      await tx.coach.update({
+        where: { id: coach.id },
+        data: { gym_id: gym.id },
+      });
 
       this.logger.info('GYM_CREATED', {
         gymId: gym.id,
