@@ -58,11 +58,11 @@ export class RegisterDto {
 
   @ApiProperty({
     description: 'Cedula del usuario',
-    example: '12345678',
+    example: 'V12345678',
   })
   @IsString({ message: 'La cédula debe ser una cadena de texto' })
   @IsNotEmpty({ message: 'La cédula no puede estar vacío' })
-  @Matches(/^[VEve]\d{6,9}$/, {
+  @Matches(/^[VEJvej]\d{6,9}$/, {
     message:
       'La cédula debe seguir el formato venezolano: V/E seguido de 6 a 9 dígitos (ej: V12345678)',
   })
