@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsUUID,
-  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
