@@ -10,7 +10,7 @@ describe('AdminServiceTest', () => {
   let service: AdminService;
   let prisma: {
     user: {
-      findUnique: jest.Mock;
+      findFirst: jest.Mock;
     };
     person: {
       update: jest.Mock;
@@ -19,7 +19,7 @@ describe('AdminServiceTest', () => {
   beforeEach(async () => {
     prisma = {
       user: {
-        findUnique: jest.fn(),
+        findFirst: jest.fn(),
       },
       person: {
         update: jest.fn(),
@@ -37,7 +37,7 @@ describe('AdminServiceTest', () => {
     service = module.get(AdminService);
   });
   it('debe invertir el estado de la persona asociada al usuario correctamente', async () => {
-    prisma.user.findUnique.mockResolvedValue({
+    prisma.user.findFirst.mockResolvedValue({
       id: 'user-123',
       person_id: 'person-789',
       person: {
@@ -53,8 +53,8 @@ describe('AdminServiceTest', () => {
 
     await service.changeUserStatus('user-123');
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
-      where: { id: 'user-123' },
+    expect(prisma.user.findFirst).toHaveBeenCalledWith({
+      where: { id: 'user-123', deleted_at: null },
       include: { person: true },
     });
 
@@ -65,7 +65,7 @@ describe('AdminServiceTest', () => {
   });
 
   it('debe activar a la persona si actualmente está inactiva', async () => {
-    prisma.user.findUnique.mockResolvedValue({
+    prisma.user.findFirst.mockResolvedValue({
       id: 'user-123',
       person_id: 'person-789',
       person: {
@@ -83,7 +83,7 @@ describe('AdminServiceTest', () => {
   });
 
   it('debe lanzar un NotFoundException si el usuario no existe', async () => {
-    prisma.user.findUnique.mockResolvedValue(null);
+    prisma.user.findFirst.mockResolvedValue(null);
 
     await expect(service.changeUserStatus('user-inexistente')).rejects.toThrow(
       NotFoundException,
