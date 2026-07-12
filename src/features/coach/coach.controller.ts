@@ -17,6 +17,7 @@ import { CreatePersonDto } from '../person/dto/request/create-person.dto';
 import { CreateAthleteDto } from '../athlete/dto/request/create-athlete.dto';
 import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
+import { AssignCoachToGymUseCase } from './use-cases/assign-coach-gym.use-case';
 import { CoachDto, CoachMeResponseDto, RawCoachDto } from './dto/response';
 import { CreateCoachDto, UpdateCoachDto } from './dto/request';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -32,6 +33,7 @@ export class CoachController {
     private readonly coachService: CoachService,
     private readonly registerAthleteUseCase: RegisterAthleteUseCase,
     private readonly assignAthleteToGymUseCase: AssignAthleteToGymUseCase,
+    private readonly assignCoachToGymUseCase: AssignCoachToGymUseCase,
   ) {}
 
   @ApiOperation({ summary: 'Crear un nuevo coach' })
@@ -54,8 +56,9 @@ export class CoachController {
     description: 'Atleta registrado en el gym',
     type: CreateAthleteDto,
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async registerAthleteInGym(
-    @Param('idGym') idGym: string,
+    @Param('idGym', ParseUUIDPipe) idGym: string,
     @Body() createPerson: CreatePersonDto,
   ): Promise<CreateAthleteDto> {
     return this.registerAthleteUseCase.execute(createPerson, idGym);
@@ -115,6 +118,7 @@ export class CoachController {
     description: 'Obtener solo un coach por su identificador',
     type: CoachDto,
   })
+  @ApiResponse({ status: 404, description: 'Coach no encontrado' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<CoachDto> {
     const coach = await this.coachService.findOne(id);
     return {
@@ -137,10 +141,12 @@ export class CoachController {
   @ApiOperation({ summary: 'Obtener todos los coaches de un gimnasio' })
   @ApiResponse({
     status: 200,
-    description: 'Coaches del gimnasio ... obtenidos.',
-    type: CoachDto,
+    description: 'Coaches del gimnasio obtenidos.',
+    type: [CoachDto],
   })
-  async findCoachesByGym(@Param('gymId') gymId: string): Promise<CoachDto[]> {
+  async findCoachesByGym(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+  ): Promise<CoachDto[]> {
     return this.coachService.findAllCoachesByGym(gymId);
   }
 
@@ -149,9 +155,10 @@ export class CoachController {
   @ApiOperation({ summary: 'Obtener el perfil de un coach' })
   @ApiResponse({
     status: 200,
-    description: 'Perfil del coach... obtenido.',
+    description: 'Perfil del coach obtenido.',
     type: CoachDto,
   })
+  @ApiResponse({ status: 404, description: 'Coach no encontrado' })
   async findCoachProfile(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CoachDto> {
@@ -178,29 +185,39 @@ export class CoachController {
   @ApiOperation({ summary: 'Asignar un atleta existente a un gimnasio' })
   @ApiResponse({
     status: 200,
-    description: 'Atleta registrado en el gym',
+    description: 'Atleta asignado al gimnasio exitosamente',
     type: CreateAthleteDto,
   })
+  @ApiResponse({ status: 404, description: 'Atleta o gimnasio no encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'El atleta ya está asignado a un gimnasio',
+  })
   async assignAthleteInGym(
-    @Param('idGym') idGym: string,
-    @Param('idAthlete') idAthlete: string,
+    @Param('idGym', ParseUUIDPipe) idGym: string,
+    @Param('idAthlete', ParseUUIDPipe) idAthlete: string,
   ): Promise<CreateAthleteDto> {
     return this.assignAthleteToGymUseCase.execute(idAthlete, idGym);
   }
 
   @Roles('ADMIN', 'COACH')
-  @Patch(':idGym/athlete/:idAthlete')
+  @Patch(':idGym/coach/:idCoach')
   @ApiOperation({ summary: 'Asignar un coach existente a un gimnasio' })
   @ApiResponse({
     status: 200,
-    description: 'Coach asignado en el gym',
+    description: 'Coach asignado al gimnasio exitosamente',
     type: RawCoachDto,
   })
+  @ApiResponse({ status: 404, description: 'Coach o gimnasio no encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'El coach ya está asignado a un gimnasio',
+  })
   async assignCoachInGym(
-    @Param('idGym') idGym: string,
-    @Param('idAthlete') idCoach: string,
+    @Param('idGym', ParseUUIDPipe) idGym: string,
+    @Param('idCoach', ParseUUIDPipe) idCoach: string,
   ): Promise<RawCoachDto> {
-    return this.assignAthleteToGymUseCase.execute(idCoach, idGym);
+    return this.assignCoachToGymUseCase.execute(idCoach, idGym);
   }
 
   @Roles('ADMIN')

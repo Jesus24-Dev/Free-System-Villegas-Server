@@ -12,7 +12,7 @@ export class AssignAthleteToGymUseCase {
 
   async execute(athleteId: string, gymId: string): Promise<Athlete> {
     const athlete = await this.prisma.athlete.findFirst({
-      where: { id: athleteId },
+      where: { id: athleteId, deleted_at: null },
     });
 
     if (!athlete) {
@@ -25,6 +25,14 @@ export class AssignAthleteToGymUseCase {
       throw new ConflictException(
         `Atleta con id ${athleteId} ya está asignado a un gimnasio`,
       );
+    }
+
+    const gym = await this.prisma.gym.findFirst({
+      where: { id: gymId, deleted_at: null },
+    });
+
+    if (!gym) {
+      throw new NotFoundException(`Gimnasio con id ${gymId} no fue encontrado`);
     }
 
     const updatedAthlete = await this.prisma.athlete.update({
