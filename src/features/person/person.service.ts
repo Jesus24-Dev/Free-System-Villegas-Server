@@ -1,7 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person } from '@prisma/client';
-import { NotFoundException } from '@nestjs/common';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 import { PersonFoundedResponseDto } from './dto/response';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
@@ -42,7 +41,22 @@ export class PersonService {
     const person = await this.prisma.person.findFirst({
       where: { dni, deleted_at: null },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            role: true,
+          },
+        },
+        coach: {
+          select: {
+            id: true,
+          },
+        },
+        athlete: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -50,17 +64,15 @@ export class PersonService {
       return null;
     }
 
-    if (person.user) {
-      throw new ConflictException(
-        `Ya hay un usuario registrado con la cedula ${dni}`,
-      );
-    }
-
     return {
       id: person.id,
+      dni: person.dni,
       name: person.name,
       surname: person.surname,
-      role: 'ATHLETE',
+      user_id: person.user?.id ?? null,
+      roles: person.user?.role ?? null,
+      athlete_id: person.athlete?.id ?? null,
+      coach_id: person.coach?.id ?? null,
     };
   }
 

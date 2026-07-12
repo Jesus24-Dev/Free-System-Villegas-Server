@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 import { Test } from '@nestjs/testing';
-import { NotFoundException, ConflictException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { PersonService } from '../person.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { describe, beforeEach, jest, it, expect } from '@jest/globals';
@@ -145,17 +145,23 @@ describe('PersonService', () => {
       expect(result).toBeNull();
       expect(prisma.person.findFirst).toHaveBeenCalledWith({
         where: { dni: '12345678', deleted_at: null },
-        include: { user: true },
+        include: {
+          user: { select: { id: true, role: true } },
+          coach: { select: { id: true } },
+          athlete: { select: { id: true } },
+        },
       });
     });
 
-    it('debe retornar PersonFoundedResponseDto si la persona existe sin usuario', async () => {
+    it('debe retornar persona con ids cuando no tiene user/athlete/coach', async () => {
       const mockPerson = {
         id: 'person-1',
         name: 'John',
         surname: 'Doe',
         dni: '12345678',
         user: null,
+        coach: null,
+        athlete: null,
       };
 
       prisma.person.findFirst.mockResolvedValue(mockPerson);
@@ -164,26 +170,41 @@ describe('PersonService', () => {
 
       expect(result).toEqual({
         id: 'person-1',
+        dni: '12345678',
         name: 'John',
         surname: 'Doe',
-        role: 'ATHLETE',
+        user_id: null,
+        roles: null,
+        athlete_id: null,
+        coach_id: null,
       });
     });
 
-    it('debe lanzar ConflictException si la persona ya tiene usuario', async () => {
+    it('debe retornar persona con user_id y roles si tiene usuario', async () => {
       const mockPerson = {
         id: 'person-1',
         name: 'John',
         surname: 'Doe',
         dni: '12345678',
-        user: { id: 'user-1', email: 'john@test.com' },
+        user: { id: 'user-1', role: ['ATHLETE'] },
+        coach: null,
+        athlete: { id: 'athlete-1' },
       };
 
       prisma.person.findFirst.mockResolvedValue(mockPerson);
 
-      await expect(
-        service.checkIfPersonByDnyExists('12345678'),
-      ).rejects.toThrow(ConflictException);
+      const result = await service.checkIfPersonByDnyExists('12345678');
+
+      expect(result).toEqual({
+        id: 'person-1',
+        dni: '12345678',
+        name: 'John',
+        surname: 'Doe',
+        user_id: 'user-1',
+        roles: ['ATHLETE'],
+        athlete_id: 'athlete-1',
+        coach_id: null,
+      });
     });
   });
 
