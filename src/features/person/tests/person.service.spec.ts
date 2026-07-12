@@ -147,13 +147,19 @@ describe('PersonService', () => {
         where: { dni: '12345678', deleted_at: null },
         include: {
           user: { select: { id: true, role: true } },
-          coach: { select: { id: true } },
-          athlete: { select: { id: true } },
+          coach: {
+            select: {
+              id: true,
+              gym_id: true,
+              gym_owned: { select: { id: true } },
+            },
+          },
+          athlete: { select: { id: true, gym_id: true } },
         },
       });
     });
 
-    it('debe retornar persona con ids cuando no tiene user/athlete/coach', async () => {
+    it('debe retornar persona sin usuario ni relaciones', async () => {
       const mockPerson = {
         id: 'person-1',
         name: 'John',
@@ -177,10 +183,12 @@ describe('PersonService', () => {
         roles: null,
         athlete_id: null,
         coach_id: null,
+        has_gym: false,
+        owns_gym: false,
       });
     });
 
-    it('debe retornar persona con user_id y roles si tiene usuario', async () => {
+    it('debe retornar athlete sin gimnasio', async () => {
       const mockPerson = {
         id: 'person-1',
         name: 'John',
@@ -188,7 +196,7 @@ describe('PersonService', () => {
         dni: '12345678',
         user: { id: 'user-1', role: ['ATHLETE'] },
         coach: null,
-        athlete: { id: 'athlete-1' },
+        athlete: { id: 'athlete-1', gym_id: null },
       };
 
       prisma.person.findFirst.mockResolvedValue(mockPerson);
@@ -204,6 +212,128 @@ describe('PersonService', () => {
         roles: ['ATHLETE'],
         athlete_id: 'athlete-1',
         coach_id: null,
+        has_gym: false,
+        owns_gym: false,
+      });
+    });
+
+    it('debe retornar athlete con gimnasio', async () => {
+      const mockPerson = {
+        id: 'person-1',
+        name: 'John',
+        surname: 'Doe',
+        dni: '12345678',
+        user: { id: 'user-1', role: ['ATHLETE'] },
+        coach: null,
+        athlete: { id: 'athlete-1', gym_id: 'gym-1' },
+      };
+
+      prisma.person.findFirst.mockResolvedValue(mockPerson);
+
+      const result = await service.checkIfPersonByDnyExists('12345678');
+
+      expect(result).toEqual({
+        id: 'person-1',
+        dni: '12345678',
+        name: 'John',
+        surname: 'Doe',
+        user_id: 'user-1',
+        roles: ['ATHLETE'],
+        athlete_id: 'athlete-1',
+        coach_id: null,
+        has_gym: true,
+        owns_gym: false,
+      });
+    });
+
+    it('debe retornar coach que solo tiene gym asignado', async () => {
+      const mockPerson = {
+        id: 'person-1',
+        name: 'Jane',
+        surname: 'Smith',
+        dni: '87654321',
+        user: { id: 'user-2', role: ['COACH'] },
+        coach: { id: 'coach-1', gym_id: 'gym-1', gym_owned: null },
+        athlete: null,
+      };
+
+      prisma.person.findFirst.mockResolvedValue(mockPerson);
+
+      const result = await service.checkIfPersonByDnyExists('87654321');
+
+      expect(result).toEqual({
+        id: 'person-1',
+        dni: '87654321',
+        name: 'Jane',
+        surname: 'Smith',
+        user_id: 'user-2',
+        roles: ['COACH'],
+        athlete_id: null,
+        coach_id: 'coach-1',
+        has_gym: true,
+        owns_gym: false,
+      });
+    });
+
+    it('debe retornar coach que es dueño de gimnasio', async () => {
+      const mockPerson = {
+        id: 'person-1',
+        name: 'Jane',
+        surname: 'Smith',
+        dni: '87654321',
+        user: { id: 'user-2', role: ['COACH'] },
+        coach: {
+          id: 'coach-1',
+          gym_id: null,
+          gym_owned: { id: 'gym-1' },
+        },
+        athlete: null,
+      };
+
+      prisma.person.findFirst.mockResolvedValue(mockPerson);
+
+      const result = await service.checkIfPersonByDnyExists('87654321');
+
+      expect(result).toEqual({
+        id: 'person-1',
+        dni: '87654321',
+        name: 'Jane',
+        surname: 'Smith',
+        user_id: 'user-2',
+        roles: ['COACH'],
+        athlete_id: null,
+        coach_id: 'coach-1',
+        has_gym: true,
+        owns_gym: true,
+      });
+    });
+
+    it('debe retornar coach sin gimnasio', async () => {
+      const mockPerson = {
+        id: 'person-1',
+        name: 'Jane',
+        surname: 'Smith',
+        dni: '87654321',
+        user: { id: 'user-2', role: ['COACH'] },
+        coach: { id: 'coach-1', gym_id: null, gym_owned: null },
+        athlete: null,
+      };
+
+      prisma.person.findFirst.mockResolvedValue(mockPerson);
+
+      const result = await service.checkIfPersonByDnyExists('87654321');
+
+      expect(result).toEqual({
+        id: 'person-1',
+        dni: '87654321',
+        name: 'Jane',
+        surname: 'Smith',
+        user_id: 'user-2',
+        roles: ['COACH'],
+        athlete_id: null,
+        coach_id: 'coach-1',
+        has_gym: false,
+        owns_gym: false,
       });
     });
   });

@@ -50,11 +50,16 @@ export class PersonService {
         coach: {
           select: {
             id: true,
+            gym_id: true,
+            gym_owned: {
+              select: { id: true },
+            },
           },
         },
         athlete: {
           select: {
             id: true,
+            gym_id: true,
           },
         },
       },
@@ -62,6 +67,18 @@ export class PersonService {
 
     if (!person) {
       return null;
+    }
+
+    const role = person.user?.role?.[0] ?? null;
+
+    let hasGym = false;
+    let ownsGym = false;
+
+    if (role === 'ATHLETE' && person.athlete) {
+      hasGym = !!person.athlete.gym_id;
+    } else if (role === 'COACH' && person.coach) {
+      ownsGym = !!person.coach.gym_owned;
+      hasGym = !!person.coach.gym_id || ownsGym;
     }
 
     return {
@@ -73,6 +90,8 @@ export class PersonService {
       roles: person.user?.role ?? null,
       athlete_id: person.athlete?.id ?? null,
       coach_id: person.coach?.id ?? null,
+      has_gym: hasGym,
+      owns_gym: ownsGym,
     };
   }
 

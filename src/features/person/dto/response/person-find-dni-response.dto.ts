@@ -48,4 +48,18 @@ export class PersonFoundedResponseDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   coach_id?: string | null;
+
+  @ApiPropertyOptional({
+    description:
+      'Si el usuario tiene un gimnasio asignado. Para ATHLETE: tiene gym_id en Athlete. Para COACH: tiene gym_id o es dueño de un gym.',
+    example: true,
+  })
+  has_gym?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Solo para COACH: indica si es dueño de un gimnasio (tiene gym_owned)',
+    example: false,
+  })
+  owns_gym?: boolean;
 }
