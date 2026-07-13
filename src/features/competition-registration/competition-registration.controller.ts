@@ -47,6 +47,69 @@ export class CompetitionRegistrationController {
   }
 
   @Roles('ADMIN', 'COACH')
+  @Get('competition/:competitionId')
+  @ApiOperation({
+    summary: 'Obtener todos los atletas registrados por ID de competencia',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de atletas registrados en la competencia',
+    type: [CompetitionRegistrationResponseDto],
+  })
+  async findByCompetitionId(
+    @Param('competitionId', ParseUUIDPipe) competitionId: string,
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    return this.competitionRegistrationService.findByCompetitionId(
+      competitionId,
+      pagination,
+    );
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get('gym/:gymId')
+  @ApiOperation({
+    summary:
+      'Obtener todos los atletas registrados en competencias por ID de gimnasio',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Lista de atletas del gimnasio registrados en competencias',
+    type: [CompetitionRegistrationResponseDto],
+  })
+  async findByGymId(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    return this.competitionRegistrationService.findByGymId(gymId, pagination);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get('gym/:gymId/competition/:competitionId')
+  @ApiOperation({
+    summary:
+      'Obtener atletas de un gimnasio registrados en una competencia específica',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Lista de atletas del gimnasio registrados en la competencia',
+    type: [CompetitionRegistrationResponseDto],
+  })
+  async findByGymAndCompetition(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+    @Param('competitionId', ParseUUIDPipe) competitionId: string,
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    return this.competitionRegistrationService.findByGymAndCompetition(
+      gymId,
+      competitionId,
+      pagination,
+    );
+  }
+
+  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({
     summary: 'Obtener todos los registros de competencia',

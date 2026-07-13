@@ -105,6 +105,143 @@ export class CompetitionRegistrationService {
     });
   }
 
+  async findByCompetitionId(
+    competitionId: string,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = {
+      deleted_at: null,
+      division: { competition_id: competitionId, deleted_at: null },
+    };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
+        include: {
+          athlete: { include: { person: true } },
+          division: true,
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(
+      data.map((reg) => ({
+        id: reg.id,
+        athlete: {
+          id: reg.athlete.id,
+          name: reg.athlete.person.name,
+          surname: reg.athlete.person.surname,
+          gender: reg.athlete.person.gender,
+        },
+        division: {
+          mode: reg.division.mode,
+          category: reg.division.category,
+          gender: reg.division.gender,
+          weight: reg.division.weight,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
+  }
+
+  async findByGymId(
+    gymId: string,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = {
+      deleted_at: null,
+      athlete: { gym_id: gymId, deleted_at: null },
+      division: { deleted_at: null },
+    };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
+        include: {
+          athlete: { include: { person: true } },
+          division: { include: { competition: { select: { id: true, name: true, status: true } } } },
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(
+      data.map((reg) => ({
+        id: reg.id,
+        athlete: {
+          id: reg.athlete.id,
+          name: reg.athlete.person.name,
+          surname: reg.athlete.person.surname,
+          gender: reg.athlete.person.gender,
+        },
+        division: {
+          mode: reg.division.mode,
+          category: reg.division.category,
+          gender: reg.division.gender,
+          weight: reg.division.weight,
+          competition: reg.division.competition,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
+  }
+
+  async findByGymAndCompetition(
+    gymId: string,
+    competitionId: string,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = {
+      deleted_at: null,
+      athlete: { gym_id: gymId, deleted_at: null },
+      division: { competition_id: competitionId, deleted_at: null },
+    };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
+        include: {
+          athlete: { include: { person: true } },
+          division: { include: { competition: { select: { id: true, name: true, status: true } } } },
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(
+      data.map((reg) => ({
+        id: reg.id,
+        athlete: {
+          id: reg.athlete.id,
+          name: reg.athlete.person.name,
+          surname: reg.athlete.person.surname,
+          gender: reg.athlete.person.gender,
+        },
+        division: {
+          mode: reg.division.mode,
+          category: reg.division.category,
+          gender: reg.division.gender,
+          weight: reg.division.weight,
+          competition: reg.division.competition,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
+  }
+
   async remove(id: string): Promise<void> {
     await this.prisma.competitionRegistration.update({
       where: { id },
