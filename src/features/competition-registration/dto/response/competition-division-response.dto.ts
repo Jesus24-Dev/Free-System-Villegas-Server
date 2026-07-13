@@ -1,5 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { FightingCategory, FightingMode, Gender } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CompetitionStatus, FightingCategory, FightingMode, Gender } from '@prisma/client';
+
+export class CompetitionBasicDto {
+  @ApiProperty({ example: '9ec2d338-dae9-4144-b807-c1dde106a5ca' })
+  id!: string;
+
+  @ApiProperty({ example: 'Copa IV de Kickboxing' })
+  name!: string;
+
+  @ApiProperty({ enum: CompetitionStatus, example: CompetitionStatus.OPEN })
+  status!: CompetitionStatus;
+}
 
 export class CompetitionDivisionDto {
   @ApiProperty({
@@ -24,4 +35,7 @@ export class CompetitionDivisionDto {
     example: 75,
   })
   weight!: number;
+
+  @ApiPropertyOptional({ type: CompetitionBasicDto })
+  competition?: CompetitionBasicDto;
 }
