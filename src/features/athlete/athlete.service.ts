@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAthleteDto } from './dto/request/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/request/update-athlete.dto';
+import { UpdatePersonByCoachDto } from './dto/request/update-person-by-coach.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   Athlete,
@@ -8,6 +9,7 @@ import {
   FightingCategory,
   FightingMode,
   Gender,
+  Person,
   Prisma,
   States,
 } from '@prisma/client';
@@ -175,6 +177,17 @@ export class AthleteService {
 
   async findOne(personId: string): Promise<AthleteWithPerson> {
     return this.resolvePersonToAthlete(personId);
+  }
+
+  async hasAccount(personId: string): Promise<boolean> {
+    const athlete = await this.resolvePersonToAthlete(personId);
+
+    const user = await this.prisma.user.findFirst({
+      where: { person_id: athlete.person_id, deleted_at: null },
+      select: { id: true },
+    });
+
+    return user !== null;
   }
 
   async findAllAthletesByGym(gymId: string): Promise<AthleteDto[]> {
@@ -347,6 +360,29 @@ export class AthleteService {
     return this.prisma.athlete.update({
       where: { id: athlete.id },
       data: updateAthleteDto,
+    });
+  }
+
+  async updatePersonByCoach(
+    personId: string,
+    dto: UpdatePersonByCoachDto,
+  ): Promise<Person> {
+    const athlete = await this.resolvePersonToAthlete(personId);
+
+    const user = await this.prisma.user.findFirst({
+      where: { person_id: athlete.person_id, deleted_at: null },
+      select: { id: true },
+    });
+
+    if (user) {
+      throw new NotFoundException(
+        `El atleta con ID ${personId} tiene una cuenta de usuario y no puede ser editado por un coach.`,
+      );
+    }
+
+    return this.prisma.person.update({
+      where: { id: athlete.person_id },
+      data: dto,
     });
   }
 

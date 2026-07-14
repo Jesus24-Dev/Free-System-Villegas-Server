@@ -13,8 +13,13 @@ import {
 } from '@nestjs/common';
 import { AthleteService } from './athlete.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { CreateAthleteDto, UpdateAthleteDto } from './dto/request';
+import {
+  CreateAthleteDto,
+  UpdateAthleteDto,
+  UpdatePersonByCoachDto,
+} from './dto/request';
 import { AthleteDto, RawAthleteDto } from './dto/response';
+import { AthleteHasAccountResponseDto } from './dto/response/athlete-has-account-response.dto';
 import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
@@ -129,6 +134,26 @@ export class AthleteController {
     return this.athleteService.findAthleteProfile(id);
   }
 
+  @Roles('ADMIN', 'COACH')
+  @Get(':id/has-account')
+  @ApiOperation({
+    summary: 'Verificar si un atleta tiene cuenta de usuario',
+    description:
+      'Retorna true si el atleta tiene una cuenta de usuario (User) asociada, false si no.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Resultado de la verificacion',
+    type: AthleteHasAccountResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Atleta no encontrado' })
+  async hasAccount(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<AthleteHasAccountResponseDto> {
+    const hasAccount = await this.athleteService.hasAccount(id);
+    return { hasAccount };
+  }
+
   @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar atleta por ID de persona' })
@@ -142,6 +167,29 @@ export class AthleteController {
     @Body() updateAthleteDto: UpdateAthleteDto,
   ): Promise<RawAthleteDto> {
     return this.athleteService.update(id, updateAthleteDto);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Patch(':id/person')
+  @ApiOperation({
+    summary: 'Actualizar datos personales de un atleta (solo coach)',
+    description:
+      'Permite a un coach editar los datos personales de un atleta que NO tiene cuenta de usuario. Si el atleta tiene cuenta, lanzara un error.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Datos personales actualizados exitosamente',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Atleta no encontrado o el atleta tiene cuenta de usuario (no editable por coach)',
+  })
+  async updatePersonByCoach(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdatePersonByCoachDto,
+  ) {
+    return this.athleteService.updatePersonByCoach(id, dto);
   }
 
   @Roles('ADMIN', 'COACH')
