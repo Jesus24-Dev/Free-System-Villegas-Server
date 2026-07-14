@@ -5,6 +5,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
 import { AssignCoachToGymUseCase } from './use-cases/assign-coach-gym.use-case';
+import { RegisterAsAthleteUseCase } from './use-cases/register-as-athlete.use-case';
 
 @Module({
   imports: [PrismaModule],
@@ -14,6 +15,7 @@ import { AssignCoachToGymUseCase } from './use-cases/assign-coach-gym.use-case';
     RegisterAthleteUseCase,
     AssignAthleteToGymUseCase,
     AssignCoachToGymUseCase,
+    RegisterAsAthleteUseCase,
   ],
 })
 export class CoachModule {}
