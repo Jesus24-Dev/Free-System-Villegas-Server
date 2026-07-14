@@ -220,6 +220,36 @@ export class CoachController {
     return this.assignCoachToGymUseCase.execute(idCoach, idGym);
   }
 
+  @Roles('ADMIN', 'COACH')
+  @Patch(':id/unassign-gym')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Remover coach de un gimnasio',
+    description:
+      'Desasigna al coach del gimnasio al que pertenece. El coach debe estar asignado a un gimnasio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Coach removido del gimnasio exitosamente',
+    type: RawCoachDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Coach no encontrado o no asignado a ningún gimnasio',
+  })
+  async removeFromGym(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<RawCoachDto> {
+    const coach = await this.coachService.removeFromGym(id);
+    return {
+      id: coach.id,
+      person_id: coach.person_id,
+      gym_id: coach.gym_id,
+      created_at: coach.created_at,
+      updated_at: coach.updated_at,
+    };
+  }
+
   @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

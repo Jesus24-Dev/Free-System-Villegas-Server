@@ -161,6 +161,21 @@ export class CoachService {
     }));
   }
 
+  async removeFromGym(id: string): Promise<Coach> {
+    const coach = await this.findOne(id);
+
+    if (!coach.gym_id) {
+      throw new NotFoundException(
+        `El coach con ID ${id} no está asignado a ningún gimnasio.`,
+      );
+    }
+
+    return this.prisma.coach.update({
+      where: { id: coach.id },
+      data: { gym_id: null },
+    });
+  }
+
   async update(id: string, updateCoachDto: UpdateCoachDto): Promise<Coach> {
     return this.prisma.coach.update({
       where: { id },
