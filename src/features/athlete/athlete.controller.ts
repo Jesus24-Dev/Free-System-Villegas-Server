@@ -144,6 +144,36 @@ export class AthleteController {
     return this.athleteService.update(id, updateAthleteDto);
   }
 
+  @Roles('ADMIN', 'COACH')
+  @Patch(':id/unassign-gym')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Remover atleta de un gimnasio',
+    description:
+      'Desasigna al atleta del gimnasio al que pertenece. El atleta debe estar asignado a un gimnasio.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Atleta removido del gimnasio exitosamente',
+    type: RawAthleteDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Atleta no encontrado o no asignado a ningún gimnasio',
+  })
+  async removeFromGym(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<RawAthleteDto> {
+    const athlete = await this.athleteService.removeFromGym(id);
+    return {
+      id: athlete.id,
+      person_id: athlete.person_id,
+      gym_id: athlete.gym_id,
+      created_at: athlete.created_at,
+      updated_at: athlete.updated_at,
+    };
+  }
+
   @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

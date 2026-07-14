@@ -350,6 +350,21 @@ export class AthleteService {
     });
   }
 
+  async removeFromGym(personId: string): Promise<Athlete> {
+    const athlete = await this.resolvePersonToAthlete(personId);
+
+    if (!athlete.gym_id) {
+      throw new NotFoundException(
+        `El atleta con ID ${personId} no está asignado a ningún gimnasio.`,
+      );
+    }
+
+    return this.prisma.athlete.update({
+      where: { id: athlete.id },
+      data: { gym_id: null },
+    });
+  }
+
   async remove(personId: string): Promise<void> {
     const athlete = await this.resolvePersonToAthlete(personId);
     await this.prisma.athlete.update({
