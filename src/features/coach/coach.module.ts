@@ -17,5 +17,6 @@ import { RegisterAsAthleteUseCase } from './use-cases/register-as-athlete.use-ca
     AssignCoachToGymUseCase,
     RegisterAsAthleteUseCase,
   ],
+  exports: [CoachService],
 })
 export class CoachModule {}

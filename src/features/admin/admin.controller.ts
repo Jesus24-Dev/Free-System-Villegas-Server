@@ -31,6 +31,8 @@ import { CreateUserDto, UpdateUserDto } from '../user/dto/request';
 import { UserDto } from '../user/dto/response';
 import { CreatePersonDto, UpdatePersonDto } from '../person/dto/request';
 import { PersonDto } from '../person/dto/response';
+import { CreateCoachDto } from '../coach/dto/request';
+import { CreateAthleteDto } from '../athlete/dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -290,5 +292,67 @@ export class AdminController {
   @ApiResponse({ status: 204, description: 'Person deleted' })
   async removePerson(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removePerson(id);
+  }
+
+  // ==================== COACHES ====================
+
+  @Post('/coaches')
+  @ApiOperation({ summary: 'Create a new coach (Admin)' })
+  @ApiResponse({ status: 201, description: 'Coach created successfully' })
+  async createCoach(@Body() dto: CreateCoachDto) {
+    return this.adminService.createCoach(dto);
+  }
+
+  @Get('/coaches/paginated')
+  @ApiOperation({ summary: 'List all coaches paginated (Admin)' })
+  @ApiResponse({ status: 200, description: 'Paginated list of coaches' })
+  async findAllCoachesPaginated(@Query() pagination: PaginationDto) {
+    return this.adminService.findAllCoachesPaginated(pagination);
+  }
+
+  @Get('/coaches/:id')
+  @ApiOperation({ summary: 'Get coach by ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'Coach found' })
+  async findOneCoach(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.findOneCoach(id);
+  }
+
+  @Delete('/coaches/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete coach by ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Coach deleted' })
+  async removeCoach(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeCoach(id);
+  }
+
+  // ==================== ATHLETES ====================
+
+  @Post('/athletes')
+  @ApiOperation({ summary: 'Create a new athlete (Admin)' })
+  @ApiResponse({ status: 201, description: 'Athlete created successfully' })
+  async createAthlete(@Body() dto: CreateAthleteDto) {
+    return this.adminService.createAthlete(dto);
+  }
+
+  @Get('/athletes/paginated')
+  @ApiOperation({ summary: 'List all athletes paginated (Admin)' })
+  @ApiResponse({ status: 200, description: 'Paginated list of athletes' })
+  async findAllAthletesPaginated(@Query() pagination: PaginationDto) {
+    return this.adminService.findAllAthletesPaginated(pagination);
+  }
+
+  @Get('/athletes/:id')
+  @ApiOperation({ summary: 'Get athlete by ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'Athlete found' })
+  async findOneAthlete(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.findOneAthlete(id);
+  }
+
+  @Delete('/athletes/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete athlete by ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Athlete deleted' })
+  async removeAthlete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeAthlete(id);
   }
 }

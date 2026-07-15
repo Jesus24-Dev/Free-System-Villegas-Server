@@ -8,5 +8,6 @@ import { PromoteAthleteToCoachUseCase } from './use-cases/promote-athlete-to-coa
   imports: [PrismaModule],
   controllers: [AthleteController],
   providers: [AthleteService, PromoteAthleteToCoachUseCase],
+  exports: [AthleteService],
 })
 export class AthleteModule {}

@@ -5,6 +5,8 @@ import { CompetitionService } from '../competition/competition.service';
 import { CompetitionDivisionService } from '../competition-division/competition-division.service';
 import { UserService } from '../user/user.service';
 import { PersonService } from '../person/person.service';
+import { CoachService } from '../coach/coach.service';
+import { AthleteService } from '../athlete/athlete.service';
 import {
   CreateCompetitionDto,
   FindCompetitionDto,
@@ -19,6 +21,8 @@ import { CreateUserDto, UpdateUserDto } from '../user/dto/request';
 import { UserDto } from '../user/dto/response';
 import { CreatePersonDto, UpdatePersonDto } from '../person/dto/request';
 import { PersonDto } from '../person/dto/response';
+import { CreateCoachDto } from '../coach/dto/request';
+import { CreateAthleteDto } from '../athlete/dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -30,6 +34,8 @@ export class AdminService {
     private readonly competitionDivisionService: CompetitionDivisionService,
     private readonly userService: UserService,
     private readonly personService: PersonService,
+    private readonly coachService: CoachService,
+    private readonly athleteService: AthleteService,
   ) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
@@ -289,5 +295,41 @@ export class AdminService {
 
   async removePerson(id: string): Promise<void> {
     return this.personService.remove(id);
+  }
+
+  // ==================== COACHES ====================
+
+  async createCoach(dto: CreateCoachDto) {
+    return this.coachService.create(dto);
+  }
+
+  async findAllCoachesPaginated(pagination: PaginationDto) {
+    return this.coachService.findAll(pagination);
+  }
+
+  async findOneCoach(id: string) {
+    return this.coachService.findOne(id);
+  }
+
+  async removeCoach(id: string): Promise<void> {
+    return this.coachService.remove(id);
+  }
+
+  // ==================== ATHLETES ====================
+
+  async createAthlete(dto: CreateAthleteDto) {
+    return this.athleteService.create(dto);
+  }
+
+  async findAllAthletesPaginated(pagination: PaginationDto) {
+    return this.athleteService.findAll(pagination);
+  }
+
+  async findOneAthlete(id: string) {
+    return this.athleteService.findOne(id);
+  }
+
+  async removeAthlete(id: string): Promise<void> {
+    return this.athleteService.remove(id);
   }
 }

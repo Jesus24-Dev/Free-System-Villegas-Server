@@ -6,6 +6,8 @@ import { CompetitionModule } from '../competition/competition.module';
 import { CompetitionDivisionModule } from '../competition-division/competition-division.module';
 import { UserModule } from '../user/user.module';
 import { PersonModule } from '../person/person.module';
+import { CoachModule } from '../coach/coach.module';
+import { AthleteModule } from '../athlete/athlete.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { PersonModule } from '../person/person.module';
     CompetitionDivisionModule,
     UserModule,
     PersonModule,
+    CoachModule,
+    AthleteModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],
