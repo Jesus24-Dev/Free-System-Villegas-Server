@@ -1,10 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GymResponseDto, UserResponseDto } from './dto/response';
+import { CompetitionService } from '../competition/competition.service';
+import { CompetitionDivisionService } from '../competition-division/competition-division.service';
+import {
+  CreateCompetitionDto,
+  FindCompetitionDto,
+  UpdateCompetitionDto,
+} from '../competition/dto/request';
+import { CompetitionDto } from '../competition/dto/response';
+import {
+  CreateCompetitionDivisionDto,
+  UpdateCompetitionDivisionDto,
+} from '../competition-division/dto/request';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly competitionService: CompetitionService,
+    private readonly competitionDivisionService: CompetitionDivisionService,
+  ) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
       where: { deleted_at: null },
@@ -91,5 +107,59 @@ export class AdminService {
       where: { id: user.person_id },
       data: { status: !user.person.status },
     });
+  }
+
+  // ==================== COMPETITIONS ====================
+
+  async createCompetition(
+    dto: CreateCompetitionDto,
+  ): Promise<CompetitionDto> {
+    return this.competitionService.create(dto);
+  }
+
+  async findAllCompetitions(
+    dto: FindCompetitionDto,
+  ): Promise<CompetitionDto[]> {
+    return this.competitionService.findAll(dto);
+  }
+
+  async findOneCompetition(id: string): Promise<CompetitionDto> {
+    return this.competitionService.findOne(id);
+  }
+
+  async updateCompetition(
+    id: string,
+    dto: UpdateCompetitionDto,
+  ): Promise<CompetitionDto> {
+    return this.competitionService.update(id, dto);
+  }
+
+  async removeCompetition(id: string): Promise<void> {
+    return this.competitionService.remove(id);
+  }
+
+  // ==================== COMPETITION DIVISIONS ====================
+
+  async createCompetitionDivision(dto: CreateCompetitionDivisionDto) {
+    return this.competitionDivisionService.create(dto);
+  }
+
+  async findAllCompetitionDivisions() {
+    return this.competitionDivisionService.findAll();
+  }
+
+  async findOneCompetitionDivision(id: string) {
+    return this.competitionDivisionService.findOne(id);
+  }
+
+  async updateCompetitionDivision(
+    id: string,
+    dto: UpdateCompetitionDivisionDto,
+  ) {
+    return this.competitionDivisionService.update(id, dto);
+  }
+
+  async removeCompetitionDivision(id: string): Promise<void> {
+    return this.competitionDivisionService.remove(id);
   }
 }

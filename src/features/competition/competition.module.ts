@@ -13,5 +13,6 @@ import { LoggerService } from 'src/common/logger/logger.service';
     RegisterAthleteAtCompetitionUseCase,
     LoggerService,
   ],
+  exports: [CompetitionService],
 })
 export class CompetitionModule {}
