@@ -7,6 +7,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { PasswordService } from './services/password.service';
 import { TokenService } from './services/token.service';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
+import { UpdateProfileUseCase } from './use-cases/update-profile.use-case';
 import { LoggerService } from 'src/common/logger/logger.service';
 import { ConfigService } from '@nestjs/config';
 
@@ -39,6 +40,7 @@ import { ConfigService } from '@nestjs/config';
     PasswordService,
     TokenService,
     RegisterUserUseCase,
+    UpdateProfileUseCase,
     LoggerService,
   ],
   exports: [AuthService],
