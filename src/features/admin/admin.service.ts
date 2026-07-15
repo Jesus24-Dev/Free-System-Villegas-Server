@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GymResponseDto, UserResponseDto } from './dto/response';
 import { CompetitionService } from '../competition/competition.service';
 import { CompetitionDivisionService } from '../competition-division/competition-division.service';
+import { UserService } from '../user/user.service';
 import {
   CreateCompetitionDto,
   FindCompetitionDto,
@@ -13,6 +14,10 @@ import {
   CreateCompetitionDivisionDto,
   UpdateCompetitionDivisionDto,
 } from '../competition-division/dto/request';
+import { CreateUserDto, UpdateUserDto } from '../user/dto/request';
+import { UserDto } from '../user/dto/response';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @Injectable()
 export class AdminService {
@@ -20,6 +25,7 @@ export class AdminService {
     private readonly prisma: PrismaService,
     private readonly competitionService: CompetitionService,
     private readonly competitionDivisionService: CompetitionDivisionService,
+    private readonly userService: UserService,
   ) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
@@ -161,5 +167,62 @@ export class AdminService {
 
   async removeCompetitionDivision(id: string): Promise<void> {
     return this.competitionDivisionService.remove(id);
+  }
+
+  // ==================== USERS ====================
+
+  async createUser(dto: CreateUserDto): Promise<UserDto> {
+    const user = await this.userService.create(dto);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      person_id: user.person_id,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+  }
+
+  async findAllUsersPaginated(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<UserDto>> {
+    const result = await this.userService.findAll(pagination);
+    const users = result.data.map((user) => ({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      person_id: user.person_id,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    }));
+    return new PaginatedResponseDto(users, result.total, result.page, result.limit);
+  }
+
+  async findOneUser(id: string): Promise<UserDto> {
+    const user = await this.userService.findOne(id);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      person_id: user.person_id,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+  }
+
+  async updateUser(id: string, dto: UpdateUserDto): Promise<UserDto> {
+    const user = await this.userService.update(id, dto);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      person_id: user.person_id,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+  }
+
+  async removeUser(id: string): Promise<void> {
+    return this.userService.remove(id);
   }
 }
