@@ -9,6 +9,7 @@ import { PersonModule } from '../person/person.module';
 import { CoachModule } from '../coach/coach.module';
 import { AthleteModule } from '../athlete/athlete.module';
 import { GymModule } from '../gym/gym.module';
+import { GymPaymentModule } from '../gym-payment/gym-payment.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { GymModule } from '../gym/gym.module';
     CoachModule,
     AthleteModule,
     GymModule,
+    GymPaymentModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

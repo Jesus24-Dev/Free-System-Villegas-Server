@@ -33,6 +33,7 @@ import { CreatePersonDto, UpdatePersonDto } from '../person/dto/request';
 import { PersonDto } from '../person/dto/response';
 import { CreateCoachDto } from '../coach/dto/request';
 import { CreateAthleteDto } from '../athlete/dto/request';
+import { UpdateGymPaymentDto } from '../gym-payment/dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -364,5 +365,25 @@ export class AdminController {
   @ApiResponse({ status: 204, description: 'Gym deleted' })
   async removeGym(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeGym(id);
+  }
+
+  // ==================== GYM PAYMENTS ====================
+
+  @Patch('/gym-payments/:id')
+  @ApiOperation({ summary: 'Update gym payment by ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'Payment updated successfully' })
+  async updateGymPayment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateGymPaymentDto,
+  ) {
+    return this.adminService.updateGymPayment(id, dto);
+  }
+
+  @Delete('/gym-payments/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete gym payment by ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Payment deleted' })
+  async removeGymPayment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeGymPayment(id);
   }
 }

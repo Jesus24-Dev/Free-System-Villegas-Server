@@ -8,6 +8,7 @@ import { PersonService } from '../person/person.service';
 import { CoachService } from '../coach/coach.service';
 import { AthleteService } from '../athlete/athlete.service';
 import { GymService } from '../gym/gym.service';
+import { GymPaymentService } from '../gym-payment/gym-payment.service';
 import {
   CreateCompetitionDto,
   FindCompetitionDto,
@@ -24,6 +25,7 @@ import { CreatePersonDto, UpdatePersonDto } from '../person/dto/request';
 import { PersonDto } from '../person/dto/response';
 import { CreateCoachDto } from '../coach/dto/request';
 import { CreateAthleteDto } from '../athlete/dto/request';
+import { UpdateGymPaymentDto } from '../gym-payment/dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -38,6 +40,7 @@ export class AdminService {
     private readonly coachService: CoachService,
     private readonly athleteService: AthleteService,
     private readonly gymService: GymService,
+    private readonly gymPaymentService: GymPaymentService,
   ) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
@@ -339,5 +342,15 @@ export class AdminService {
 
   async removeGym(id: string): Promise<void> {
     return this.gymService.remove(id);
+  }
+
+  // ==================== GYM PAYMENTS ====================
+
+  async updateGymPayment(id: string, dto: UpdateGymPaymentDto) {
+    return this.gymPaymentService.update(id, dto);
+  }
+
+  async removeGymPayment(id: string): Promise<void> {
+    return this.gymPaymentService.remove(id);
   }
 }
