@@ -7,6 +7,7 @@ import { UserService } from '../user/user.service';
 import { PersonService } from '../person/person.service';
 import { CoachService } from '../coach/coach.service';
 import { AthleteService } from '../athlete/athlete.service';
+import { GymService } from '../gym/gym.service';
 import {
   CreateCompetitionDto,
   FindCompetitionDto,
@@ -36,6 +37,7 @@ export class AdminService {
     private readonly personService: PersonService,
     private readonly coachService: CoachService,
     private readonly athleteService: AthleteService,
+    private readonly gymService: GymService,
   ) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
@@ -331,5 +333,11 @@ export class AdminService {
 
   async removeAthlete(id: string): Promise<void> {
     return this.athleteService.remove(id);
+  }
+
+  // ==================== GYMS ====================
+
+  async removeGym(id: string): Promise<void> {
+    return this.gymService.remove(id);
   }
 }

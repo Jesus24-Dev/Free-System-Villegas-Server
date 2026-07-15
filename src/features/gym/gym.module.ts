@@ -15,5 +15,6 @@ import { LoggerService } from 'src/common/logger/logger.service';
     UpdateGymByOwnerUseCase,
     LoggerService,
   ],
+  exports: [GymService],
 })
 export class GymModule {}

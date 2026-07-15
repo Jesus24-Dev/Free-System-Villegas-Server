@@ -355,4 +355,14 @@ export class AdminController {
   async removeAthlete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeAthlete(id);
   }
+
+  // ==================== GYMS ====================
+
+  @Delete('/gyms/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete gym by ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Gym deleted' })
+  async removeGym(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeGym(id);
+  }
 }
