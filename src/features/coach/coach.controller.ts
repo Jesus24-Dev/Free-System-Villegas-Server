@@ -136,7 +136,8 @@ export class CoachController {
   })
   @ApiResponse({
     status: 409,
-    description: 'El coach ya tiene el rol ATHLETE o ya existe un registro de atleta',
+    description:
+      'El coach ya tiene el rol ATHLETE o ya existe un registro de atleta',
   })
   async registerAsAthlete(
     @GetUser() user: JwtPayload,

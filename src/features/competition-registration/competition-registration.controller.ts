@@ -74,8 +74,7 @@ export class CompetitionRegistrationController {
   })
   @ApiResponse({
     status: 200,
-    description:
-      'Lista de atletas del gimnasio registrados en competencias',
+    description: 'Lista de atletas del gimnasio registrados en competencias',
     type: [CompetitionRegistrationResponseDto],
   })
   async findByGymId(
@@ -93,8 +92,7 @@ export class CompetitionRegistrationController {
   })
   @ApiResponse({
     status: 200,
-    description:
-      'Lista de atletas del gimnasio registrados en la competencia',
+    description: 'Lista de atletas del gimnasio registrados en la competencia',
     type: [CompetitionRegistrationResponseDto],
   })
   async findByGymAndCompetition(

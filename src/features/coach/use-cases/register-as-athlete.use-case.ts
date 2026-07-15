@@ -59,7 +59,7 @@ export class RegisterAsAthleteUseCase {
     return this.prisma.$transaction(async (tx) => {
       await tx.athlete.create({
         data: {
-          person_id: user.person_id!,
+          person_id: user.person_id,
           gym_id: coach.gym_id,
         },
       });

@@ -164,7 +164,11 @@ export class CompetitionRegistrationService {
         where,
         include: {
           athlete: { include: { person: true } },
-          division: { include: { competition: { select: { id: true, name: true, status: true } } } },
+          division: {
+            include: {
+              competition: { select: { id: true, name: true, status: true } },
+            },
+          },
         },
         skip,
         take: limit,
@@ -211,7 +215,11 @@ export class CompetitionRegistrationService {
         where,
         include: {
           athlete: { include: { person: true } },
-          division: { include: { competition: { select: { id: true, name: true, status: true } } } },
+          division: {
+            include: {
+              competition: { select: { id: true, name: true, status: true } },
+            },
+          },
         },
         skip,
         take: limit,

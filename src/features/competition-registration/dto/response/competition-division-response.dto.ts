@@ -1,5 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CompetitionStatus, FightingCategory, FightingMode, Gender } from '@prisma/client';
+import {
+  CompetitionStatus,
+  FightingCategory,
+  FightingMode,
+  Gender,
+} from '@prisma/client';
 
 export class CompetitionBasicDto {
   @ApiProperty({ example: '9ec2d338-dae9-4144-b807-c1dde106a5ca' })
