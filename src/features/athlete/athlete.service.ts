@@ -190,7 +190,10 @@ export class AthleteService {
     return user !== null;
   }
 
-  async findAllAthletesByGym(gymId: string): Promise<AthleteDto[]> {
+  async findAllAthletesByGym(
+    gymId: string,
+    excludeCoaches = false,
+  ): Promise<AthleteDto[]> {
     const athletes = await this.prisma.athlete.findMany({
       where: { gym_id: gymId, deleted_at: null },
       select: {
@@ -212,7 +215,30 @@ export class AthleteService {
       },
     });
 
-    return athletes.map((athlete) => ({
+    let filteredAthletes = athletes;
+
+    if (excludeCoaches) {
+      const athletePersonIds = athletes.map((a) => a.person_id);
+
+      const usersWithCoachRole = await this.prisma.user.findMany({
+        where: {
+          person_id: { in: athletePersonIds },
+          deleted_at: null,
+          role: { has: 'COACH' },
+        },
+        select: { person_id: true },
+      });
+
+      const coachPersonIds = new Set(
+        usersWithCoachRole.map((u) => u.person_id),
+      );
+
+      filteredAthletes = athletes.filter(
+        (a) => !coachPersonIds.has(a.person_id),
+      );
+    }
+
+    return filteredAthletes.map((athlete) => ({
       id: athlete.id,
       person_id: athlete.person_id,
       gym_id: athlete.gym_id,

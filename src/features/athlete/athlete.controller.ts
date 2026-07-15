@@ -21,14 +21,21 @@ import {
 import { AthleteDto, RawAthleteDto } from './dto/response';
 import { AthleteHasAccountResponseDto } from './dto/response/athlete-has-account-response.dto';
 import { AthleteProfileResponseDto } from './dto/response/athlete-profile-response.dto';
+import { AthleteAsCoachResponseDto } from './dto/response/athlete-as-coach-response.dto';
+import { PromoteAthleteToCoachUseCase } from './use-cases/promote-athlete-to-coach.use-case';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { JwtPayload } from '../auth/dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Athlete')
 @Controller('athlete')
 export class AthleteController {
-  constructor(private readonly athleteService: AthleteService) {}
+  constructor(
+    private readonly athleteService: AthleteService,
+    private readonly promoteAthleteToCoachUseCase: PromoteAthleteToCoachUseCase,
+  ) {}
 
   @Roles('ADMIN')
   @Post()
@@ -103,16 +110,25 @@ export class AthleteController {
 
   @Roles('ADMIN', 'COACH')
   @Get('gym/:gymId/athletes')
-  @ApiOperation({ summary: 'Obtener todos los atletas de un gimnasio' })
+  @ApiOperation({
+    summary: 'Obtener atletas del gimnasio que NO son coaches',
+    description:
+      'Retorna atletas del gimnasio que no tienen rol COACH. Use excludeCoaches=false para incluir tambien coaches.',
+  })
   @ApiResponse({
     status: 200,
-    description: 'Atletas del gimnasio ... obtenidos.',
+    description: 'Atletas del gimnasio obtenidos.',
     type: [AthleteDto],
   })
   async findAthletesByGym(
     @Param('gymId') gymId: string,
+    @Query('excludeCoaches') excludeCoaches?: string,
   ): Promise<AthleteDto[]> {
-    const athletes = await this.athleteService.findAllAthletesByGym(gymId);
+    const shouldExclude = excludeCoaches !== 'false';
+    const athletes = await this.athleteService.findAllAthletesByGym(
+      gymId,
+      shouldExclude,
+    );
     return athletes;
   }
 
@@ -152,6 +168,49 @@ export class AthleteController {
   ): Promise<AthleteHasAccountResponseDto> {
     const hasAccount = await this.athleteService.hasAccount(id);
     return { hasAccount };
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Patch(':id/promote-to-coach')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Promover atleta a entrenador',
+    description:
+      'Permite al dueno del gimnasio o un administrador promover un atleta a entrenador. El atleta debe tener una cuenta de usuario asociada. Se agrega el rol COACH al usuario y se crea un registro en la tabla Coach con el mismo gimnasio del atleta.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Atleta promovido a entrenador exitosamente',
+    type: AthleteAsCoachResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Atleta no encontrado o no tiene cuenta de usuario',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'El atleta ya tiene el rol COACH o ya existe un registro de coach',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'No eres el dueno del gimnasio donde esta asignado el atleta',
+  })
+  async promoteToCoach(
+    @Param('id', ParseUUIDPipe) id: string,
+    @GetUser() user: JwtPayload,
+  ): Promise<AthleteAsCoachResponseDto> {
+    const updatedUser = await this.promoteAthleteToCoachUseCase.execute(
+      id,
+      user.sub,
+      user.role || [],
+    );
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      message: 'Atleta promovido a entrenador exitosamente',
+    };
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
