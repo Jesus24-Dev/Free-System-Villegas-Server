@@ -4,6 +4,7 @@ import { GymResponseDto, UserResponseDto } from './dto/response';
 import { CompetitionService } from '../competition/competition.service';
 import { CompetitionDivisionService } from '../competition-division/competition-division.service';
 import { UserService } from '../user/user.service';
+import { PersonService } from '../person/person.service';
 import {
   CreateCompetitionDto,
   FindCompetitionDto,
@@ -16,6 +17,8 @@ import {
 } from '../competition-division/dto/request';
 import { CreateUserDto, UpdateUserDto } from '../user/dto/request';
 import { UserDto } from '../user/dto/response';
+import { CreatePersonDto, UpdatePersonDto } from '../person/dto/request';
+import { PersonDto } from '../person/dto/response';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -26,6 +29,7 @@ export class AdminService {
     private readonly competitionService: CompetitionService,
     private readonly competitionDivisionService: CompetitionDivisionService,
     private readonly userService: UserService,
+    private readonly personService: PersonService,
   ) {}
   async getAllGyms(): Promise<GymResponseDto[]> {
     const gyms = await this.prisma.gym.findMany({
@@ -224,5 +228,66 @@ export class AdminService {
 
   async removeUser(id: string): Promise<void> {
     return this.userService.remove(id);
+  }
+
+  // ==================== PERSONS ====================
+
+  async createPerson(dto: CreatePersonDto): Promise<PersonDto> {
+    const person = await this.personService.create(dto);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
+  }
+
+  async findAllPersonsPaginated(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<PersonDto>> {
+    const result = await this.personService.findAll(pagination);
+    const persons = result.data.map((person) => ({
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    }));
+    return new PaginatedResponseDto(persons, result.total, result.page, result.limit);
+  }
+
+  async findOnePerson(id: string): Promise<PersonDto> {
+    const person = await this.personService.findOne(id);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
+  }
+
+  async updatePerson(id: string, dto: UpdatePersonDto): Promise<PersonDto> {
+    const person = await this.personService.update(id, dto);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
+  }
+
+  async removePerson(id: string): Promise<void> {
+    return this.personService.remove(id);
   }
 }

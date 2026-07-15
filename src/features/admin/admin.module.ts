@@ -5,6 +5,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { CompetitionModule } from '../competition/competition.module';
 import { CompetitionDivisionModule } from '../competition-division/competition-division.module';
 import { UserModule } from '../user/user.module';
+import { PersonModule } from '../person/person.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UserModule } from '../user/user.module';
     CompetitionModule,
     CompetitionDivisionModule,
     UserModule,
+    PersonModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

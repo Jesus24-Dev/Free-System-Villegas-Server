@@ -29,6 +29,8 @@ import {
 } from '../competition-division/dto/request';
 import { CreateUserDto, UpdateUserDto } from '../user/dto/request';
 import { UserDto } from '../user/dto/response';
+import { CreatePersonDto, UpdatePersonDto } from '../person/dto/request';
+import { PersonDto } from '../person/dto/response';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -228,5 +230,65 @@ export class AdminController {
   @ApiResponse({ status: 204, description: 'User deleted' })
   async removeUser(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeUser(id);
+  }
+
+  // ==================== PERSONS ====================
+
+  @Post('/persons')
+  @ApiOperation({ summary: 'Create a new person (Admin)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Person created successfully',
+    type: PersonDto,
+  })
+  async createPerson(@Body() dto: CreatePersonDto): Promise<PersonDto> {
+    return this.adminService.createPerson(dto);
+  }
+
+  @Get('/persons/paginated')
+  @ApiOperation({ summary: 'List all persons paginated (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Paginated list of persons',
+  })
+  async findAllPersonsPaginated(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<PersonDto>> {
+    return this.adminService.findAllPersonsPaginated(pagination);
+  }
+
+  @Get('/persons/:id')
+  @ApiOperation({ summary: 'Get person by ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Person found',
+    type: PersonDto,
+  })
+  async findOnePerson(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<PersonDto> {
+    return this.adminService.findOnePerson(id);
+  }
+
+  @Patch('/persons/:id')
+  @ApiOperation({ summary: 'Update person by ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Person updated successfully',
+    type: PersonDto,
+  })
+  async updatePerson(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdatePersonDto,
+  ): Promise<PersonDto> {
+    return this.adminService.updatePerson(id, dto);
+  }
+
+  @Delete('/persons/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete person by ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Person deleted' })
+  async removePerson(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removePerson(id);
   }
 }
