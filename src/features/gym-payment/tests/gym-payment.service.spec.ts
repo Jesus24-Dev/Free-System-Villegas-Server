@@ -169,6 +169,92 @@ describe('GymPaymentService', () => {
     });
   });
 
+  describe('findByGym', () => {
+    it('debe retornar pagos de un gimnasio con datos del atleta', async () => {
+      const gymId = 'gym-1';
+      const prismaResult = [
+        {
+          id: 'payment-1',
+          day_payed: new Date('2026-06-01'),
+          amount: 50,
+          evidence_url: null,
+          payment_reference: 'REF-001',
+          isConfirmed: true,
+          gym_id: gymId,
+          created_at: new Date(),
+          updated_at: new Date(),
+          athlete: {
+            id: 'athlete-1',
+            person: {
+              dni: 'V12345678',
+              name: 'Juan',
+              surname: 'Pérez',
+            },
+          },
+        },
+      ];
+
+      prisma.gymPayment.findMany.mockResolvedValue(prismaResult);
+
+      const result = await service.findByGym(gymId);
+
+      expect(prisma.gymPayment.findMany).toHaveBeenCalledWith({
+        where: { gym_id: gymId, deleted_at: null },
+        select: {
+          id: true,
+          day_payed: true,
+          amount: true,
+          evidence_url: true,
+          payment_reference: true,
+          isConfirmed: true,
+          gym_id: true,
+          created_at: true,
+          updated_at: true,
+          athlete: {
+            select: {
+              id: true,
+              person: {
+                select: {
+                  dni: true,
+                  name: true,
+                  surname: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: { created_at: 'desc' },
+      });
+      expect(result).toEqual([
+        {
+          id: 'payment-1',
+          day_payed: prismaResult[0].day_payed,
+          amount: 50,
+          evidence_url: null,
+          payment_reference: 'REF-001',
+          isConfirmed: true,
+          gym_id: gymId,
+          created_at: prismaResult[0].created_at,
+          updated_at: prismaResult[0].updated_at,
+          athlete: {
+            id: 'athlete-1',
+            dni: 'V12345678',
+            name: 'Juan',
+            surname: 'Pérez',
+          },
+        },
+      ]);
+    });
+
+    it('debe retornar lista vacía cuando no hay pagos para el gimnasio', async () => {
+      prisma.gymPayment.findMany.mockResolvedValue([]);
+
+      const result = await service.findByGym('gym-sin-pagos');
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('findOne', () => {
     it('debe retornar un pago por ID', async () => {
       const payment = {

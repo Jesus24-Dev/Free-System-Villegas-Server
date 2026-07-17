@@ -15,7 +15,10 @@ import { GymPaymentService } from './gym-payment.service';
 import { CreateGymPaymentDto } from './dto/request';
 import { UpdateGymPaymentDto } from './dto/request';
 import { FilterGymPaymentDto } from './dto/request';
-import { GymPaymentResponseDto } from './dto/response';
+import {
+  GymPaymentResponseDto,
+  GymPaymentByGymResponseDto,
+} from './dto/response';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
@@ -51,6 +54,22 @@ export class GymPaymentController {
     @Query() filter: FilterGymPaymentDto,
   ): Promise<PaginatedResponseDto<GymPaymentResponseDto>> {
     return this.gymPaymentService.findAll(filter);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get('gym/:gymId')
+  @ApiOperation({
+    summary: 'Obtener todos los pagos de un gimnasio con datos del atleta',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de pagos con datos del atleta',
+    type: [GymPaymentByGymResponseDto],
+  })
+  async findByGym(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+  ): Promise<GymPaymentByGymResponseDto[]> {
+    return this.gymPaymentService.findByGym(gymId);
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')

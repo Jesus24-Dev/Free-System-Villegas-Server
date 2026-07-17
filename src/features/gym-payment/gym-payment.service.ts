@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GymPayment } from '@prisma/client';
 import { LoggerService } from 'src/common/logger/logger.service';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
+import { GymPaymentByGymResponseDto } from './dto/response';
 
 @Injectable()
 export class GymPaymentService {
@@ -29,6 +30,57 @@ export class GymPaymentService {
       this.prisma.gymPayment.count({ where }),
     ]);
     return new PaginatedResponseDto(data, total, page!, limit!);
+  }
+
+  async findByGym(gymId: string): Promise<GymPaymentByGymResponseDto[]> {
+    const payments = await this.prisma.gymPayment.findMany({
+      where: {
+        gym_id: gymId,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        day_payed: true,
+        amount: true,
+        evidence_url: true,
+        payment_reference: true,
+        isConfirmed: true,
+        gym_id: true,
+        created_at: true,
+        updated_at: true,
+        athlete: {
+          select: {
+            id: true,
+            person: {
+              select: {
+                dni: true,
+                name: true,
+                surname: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    return payments.map((payment) => ({
+      id: payment.id,
+      day_payed: payment.day_payed,
+      amount: payment.amount,
+      evidence_url: payment.evidence_url,
+      payment_reference: payment.payment_reference,
+      isConfirmed: payment.isConfirmed,
+      gym_id: payment.gym_id,
+      created_at: payment.created_at,
+      updated_at: payment.updated_at,
+      athlete: {
+        id: payment.athlete.id,
+        dni: payment.athlete.person.dni,
+        name: payment.athlete.person.name,
+        surname: payment.athlete.person.surname,
+      },
+    }));
   }
 
   async findOne(id: string): Promise<GymPayment> {
