@@ -132,9 +132,7 @@ export class AdminService {
 
   // ==================== COMPETITIONS ====================
 
-  async createCompetition(
-    dto: CreateCompetitionDto,
-  ): Promise<CompetitionDto> {
+  async createCompetition(dto: CreateCompetitionDto): Promise<CompetitionDto> {
     return this.competitionService.create(dto);
   }
 
@@ -210,7 +208,12 @@ export class AdminService {
       created_at: user.created_at,
       updated_at: user.updated_at,
     }));
-    return new PaginatedResponseDto(users, result.total, result.page, result.limit);
+    return new PaginatedResponseDto(
+      users,
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   async findOneUser(id: string): Promise<UserDto> {
@@ -269,7 +272,12 @@ export class AdminService {
       gender: person.gender,
       status: person.status,
     }));
-    return new PaginatedResponseDto(persons, result.total, result.page, result.limit);
+    return new PaginatedResponseDto(
+      persons,
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   async findOnePerson(id: string): Promise<PersonDto> {

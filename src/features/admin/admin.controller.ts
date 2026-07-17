@@ -68,10 +68,10 @@ export class AdminController {
   // ==================== COMPETITIONS ====================
 
   @Post('/competitions')
-  @ApiOperation({ summary: 'Create a new competition (Admin)' })
+  @ApiOperation({ summary: 'Crear una nueva competencia (Admin)' })
   @ApiResponse({
     status: 201,
-    description: 'Competition created successfully',
+    description: 'Competencia creada exitosamente',
     type: CompetitionDto,
   })
   async createCompetition(
@@ -81,10 +81,10 @@ export class AdminController {
   }
 
   @Get('/competitions')
-  @ApiOperation({ summary: 'List all competitions (Admin)' })
+  @ApiOperation({ summary: 'Listar todas las competencias (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'List of competitions',
+    description: 'Lista de competencias',
     type: [CompetitionDto],
   })
   async findAllCompetitions(
@@ -94,10 +94,10 @@ export class AdminController {
   }
 
   @Get('/competitions/:id')
-  @ApiOperation({ summary: 'Get competition by ID (Admin)' })
+  @ApiOperation({ summary: 'Obtener competencia por ID (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Competition found',
+    description: 'Competencia encontrada',
     type: CompetitionDto,
   })
   async findOneCompetition(
@@ -107,10 +107,10 @@ export class AdminController {
   }
 
   @Patch('/competitions/:id')
-  @ApiOperation({ summary: 'Update competition by ID (Admin)' })
+  @ApiOperation({ summary: 'Actualizar competencia por ID (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Competition updated successfully',
+    description: 'Competencia actualizada exitosamente',
     type: CompetitionDto,
   })
   async updateCompetition(
@@ -122,8 +122,8 @@ export class AdminController {
 
   @Delete('/competitions/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete competition by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Competition deleted' })
+  @ApiOperation({ summary: 'Eliminar competencia por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Competencia eliminada' })
   async removeCompetition(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<void> {
@@ -133,33 +133,34 @@ export class AdminController {
   // ==================== COMPETITION DIVISIONS ====================
 
   @Post('/competition-divisions')
-  @ApiOperation({ summary: 'Create a competition division (Admin)' })
-  @ApiResponse({ status: 201, description: 'Division created successfully' })
-  async createCompetitionDivision(
-    @Body() dto: CreateCompetitionDivisionDto,
-  ) {
+  @ApiOperation({ summary: 'Crear una división de competencia (Admin)' })
+  @ApiResponse({ status: 201, description: 'División creada exitosamente' })
+  async createCompetitionDivision(@Body() dto: CreateCompetitionDivisionDto) {
     return this.adminService.createCompetitionDivision(dto);
   }
 
   @Get('/competition-divisions')
-  @ApiOperation({ summary: 'List all competition divisions (Admin)' })
-  @ApiResponse({ status: 200, description: 'List of divisions' })
+  @ApiOperation({
+    summary: 'Listar todas las divisiones de competencia (Admin)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de divisiones' })
   async findAllCompetitionDivisions() {
     return this.adminService.findAllCompetitionDivisions();
   }
 
   @Get('/competition-divisions/:id')
-  @ApiOperation({ summary: 'Get division by ID (Admin)' })
-  @ApiResponse({ status: 200, description: 'Division found' })
-  async findOneCompetitionDivision(
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  @ApiOperation({ summary: 'Obtener división por ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'División encontrada' })
+  async findOneCompetitionDivision(@Param('id', ParseUUIDPipe) id: string) {
     return this.adminService.findOneCompetitionDivision(id);
   }
 
   @Patch('/competition-divisions/:id')
-  @ApiOperation({ summary: 'Update division by ID (Admin)' })
-  @ApiResponse({ status: 200, description: 'Division updated successfully' })
+  @ApiOperation({ summary: 'Actualizar división por ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'División actualizada exitosamente',
+  })
   async updateCompetitionDivision(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCompetitionDivisionDto,
@@ -169,8 +170,8 @@ export class AdminController {
 
   @Delete('/competition-divisions/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete division by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Division deleted' })
+  @ApiOperation({ summary: 'Eliminar división por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'División eliminada' })
   async removeCompetitionDivision(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<void> {
@@ -180,10 +181,10 @@ export class AdminController {
   // ==================== USERS ====================
 
   @Post('/users')
-  @ApiOperation({ summary: 'Create a new user (Admin)' })
+  @ApiOperation({ summary: 'Crear un nuevo usuario (Admin)' })
   @ApiResponse({
     status: 201,
-    description: 'User created successfully',
+    description: 'Usuario creado exitosamente',
     type: UserDto,
   })
   async createUser(@Body() dto: CreateUserDto): Promise<UserDto> {
@@ -191,10 +192,10 @@ export class AdminController {
   }
 
   @Get('/users/paginated')
-  @ApiOperation({ summary: 'List all users paginated (Admin)' })
+  @ApiOperation({ summary: 'Listar todos los usuarios paginados (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Paginated list of users',
+    description: 'Lista paginada de usuarios',
   })
   async findAllUsersPaginated(
     @Query() pagination: PaginationDto,
@@ -203,10 +204,10 @@ export class AdminController {
   }
 
   @Get('/users/:id')
-  @ApiOperation({ summary: 'Get user by ID (Admin)' })
+  @ApiOperation({ summary: 'Obtener usuario por ID (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'User found',
+    description: 'Usuario encontrado',
     type: UserDto,
   })
   async findOneUser(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
@@ -214,10 +215,10 @@ export class AdminController {
   }
 
   @Patch('/users/:id')
-  @ApiOperation({ summary: 'Update user by ID (Admin)' })
+  @ApiOperation({ summary: 'Actualizar usuario por ID (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'User updated successfully',
+    description: 'Usuario actualizado exitosamente',
     type: UserDto,
   })
   async updateUser(
@@ -229,8 +230,8 @@ export class AdminController {
 
   @Delete('/users/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete user by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'User deleted' })
+  @ApiOperation({ summary: 'Eliminar usuario por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Usuario eliminado' })
   async removeUser(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeUser(id);
   }
@@ -238,10 +239,10 @@ export class AdminController {
   // ==================== PERSONS ====================
 
   @Post('/persons')
-  @ApiOperation({ summary: 'Create a new person (Admin)' })
+  @ApiOperation({ summary: 'Crear una nueva persona (Admin)' })
   @ApiResponse({
     status: 201,
-    description: 'Person created successfully',
+    description: 'Persona creada exitosamente',
     type: PersonDto,
   })
   async createPerson(@Body() dto: CreatePersonDto): Promise<PersonDto> {
@@ -249,10 +250,10 @@ export class AdminController {
   }
 
   @Get('/persons/paginated')
-  @ApiOperation({ summary: 'List all persons paginated (Admin)' })
+  @ApiOperation({ summary: 'Listar todas las personas paginadas (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Paginated list of persons',
+    description: 'Lista paginada de personas',
   })
   async findAllPersonsPaginated(
     @Query() pagination: PaginationDto,
@@ -261,10 +262,10 @@ export class AdminController {
   }
 
   @Get('/persons/:id')
-  @ApiOperation({ summary: 'Get person by ID (Admin)' })
+  @ApiOperation({ summary: 'Obtener persona por ID (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Person found',
+    description: 'Persona encontrada',
     type: PersonDto,
   })
   async findOnePerson(
@@ -274,10 +275,10 @@ export class AdminController {
   }
 
   @Patch('/persons/:id')
-  @ApiOperation({ summary: 'Update person by ID (Admin)' })
+  @ApiOperation({ summary: 'Actualizar persona por ID (Admin)' })
   @ApiResponse({
     status: 200,
-    description: 'Person updated successfully',
+    description: 'Persona actualizada exitosamente',
     type: PersonDto,
   })
   async updatePerson(
@@ -289,8 +290,8 @@ export class AdminController {
 
   @Delete('/persons/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete person by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Person deleted' })
+  @ApiOperation({ summary: 'Eliminar persona por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Persona eliminada' })
   async removePerson(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removePerson(id);
   }
@@ -298,30 +299,30 @@ export class AdminController {
   // ==================== COACHES ====================
 
   @Post('/coaches')
-  @ApiOperation({ summary: 'Create a new coach (Admin)' })
-  @ApiResponse({ status: 201, description: 'Coach created successfully' })
+  @ApiOperation({ summary: 'Crear un nuevo entrenador (Admin)' })
+  @ApiResponse({ status: 201, description: 'Entrenador creado exitosamente' })
   async createCoach(@Body() dto: CreateCoachDto) {
     return this.adminService.createCoach(dto);
   }
 
   @Get('/coaches/paginated')
-  @ApiOperation({ summary: 'List all coaches paginated (Admin)' })
-  @ApiResponse({ status: 200, description: 'Paginated list of coaches' })
+  @ApiOperation({ summary: 'Listar todos los entrenadores paginados (Admin)' })
+  @ApiResponse({ status: 200, description: 'Lista paginada de entrenadores' })
   async findAllCoachesPaginated(@Query() pagination: PaginationDto) {
     return this.adminService.findAllCoachesPaginated(pagination);
   }
 
   @Get('/coaches/:id')
-  @ApiOperation({ summary: 'Get coach by ID (Admin)' })
-  @ApiResponse({ status: 200, description: 'Coach found' })
+  @ApiOperation({ summary: 'Obtener entrenador por ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'Entrenador encontrado' })
   async findOneCoach(@Param('id', ParseUUIDPipe) id: string) {
     return this.adminService.findOneCoach(id);
   }
 
   @Delete('/coaches/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete coach by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Coach deleted' })
+  @ApiOperation({ summary: 'Eliminar entrenador por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Entrenador eliminado' })
   async removeCoach(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeCoach(id);
   }
@@ -329,30 +330,30 @@ export class AdminController {
   // ==================== ATHLETES ====================
 
   @Post('/athletes')
-  @ApiOperation({ summary: 'Create a new athlete (Admin)' })
-  @ApiResponse({ status: 201, description: 'Athlete created successfully' })
+  @ApiOperation({ summary: 'Crear un nuevo atleta (Admin)' })
+  @ApiResponse({ status: 201, description: 'Atleta creado exitosamente' })
   async createAthlete(@Body() dto: CreateAthleteDto) {
     return this.adminService.createAthlete(dto);
   }
 
   @Get('/athletes/paginated')
-  @ApiOperation({ summary: 'List all athletes paginated (Admin)' })
-  @ApiResponse({ status: 200, description: 'Paginated list of athletes' })
+  @ApiOperation({ summary: 'Listar todos los atletas paginados (Admin)' })
+  @ApiResponse({ status: 200, description: 'Lista paginada de atletas' })
   async findAllAthletesPaginated(@Query() pagination: PaginationDto) {
     return this.adminService.findAllAthletesPaginated(pagination);
   }
 
   @Get('/athletes/:id')
-  @ApiOperation({ summary: 'Get athlete by ID (Admin)' })
-  @ApiResponse({ status: 200, description: 'Athlete found' })
+  @ApiOperation({ summary: 'Obtener atleta por ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'Atleta encontrado' })
   async findOneAthlete(@Param('id', ParseUUIDPipe) id: string) {
     return this.adminService.findOneAthlete(id);
   }
 
   @Delete('/athletes/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete athlete by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Athlete deleted' })
+  @ApiOperation({ summary: 'Eliminar atleta por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Atleta eliminado' })
   async removeAthlete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeAthlete(id);
   }
@@ -361,8 +362,8 @@ export class AdminController {
 
   @Delete('/gyms/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete gym by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Gym deleted' })
+  @ApiOperation({ summary: 'Eliminar gimnasio por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Gimnasio eliminado' })
   async removeGym(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.adminService.removeGym(id);
   }
@@ -370,8 +371,8 @@ export class AdminController {
   // ==================== GYM PAYMENTS ====================
 
   @Patch('/gym-payments/:id')
-  @ApiOperation({ summary: 'Update gym payment by ID (Admin)' })
-  @ApiResponse({ status: 200, description: 'Payment updated successfully' })
+  @ApiOperation({ summary: 'Actualizar pago de gimnasio por ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'Pago actualizado exitosamente' })
   async updateGymPayment(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateGymPaymentDto,
@@ -381,9 +382,11 @@ export class AdminController {
 
   @Delete('/gym-payments/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete gym payment by ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Payment deleted' })
-  async removeGymPayment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+  @ApiOperation({ summary: 'Eliminar pago de gimnasio por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Pago eliminado' })
+  async removeGymPayment(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
     await this.adminService.removeGymPayment(id);
   }
 }
