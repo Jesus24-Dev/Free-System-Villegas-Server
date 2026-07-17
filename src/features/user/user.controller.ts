@@ -26,28 +26,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Roles('ADMIN')
-  @Post()
-  @ApiOperation({ summary: 'Crear un nuevo usuario' })
-  @ApiResponse({
-    status: 201,
-    description: 'Crear un nuevo usuario exitosamente',
-    type: UserDto,
-  })
-  async create(
-    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
-  ): Promise<UserDto> {
-    const user = await this.userService.create(createUserDto);
-    return {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-      person_id: user.person_id,
-    };
-  }
-
-  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({
@@ -84,6 +62,28 @@ export class UserController {
   })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
     const user = await this.userService.findOne(id);
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      person_id: user.person_id,
+    };
+  }
+
+  @Roles('ADMIN')
+  @Post()
+  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiResponse({
+    status: 201,
+    description: 'Crear un nuevo usuario exitosamente',
+    type: UserDto,
+  })
+  async create(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<UserDto> {
+    const user = await this.userService.create(createUserDto);
     return {
       id: user.id,
       email: user.email,

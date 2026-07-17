@@ -43,34 +43,6 @@ export class CoachController {
     private readonly registerAsAthleteUseCase: RegisterAsAthleteUseCase,
   ) {}
 
-  @ApiOperation({ summary: 'Crear un nuevo coach' })
-  @ApiResponse({
-    status: 201,
-    description: 'Crear un nuevo coach exitosamente',
-    type: RawCoachDto,
-  })
-  @Roles('ADMIN')
-  @Post()
-  async create(@Body() createCoachDto: CreateCoachDto): Promise<RawCoachDto> {
-    return this.coachService.create(createCoachDto);
-  }
-
-  @Roles('ADMIN', 'COACH')
-  @Post(':idGym/athlete')
-  @ApiOperation({ summary: 'Registrar nuevo atleta en un gimnasio' })
-  @ApiResponse({
-    status: 201,
-    description: 'Atleta registrado en el gym',
-    type: CreateAthleteDto,
-  })
-  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
-  async registerAthleteInGym(
-    @Param('idGym', ParseUUIDPipe) idGym: string,
-    @Body() createPerson: CreatePersonDto,
-  ): Promise<CreateAthleteDto> {
-    return this.registerAthleteUseCase.execute(createPerson, idGym);
-  }
-
   @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los coaches' })
@@ -115,40 +87,6 @@ export class CoachController {
     @GetUser() user: JwtPayload,
   ): Promise<CoachMeResponseDto> {
     return this.coachService.findCoachByUserId(user.sub);
-  }
-
-  @Roles('COACH')
-  @Post('register-as-athlete')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({
-    summary: 'Registrarse como atleta',
-    description:
-      'Permite a un coach registrarse como atleta para participar en competencias. Se agrega el rol ATHLETE al usuario y se crea un registro en la tabla Athlete.',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Coach registrado como atleta exitosamente',
-    type: CoachAsAthleteResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Coach no encontrado',
-  })
-  @ApiResponse({
-    status: 409,
-    description:
-      'El coach ya tiene el rol ATHLETE o ya existe un registro de atleta',
-  })
-  async registerAsAthlete(
-    @GetUser() user: JwtPayload,
-  ): Promise<CoachAsAthleteResponseDto> {
-    const updatedUser = await this.registerAsAthleteUseCase.execute(user.sub);
-    return {
-      id: updatedUser.id,
-      email: updatedUser.email,
-      role: updatedUser.role,
-      message: 'Coach registrado como atleta exitosamente',
-    };
   }
 
   @Roles('ADMIN')
@@ -204,6 +142,68 @@ export class CoachController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CoachDto> {
     return this.coachService.findCoachProfile(id);
+  }
+
+  @ApiOperation({ summary: 'Crear un nuevo coach' })
+  @ApiResponse({
+    status: 201,
+    description: 'Crear un nuevo coach exitosamente',
+    type: RawCoachDto,
+  })
+  @Roles('ADMIN')
+  @Post()
+  async create(@Body() createCoachDto: CreateCoachDto): Promise<RawCoachDto> {
+    return this.coachService.create(createCoachDto);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post(':idGym/athlete')
+  @ApiOperation({ summary: 'Registrar nuevo atleta en un gimnasio' })
+  @ApiResponse({
+    status: 201,
+    description: 'Atleta registrado en el gym',
+    type: CreateAthleteDto,
+  })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
+  async registerAthleteInGym(
+    @Param('idGym', ParseUUIDPipe) idGym: string,
+    @Body() createPerson: CreatePersonDto,
+  ): Promise<CreateAthleteDto> {
+    return this.registerAthleteUseCase.execute(createPerson, idGym);
+  }
+
+  @Roles('COACH')
+  @Post('register-as-athlete')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: 'Registrarse como atleta',
+    description:
+      'Permite a un coach registrarse como atleta para participar en competencias. Se agrega el rol ATHLETE al usuario y se crea un registro en la tabla Athlete.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Coach registrado como atleta exitosamente',
+    type: CoachAsAthleteResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Coach no encontrado',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'El coach ya tiene el rol ATHLETE o ya existe un registro de atleta',
+  })
+  async registerAsAthlete(
+    @GetUser() user: JwtPayload,
+  ): Promise<CoachAsAthleteResponseDto> {
+    const updatedUser = await this.registerAsAthleteUseCase.execute(user.sub);
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      message: 'Coach registrado como atleta exitosamente',
+    };
   }
 
   @Roles('ADMIN', 'COACH')

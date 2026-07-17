@@ -31,22 +31,6 @@ export class CompetitionRegistrationController {
   ) {}
 
   @Roles('ADMIN', 'COACH')
-  @Post()
-  @ApiOperation({ summary: 'Registrar un atleta en una competencia' })
-  @ApiResponse({
-    status: 201,
-    description: 'Crear un nuevo usuario exitosamente',
-    type: RawCompetitionRegistrationDto,
-  })
-  async create(
-    @Body() createCompetitionRegistrationDto: CreateCompetitionRegistrationDto,
-  ): Promise<RawCompetitionRegistrationDto> {
-    return this.competitionRegistrationService.create(
-      createCompetitionRegistrationDto,
-    );
-  }
-
-  @Roles('ADMIN', 'COACH')
   @Get('competition/:competitionId')
   @ApiOperation({
     summary: 'Obtener todos los atletas registrados por ID de competencia',
@@ -137,6 +121,22 @@ export class CompetitionRegistrationController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionRegistrationResponseDto> {
     return this.competitionRegistrationService.findOne(id);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post()
+  @ApiOperation({ summary: 'Registrar un atleta en una competencia' })
+  @ApiResponse({
+    status: 201,
+    description: 'Crear un nuevo usuario exitosamente',
+    type: RawCompetitionRegistrationDto,
+  })
+  async create(
+    @Body() createCompetitionRegistrationDto: CreateCompetitionRegistrationDto,
+  ): Promise<RawCompetitionRegistrationDto> {
+    return this.competitionRegistrationService.create(
+      createCompetitionRegistrationDto,
+    );
   }
 
   @Roles('ADMIN', 'COACH')

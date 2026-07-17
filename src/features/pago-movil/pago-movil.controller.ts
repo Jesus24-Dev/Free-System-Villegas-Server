@@ -21,23 +21,6 @@ import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 export class PagoMovilController {
   constructor(private readonly pagoMovilService: PagoMovilService) {}
 
-  @Roles('ADMIN', 'COACH')
-  @Post(':gymId')
-  @ApiOperation({
-    summary: 'Crear un nuevo método de pago móvil para un gimnasio',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'El método de pago móvil ha sido creado.',
-    type: PagoMovilResponseDto,
-  })
-  create(
-    @Param('gymId', ParseUUIDPipe) gymId: string,
-    @Body() createPagoMovilDto: CreatePagoMovilDto,
-  ): Promise<PagoMovilResponseDto> {
-    return this.pagoMovilService.create(gymId, createPagoMovilDto);
-  }
-
   @Roles('ADMIN')
   @Get()
   @ApiOperation({
@@ -90,6 +73,23 @@ export class PagoMovilController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<PagoMovilResponseDto> {
     return this.pagoMovilService.findOne(id);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post(':gymId')
+  @ApiOperation({
+    summary: 'Crear un nuevo método de pago móvil para un gimnasio',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'El método de pago móvil ha sido creado.',
+    type: PagoMovilResponseDto,
+  })
+  create(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+    @Body() createPagoMovilDto: CreatePagoMovilDto,
+  ): Promise<PagoMovilResponseDto> {
+    return this.pagoMovilService.create(gymId, createPagoMovilDto);
   }
 
   @Roles('ADMIN', 'COACH')

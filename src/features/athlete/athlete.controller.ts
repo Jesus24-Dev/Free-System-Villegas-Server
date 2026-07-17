@@ -37,20 +37,6 @@ export class AthleteController {
     private readonly promoteAthleteToCoachUseCase: PromoteAthleteToCoachUseCase,
   ) {}
 
-  @Roles('ADMIN')
-  @Post()
-  @ApiOperation({ summary: 'Crear un nuevo atleta' })
-  @ApiResponse({
-    status: 201,
-    description: 'Crear un nuevo atleta exitosamente',
-    type: RawAthleteDto,
-  })
-  async create(
-    @Body() createAthleteDto: CreateAthleteDto,
-  ): Promise<RawAthleteDto> {
-    return this.athleteService.create(createAthleteDto);
-  }
-
   @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los atletas' })
@@ -168,6 +154,20 @@ export class AthleteController {
   ): Promise<AthleteHasAccountResponseDto> {
     const hasAccount = await this.athleteService.hasAccount(id);
     return { hasAccount };
+  }
+
+  @Roles('ADMIN')
+  @Post()
+  @ApiOperation({ summary: 'Crear un nuevo atleta' })
+  @ApiResponse({
+    status: 201,
+    description: 'Crear un nuevo atleta exitosamente',
+    type: RawAthleteDto,
+  })
+  async create(
+    @Body() createAthleteDto: CreateAthleteDto,
+  ): Promise<RawAthleteDto> {
+    return this.athleteService.create(createAthleteDto);
   }
 
   @Roles('ADMIN', 'COACH')

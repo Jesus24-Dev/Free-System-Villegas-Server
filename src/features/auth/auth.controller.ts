@@ -33,34 +33,6 @@ export class AuthController {
     private readonly updateProfileUseCase: UpdateProfileUseCase,
   ) {}
 
-  @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Inicio de sesion del usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Usuario inicio sesion exitosamente',
-    type: AuthDto,
-  })
-  async signIn(@Body() dto: SignInDto): Promise<AuthDto> {
-    return this.authService.signIn(dto);
-  }
-
-  @Post('register')
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
-  @Public()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Registrar nuevo usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Nuevo usuario registrado',
-    type: AuthDto,
-  })
-  async register(@Body() dto: RegisterDto): Promise<AuthDto> {
-    return this.authService.register(dto);
-  }
-
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -87,6 +59,34 @@ export class AuthController {
     };
 
     return plainToInstance(ProfileDto, profile);
+  }
+
+  @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Inicio de sesion del usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuario inicio sesion exitosamente',
+    type: AuthDto,
+  })
+  async signIn(@Body() dto: SignInDto): Promise<AuthDto> {
+    return this.authService.signIn(dto);
+  }
+
+  @Post('register')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Public()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Nuevo usuario registrado',
+    type: AuthDto,
+  })
+  async register(@Body() dto: RegisterDto): Promise<AuthDto> {
+    return this.authService.register(dto);
   }
 
   @Patch('profile')

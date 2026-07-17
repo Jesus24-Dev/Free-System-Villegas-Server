@@ -28,20 +28,6 @@ import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 export class GymPaymentController {
   constructor(private readonly gymPaymentService: GymPaymentService) {}
 
-  @Roles('ADMIN', 'ATHLETE')
-  @Post()
-  @ApiOperation({ summary: 'Registrar un nuevo pago por un atleta' })
-  @ApiResponse({
-    status: 201,
-    description: 'Pago registrado con exito',
-    type: GymPaymentResponseDto,
-  })
-  async create(
-    @Body() createGymPaymentDto: CreateGymPaymentDto,
-  ): Promise<GymPaymentResponseDto> {
-    return this.gymPaymentService.create(createGymPaymentDto);
-  }
-
   @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los pagos de todos los gimnasios' })
@@ -84,6 +70,20 @@ export class GymPaymentController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.findOne(id);
+  }
+
+  @Roles('ADMIN', 'ATHLETE')
+  @Post()
+  @ApiOperation({ summary: 'Registrar un nuevo pago por un atleta' })
+  @ApiResponse({
+    status: 201,
+    description: 'Pago registrado con exito',
+    type: GymPaymentResponseDto,
+  })
+  async create(
+    @Body() createGymPaymentDto: CreateGymPaymentDto,
+  ): Promise<GymPaymentResponseDto> {
+    return this.gymPaymentService.create(createGymPaymentDto);
   }
 
   @Roles('ADMIN')

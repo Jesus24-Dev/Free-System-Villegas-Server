@@ -31,21 +31,6 @@ export class GymController {
     private readonly updateGymByOwnerUseCase: UpdateGymByOwnerUseCase,
   ) {}
 
-  @Roles('ADMIN', 'COACH')
-  @Post()
-  @ApiOperation({ summary: 'Crear un nuevo gimnasio' })
-  @ApiResponse({
-    status: 201,
-    description: 'Crear un nuevo gimnasio exitosamente',
-    type: RawGymDto,
-  })
-  async create(
-    @Body(new ValidationPipe()) createGymDto: CreateGymDto,
-    @GetUser() user: JwtPayload,
-  ): Promise<RawGymDto> {
-    return this.gymUseCase.execute(user.sub, createGymDto);
-  }
-
   @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los gimnasios' })
@@ -82,6 +67,21 @@ export class GymController {
     @Param('gymId', ParseUUIDPipe) gymId: string,
   ): Promise<GymDetailsResponseDto> {
     return this.gymService.getGymDetails(gymId);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post()
+  @ApiOperation({ summary: 'Crear un nuevo gimnasio' })
+  @ApiResponse({
+    status: 201,
+    description: 'Crear un nuevo gimnasio exitosamente',
+    type: RawGymDto,
+  })
+  async create(
+    @Body(new ValidationPipe()) createGymDto: CreateGymDto,
+    @GetUser() user: JwtPayload,
+  ): Promise<RawGymDto> {
+    return this.gymUseCase.execute(user.sub, createGymDto);
   }
 
   @Roles('ADMIN', 'COACH')

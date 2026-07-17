@@ -27,29 +27,6 @@ export class PersonController {
   constructor(private readonly personService: PersonService) {}
 
   @Roles('ADMIN')
-  @Post()
-  @ApiOperation({ summary: 'Crear una nueva persona' })
-  @ApiResponse({
-    status: 201,
-    description: 'La persona ha sido creada exitosamente',
-    type: PersonDto,
-  })
-  async create(
-    @Body(new ValidationPipe()) createPersonDto: CreatePersonDto,
-  ): Promise<PersonDto> {
-    const person = await this.personService.create(createPersonDto);
-    return {
-      id: person.id,
-      dni: person.dni,
-      name: person.name,
-      surname: person.surname,
-      birthday: person.birthday,
-      gender: person.gender,
-      status: person.status,
-    };
-  }
-
-  @Roles('ADMIN')
   @Get()
   @ApiOperation({ summary: 'Obtener todas las personas' })
   @ApiResponse({
@@ -148,6 +125,29 @@ export class PersonController {
     @Param('dni') dni: string,
   ): Promise<AthleteGymByDniResponseDto> {
     return this.personService.findAthleteGymByDni(dni);
+  }
+
+  @Roles('ADMIN')
+  @Post()
+  @ApiOperation({ summary: 'Crear una nueva persona' })
+  @ApiResponse({
+    status: 201,
+    description: 'La persona ha sido creada exitosamente',
+    type: PersonDto,
+  })
+  async create(
+    @Body(new ValidationPipe()) createPersonDto: CreatePersonDto,
+  ): Promise<PersonDto> {
+    const person = await this.personService.create(createPersonDto);
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      birthday: person.birthday,
+      gender: person.gender,
+      status: person.status,
+    };
   }
 
   @Roles('ADMIN')

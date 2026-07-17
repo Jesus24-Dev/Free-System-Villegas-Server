@@ -30,22 +30,6 @@ export class CompetitionDivisionController {
   ) {}
 
   @Roles('ADMIN', 'COACH')
-  @Post()
-  @ApiOperation({
-    summary: 'Registrar una modalidad del atleta en la competencia',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Modalidad registrada con exito',
-    type: CompetitionDivisionWithoutCompetitionDto,
-  })
-  async create(
-    @Body() createCompetitionDivisionDto: CreateCompetitionDivisionDto,
-  ): Promise<CompetitionDivisionWithoutCompetitionDto> {
-    return this.competitionDivisionService.create(createCompetitionDivisionDto);
-  }
-
-  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({
     summary:
@@ -74,6 +58,22 @@ export class CompetitionDivisionController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionDivisionDto> {
     return this.competitionDivisionService.findOne(id);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post()
+  @ApiOperation({
+    summary: 'Registrar una modalidad del atleta en la competencia',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Modalidad registrada con exito',
+    type: CompetitionDivisionWithoutCompetitionDto,
+  })
+  async create(
+    @Body() createCompetitionDivisionDto: CreateCompetitionDivisionDto,
+  ): Promise<CompetitionDivisionWithoutCompetitionDto> {
+    return this.competitionDivisionService.create(createCompetitionDivisionDto);
   }
 
   @Roles('ADMIN')

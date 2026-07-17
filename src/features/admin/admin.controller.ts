@@ -43,6 +43,13 @@ import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
+  // ==================== GET ====================
+
+  @Get('')
+  test(@GetUser() user: JwtPayload) {
+    return user;
+  }
+
   @Get('/gyms')
   findAllGyms(): Promise<GymResponseDto[]> {
     return this.adminService.getAllGyms();
@@ -51,144 +58,6 @@ export class AdminController {
   @Get('/users')
   findAllUsers(): Promise<UserResponseDto[]> {
     return this.adminService.getAllUsers();
-  }
-
-  @Patch('/users/:id/status')
-  async changeUserStatus(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<void> {
-    await this.adminService.changeUserStatus(id);
-  }
-
-  @Get('')
-  test(@GetUser() user: JwtPayload) {
-    return user;
-  }
-
-  // ==================== COMPETITIONS ====================
-
-  @Post('/competitions')
-  @ApiOperation({ summary: 'Crear una nueva competencia (Admin)' })
-  @ApiResponse({
-    status: 201,
-    description: 'Competencia creada exitosamente',
-    type: CompetitionDto,
-  })
-  async createCompetition(
-    @Body() dto: CreateCompetitionDto,
-  ): Promise<CompetitionDto> {
-    return this.adminService.createCompetition(dto);
-  }
-
-  @Get('/competitions')
-  @ApiOperation({ summary: 'Listar todas las competencias (Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Lista de competencias',
-    type: [CompetitionDto],
-  })
-  async findAllCompetitions(
-    @Query() dto: FindCompetitionDto,
-  ): Promise<CompetitionDto[]> {
-    return this.adminService.findAllCompetitions(dto);
-  }
-
-  @Get('/competitions/:id')
-  @ApiOperation({ summary: 'Obtener competencia por ID (Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Competencia encontrada',
-    type: CompetitionDto,
-  })
-  async findOneCompetition(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<CompetitionDto> {
-    return this.adminService.findOneCompetition(id);
-  }
-
-  @Patch('/competitions/:id')
-  @ApiOperation({ summary: 'Actualizar competencia por ID (Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Competencia actualizada exitosamente',
-    type: CompetitionDto,
-  })
-  async updateCompetition(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateCompetitionDto,
-  ): Promise<CompetitionDto> {
-    return this.adminService.updateCompetition(id, dto);
-  }
-
-  @Delete('/competitions/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar competencia por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Competencia eliminada' })
-  async removeCompetition(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<void> {
-    await this.adminService.removeCompetition(id);
-  }
-
-  // ==================== COMPETITION DIVISIONS ====================
-
-  @Post('/competition-divisions')
-  @ApiOperation({ summary: 'Crear una división de competencia (Admin)' })
-  @ApiResponse({ status: 201, description: 'División creada exitosamente' })
-  async createCompetitionDivision(@Body() dto: CreateCompetitionDivisionDto) {
-    return this.adminService.createCompetitionDivision(dto);
-  }
-
-  @Get('/competition-divisions')
-  @ApiOperation({
-    summary: 'Listar todas las divisiones de competencia (Admin)',
-  })
-  @ApiResponse({ status: 200, description: 'Lista de divisiones' })
-  async findAllCompetitionDivisions() {
-    return this.adminService.findAllCompetitionDivisions();
-  }
-
-  @Get('/competition-divisions/:id')
-  @ApiOperation({ summary: 'Obtener división por ID (Admin)' })
-  @ApiResponse({ status: 200, description: 'División encontrada' })
-  async findOneCompetitionDivision(@Param('id', ParseUUIDPipe) id: string) {
-    return this.adminService.findOneCompetitionDivision(id);
-  }
-
-  @Patch('/competition-divisions/:id')
-  @ApiOperation({ summary: 'Actualizar división por ID (Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'División actualizada exitosamente',
-  })
-  async updateCompetitionDivision(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateCompetitionDivisionDto,
-  ) {
-    return this.adminService.updateCompetitionDivision(id, dto);
-  }
-
-  @Delete('/competition-divisions/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar división por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'División eliminada' })
-  async removeCompetitionDivision(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<void> {
-    await this.adminService.removeCompetitionDivision(id);
-  }
-
-  // ==================== USERS ====================
-
-  @Post('/users')
-  @ApiOperation({ summary: 'Crear un nuevo usuario (Admin)' })
-  @ApiResponse({
-    status: 201,
-    description: 'Usuario creado exitosamente',
-    type: UserDto,
-  })
-  async createUser(@Body() dto: CreateUserDto): Promise<UserDto> {
-    return this.adminService.createUser(dto);
   }
 
   @Get('/users/paginated')
@@ -212,41 +81,6 @@ export class AdminController {
   })
   async findOneUser(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
     return this.adminService.findOneUser(id);
-  }
-
-  @Patch('/users/:id')
-  @ApiOperation({ summary: 'Actualizar usuario por ID (Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Usuario actualizado exitosamente',
-    type: UserDto,
-  })
-  async updateUser(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateUserDto,
-  ): Promise<UserDto> {
-    return this.adminService.updateUser(id, dto);
-  }
-
-  @Delete('/users/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar usuario por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Usuario eliminado' })
-  async removeUser(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.adminService.removeUser(id);
-  }
-
-  // ==================== PERSONS ====================
-
-  @Post('/persons')
-  @ApiOperation({ summary: 'Crear una nueva persona (Admin)' })
-  @ApiResponse({
-    status: 201,
-    description: 'Persona creada exitosamente',
-    type: PersonDto,
-  })
-  async createPerson(@Body() dto: CreatePersonDto): Promise<PersonDto> {
-    return this.adminService.createPerson(dto);
   }
 
   @Get('/persons/paginated')
@@ -274,37 +108,6 @@ export class AdminController {
     return this.adminService.findOnePerson(id);
   }
 
-  @Patch('/persons/:id')
-  @ApiOperation({ summary: 'Actualizar persona por ID (Admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Persona actualizada exitosamente',
-    type: PersonDto,
-  })
-  async updatePerson(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdatePersonDto,
-  ): Promise<PersonDto> {
-    return this.adminService.updatePerson(id, dto);
-  }
-
-  @Delete('/persons/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar persona por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Persona eliminada' })
-  async removePerson(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.adminService.removePerson(id);
-  }
-
-  // ==================== COACHES ====================
-
-  @Post('/coaches')
-  @ApiOperation({ summary: 'Crear un nuevo entrenador (Admin)' })
-  @ApiResponse({ status: 201, description: 'Entrenador creado exitosamente' })
-  async createCoach(@Body() dto: CreateCoachDto) {
-    return this.adminService.createCoach(dto);
-  }
-
   @Get('/coaches/paginated')
   @ApiOperation({ summary: 'Listar todos los entrenadores paginados (Admin)' })
   @ApiResponse({ status: 200, description: 'Lista paginada de entrenadores' })
@@ -317,23 +120,6 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Entrenador encontrado' })
   async findOneCoach(@Param('id', ParseUUIDPipe) id: string) {
     return this.adminService.findOneCoach(id);
-  }
-
-  @Delete('/coaches/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar entrenador por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Entrenador eliminado' })
-  async removeCoach(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.adminService.removeCoach(id);
-  }
-
-  // ==================== ATHLETES ====================
-
-  @Post('/athletes')
-  @ApiOperation({ summary: 'Crear un nuevo atleta (Admin)' })
-  @ApiResponse({ status: 201, description: 'Atleta creado exitosamente' })
-  async createAthlete(@Body() dto: CreateAthleteDto) {
-    return this.adminService.createAthlete(dto);
   }
 
   @Get('/athletes/paginated')
@@ -350,25 +136,173 @@ export class AdminController {
     return this.adminService.findOneAthlete(id);
   }
 
-  @Delete('/athletes/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar atleta por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Atleta eliminado' })
-  async removeAthlete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.adminService.removeAthlete(id);
+  // ==================== COMPETITIONS GET ====================
+
+  @Get('/competitions')
+  @ApiOperation({ summary: 'Listar todas las competencias (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de competencias',
+    type: [CompetitionDto],
+  })
+  async findAllCompetitions(
+    @Query() dto: FindCompetitionDto,
+  ): Promise<CompetitionDto[]> {
+    return this.adminService.findAllCompetitions(dto);
   }
 
-  // ==================== GYMS ====================
-
-  @Delete('/gyms/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar gimnasio por ID (Admin)' })
-  @ApiResponse({ status: 204, description: 'Gimnasio eliminado' })
-  async removeGym(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    await this.adminService.removeGym(id);
+  @Get('/competitions/:id')
+  @ApiOperation({ summary: 'Obtener competencia por ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Competencia encontrada',
+    type: CompetitionDto,
+  })
+  async findOneCompetition(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CompetitionDto> {
+    return this.adminService.findOneCompetition(id);
   }
 
-  // ==================== GYM PAYMENTS ====================
+  // ==================== COMPETITION DIVISIONS GET ====================
+
+  @Get('/competition-divisions')
+  @ApiOperation({
+    summary: 'Listar todas las divisiones de competencia (Admin)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista de divisiones' })
+  async findAllCompetitionDivisions() {
+    return this.adminService.findAllCompetitionDivisions();
+  }
+
+  @Get('/competition-divisions/:id')
+  @ApiOperation({ summary: 'Obtener división por ID (Admin)' })
+  @ApiResponse({ status: 200, description: 'División encontrada' })
+  async findOneCompetitionDivision(@Param('id', ParseUUIDPipe) id: string) {
+    return this.adminService.findOneCompetitionDivision(id);
+  }
+
+  // ==================== POST ====================
+
+  @Post('/competitions')
+  @ApiOperation({ summary: 'Crear una nueva competencia (Admin)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Competencia creada exitosamente',
+    type: CompetitionDto,
+  })
+  async createCompetition(
+    @Body() dto: CreateCompetitionDto,
+  ): Promise<CompetitionDto> {
+    return this.adminService.createCompetition(dto);
+  }
+
+  @Post('/competition-divisions')
+  @ApiOperation({ summary: 'Crear una división de competencia (Admin)' })
+  @ApiResponse({ status: 201, description: 'División creada exitosamente' })
+  async createCompetitionDivision(@Body() dto: CreateCompetitionDivisionDto) {
+    return this.adminService.createCompetitionDivision(dto);
+  }
+
+  @Post('/users')
+  @ApiOperation({ summary: 'Crear un nuevo usuario (Admin)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Usuario creado exitosamente',
+    type: UserDto,
+  })
+  async createUser(@Body() dto: CreateUserDto): Promise<UserDto> {
+    return this.adminService.createUser(dto);
+  }
+
+  @Post('/persons')
+  @ApiOperation({ summary: 'Crear una nueva persona (Admin)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Persona creada exitosamente',
+    type: PersonDto,
+  })
+  async createPerson(@Body() dto: CreatePersonDto): Promise<PersonDto> {
+    return this.adminService.createPerson(dto);
+  }
+
+  @Post('/coaches')
+  @ApiOperation({ summary: 'Crear un nuevo entrenador (Admin)' })
+  @ApiResponse({ status: 201, description: 'Entrenador creado exitosamente' })
+  async createCoach(@Body() dto: CreateCoachDto) {
+    return this.adminService.createCoach(dto);
+  }
+
+  @Post('/athletes')
+  @ApiOperation({ summary: 'Crear un nuevo atleta (Admin)' })
+  @ApiResponse({ status: 201, description: 'Atleta creado exitosamente' })
+  async createAthlete(@Body() dto: CreateAthleteDto) {
+    return this.adminService.createAthlete(dto);
+  }
+
+  // ==================== PATCH ====================
+
+  @Patch('/users/:id/status')
+  async changeUserStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    await this.adminService.changeUserStatus(id);
+  }
+
+  @Patch('/competitions/:id')
+  @ApiOperation({ summary: 'Actualizar competencia por ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Competencia actualizada exitosamente',
+    type: CompetitionDto,
+  })
+  async updateCompetition(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateCompetitionDto,
+  ): Promise<CompetitionDto> {
+    return this.adminService.updateCompetition(id, dto);
+  }
+
+  @Patch('/competition-divisions/:id')
+  @ApiOperation({ summary: 'Actualizar división por ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'División actualizada exitosamente',
+  })
+  async updateCompetitionDivision(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateCompetitionDivisionDto,
+  ) {
+    return this.adminService.updateCompetitionDivision(id, dto);
+  }
+
+  @Patch('/users/:id')
+  @ApiOperation({ summary: 'Actualizar usuario por ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuario actualizado exitosamente',
+    type: UserDto,
+  })
+  async updateUser(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserDto> {
+    return this.adminService.updateUser(id, dto);
+  }
+
+  @Patch('/persons/:id')
+  @ApiOperation({ summary: 'Actualizar persona por ID (Admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Persona actualizada exitosamente',
+    type: PersonDto,
+  })
+  async updatePerson(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdatePersonDto,
+  ): Promise<PersonDto> {
+    return this.adminService.updatePerson(id, dto);
+  }
 
   @Patch('/gym-payments/:id')
   @ApiOperation({ summary: 'Actualizar pago de gimnasio por ID (Admin)' })
@@ -378,6 +312,68 @@ export class AdminController {
     @Body() dto: UpdateGymPaymentDto,
   ) {
     return this.adminService.updateGymPayment(id, dto);
+  }
+
+  // ==================== DELETE ====================
+
+  @Delete('/competitions/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar competencia por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Competencia eliminada' })
+  async removeCompetition(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    await this.adminService.removeCompetition(id);
+  }
+
+  @Delete('/competition-divisions/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar división por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'División eliminada' })
+  async removeCompetitionDivision(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<void> {
+    await this.adminService.removeCompetitionDivision(id);
+  }
+
+  @Delete('/users/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar usuario por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Usuario eliminado' })
+  async removeUser(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeUser(id);
+  }
+
+  @Delete('/persons/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar persona por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Persona eliminada' })
+  async removePerson(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removePerson(id);
+  }
+
+  @Delete('/coaches/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar entrenador por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Entrenador eliminado' })
+  async removeCoach(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeCoach(id);
+  }
+
+  @Delete('/athletes/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar atleta por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Atleta eliminado' })
+  async removeAthlete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeAthlete(id);
+  }
+
+  @Delete('/gyms/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar gimnasio por ID (Admin)' })
+  @ApiResponse({ status: 204, description: 'Gimnasio eliminado' })
+  async removeGym(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.adminService.removeGym(id);
   }
 
   @Delete('/gym-payments/:id')

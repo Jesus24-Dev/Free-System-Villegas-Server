@@ -33,40 +33,6 @@ export class CompetitionController {
     private readonly registerAthleteAtCompetitionUseCase: RegisterAthleteAtCompetitionUseCase,
   ) {}
 
-  @Roles('ADMIN')
-  @Post()
-  @ApiOperation({ summary: 'Crear una nueva competencia' })
-  @ApiResponse({
-    status: 201,
-    description: 'Competencia creada exitosamente',
-    type: CompetitionDto,
-  })
-  async create(
-    @Body() createCompetitionDto: CreateCompetitionDto,
-  ): Promise<CompetitionDto> {
-    return this.competitionService.create(createCompetitionDto);
-  }
-
-  @Roles('ADMIN', 'COACH')
-  @Post(':competitionId/athletes/:athleteId/register')
-  @ApiOperation({ summary: 'Registrar atleta en una competencia' })
-  @ApiResponse({
-    status: 201,
-    description: 'Atleta registrado exitosamente',
-    type: RegisterAthleteAtCompetitionDto,
-  })
-  registerAthlete(
-    @Param('competitionId', ParseUUIDPipe) competitionId: string,
-    @Param('athleteId', ParseUUIDPipe) athleteId: string,
-    @Body() dto: RegisterAthleteAtCompetitionDto,
-  ) {
-    return this.registerAthleteAtCompetitionUseCase.execute(
-      dto,
-      competitionId,
-      athleteId,
-    );
-  }
-
   @Roles('ADMIN', 'COACH', 'ATHLETE')
   @Get()
   @ApiOperation({ summary: 'Obtener todas las competencias' })
@@ -115,6 +81,40 @@ export class CompetitionController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionDto> {
     return this.competitionService.findOne(id);
+  }
+
+  @Roles('ADMIN')
+  @Post()
+  @ApiOperation({ summary: 'Crear una nueva competencia' })
+  @ApiResponse({
+    status: 201,
+    description: 'Competencia creada exitosamente',
+    type: CompetitionDto,
+  })
+  async create(
+    @Body() createCompetitionDto: CreateCompetitionDto,
+  ): Promise<CompetitionDto> {
+    return this.competitionService.create(createCompetitionDto);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post(':competitionId/athletes/:athleteId/register')
+  @ApiOperation({ summary: 'Registrar atleta en una competencia' })
+  @ApiResponse({
+    status: 201,
+    description: 'Atleta registrado exitosamente',
+    type: RegisterAthleteAtCompetitionDto,
+  })
+  registerAthlete(
+    @Param('competitionId', ParseUUIDPipe) competitionId: string,
+    @Param('athleteId', ParseUUIDPipe) athleteId: string,
+    @Body() dto: RegisterAthleteAtCompetitionDto,
+  ) {
+    return this.registerAthleteAtCompetitionUseCase.execute(
+      dto,
+      competitionId,
+      athleteId,
+    );
   }
 
   @Roles('ADMIN')
