@@ -6,12 +6,15 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { PagoMovilService } from './pago-movil.service';
 import { CreatePagoMovilDto } from './dto/request/create-pago-movil.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PagoMovilResponseDto } from './dto/responses/pago-movil-response.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Pago Movil')
 @Controller('pago-movil')
@@ -35,8 +38,30 @@ export class PagoMovilController {
     return this.pagoMovilService.create(gymId, createPagoMovilDto);
   }
 
+  @Roles('ADMIN')
+  @Get()
+  @ApiOperation({
+    summary: 'Obtener todos los datos de pago movil',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Los datos han sido devueltos.',
+    type: PaginatedResponseDto<PagoMovilResponseDto>,
+  })
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<PagoMovilResponseDto>> {
+    const result = await this.pagoMovilService.findAll(pagination);
+    return new PaginatedResponseDto(
+      result.data,
+      result.total,
+      result.page,
+      result.limit,
+    );
+  }
+
   @Roles('ADMIN', 'COACH', 'ATHLETE')
-  @Get(':gymId')
+  @Get('gym/:gymId')
   @ApiOperation({
     summary: 'Obtener todos los datos de pago movil de un gimnasio',
   })

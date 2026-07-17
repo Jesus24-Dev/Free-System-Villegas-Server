@@ -14,6 +14,7 @@ describe('PagoMovilService', () => {
       create: jest.Mock;
       findMany: jest.Mock;
       findFirst: jest.Mock;
+      count: jest.Mock;
       update: jest.Mock;
     };
   };
@@ -24,6 +25,7 @@ describe('PagoMovilService', () => {
         create: jest.fn(),
         findMany: jest.fn(),
         findFirst: jest.fn(),
+        count: jest.fn(),
         update: jest.fn(),
       },
     };
@@ -70,6 +72,67 @@ describe('PagoMovilService', () => {
         },
       });
       expect(result).toEqual(expectedPagoMovil);
+    });
+  });
+
+  describe('findAll', () => {
+    it('debe retornar pagos móviles paginados', async () => {
+      const pagination = { page: 1, limit: 10, skip: 0 };
+      const pagoMovilFields = [
+        {
+          id: 'pm-1',
+          bank_to_pay: '0102',
+          dni: 'V12345678',
+          phone: '04141234567',
+          gym_id: 'gym-1',
+        },
+        {
+          id: 'pm-2',
+          bank_to_pay: '0104',
+          dni: 'V87654321',
+          phone: '04147654321',
+          gym_id: 'gym-1',
+        },
+      ];
+
+      prisma.pagoMovilFields.findMany.mockResolvedValue(pagoMovilFields);
+      prisma.pagoMovilFields.count.mockResolvedValue(2);
+
+      const result = await service.findAll(pagination);
+
+      expect(prisma.pagoMovilFields.findMany).toHaveBeenCalledWith({
+        where: { deleted_at: null },
+        select: {
+          id: true,
+          bank_to_pay: true,
+          dni: true,
+          phone: true,
+          gym_id: true,
+        },
+        skip: 0,
+        take: 10,
+      });
+      expect(prisma.pagoMovilFields.count).toHaveBeenCalledWith({
+        where: { deleted_at: null },
+      });
+      expect(result.data).toEqual(pagoMovilFields);
+      expect(result.total).toBe(2);
+      expect(result.page).toBe(1);
+      expect(result.limit).toBe(10);
+      expect(result.totalPages).toBe(1);
+    });
+
+    it('debe retornar lista vacía cuando no hay pagos móviles', async () => {
+      const pagination = { page: 1, limit: 10, skip: 0 };
+
+      prisma.pagoMovilFields.findMany.mockResolvedValue([]);
+      prisma.pagoMovilFields.count.mockResolvedValue(0);
+
+      const result = await service.findAll(pagination);
+
+      expect(result.data).toEqual([]);
+      expect(result.total).toBe(0);
+      expect(result.totalPages).toBe(0);
     });
   });
 
