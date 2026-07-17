@@ -2,7 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Person } from '@prisma/client';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
-import { PersonFoundedResponseDto } from './dto/response';
+import {
+  PersonFoundedResponseDto,
+  CoachGymByDniResponseDto,
+  AthleteGymByDniResponseDto,
+} from './dto/response';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
@@ -92,6 +96,120 @@ export class PersonService {
       coach_id: person.coach?.id ?? null,
       has_gym: hasGym,
       owns_gym: ownsGym,
+    };
+  }
+
+  async findCoachGymByDni(
+    dni: string,
+  ): Promise<CoachGymByDniResponseDto> {
+    const person = await this.prisma.person.findFirst({
+      where: { dni, deleted_at: null },
+      select: {
+        id: true,
+        dni: true,
+        name: true,
+        surname: true,
+        coach: {
+          select: {
+            id: true,
+            gym_id: true,
+            gym_owned: {
+              select: {
+                id: true,
+                name: true,
+                address: true,
+                state: true,
+                monthly_payment: true,
+              },
+            },
+            gym: {
+              select: {
+                id: true,
+                name: true,
+                address: true,
+                state: true,
+                monthly_payment: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!person) {
+      throw new NotFoundException(`Persona con DNI ${dni} no encontrada`);
+    }
+
+    if (!person.coach) {
+      throw new NotFoundException(
+        `La persona con DNI ${dni} no tiene un registro de coach`,
+      );
+    }
+
+    const ownsGym = !!person.coach.gym_owned;
+    const hasGym = !!person.coach.gym_id || ownsGym;
+    const gym = ownsGym ? person.coach.gym_owned : person.coach.gym;
+
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      coach_id: person.coach.id,
+      has_gym: hasGym,
+      owns_gym: ownsGym,
+      gym: gym ?? null,
+    };
+  }
+
+  async findAthleteGymByDni(
+    dni: string,
+  ): Promise<AthleteGymByDniResponseDto> {
+    const person = await this.prisma.person.findFirst({
+      where: { dni, deleted_at: null },
+      select: {
+        id: true,
+        dni: true,
+        name: true,
+        surname: true,
+        athlete: {
+          select: {
+            id: true,
+            gym_id: true,
+            gym: {
+              select: {
+                id: true,
+                name: true,
+                address: true,
+                state: true,
+                monthly_payment: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!person) {
+      throw new NotFoundException(`Persona con DNI ${dni} no encontrada`);
+    }
+
+    if (!person.athlete) {
+      throw new NotFoundException(
+        `La persona con DNI ${dni} no tiene un registro de atleta`,
+      );
+    }
+
+    const hasGym = !!person.athlete.gym_id;
+
+    return {
+      id: person.id,
+      dni: person.dni,
+      name: person.name,
+      surname: person.surname,
+      athlete_id: person.athlete.id,
+      has_gym: hasGym,
+      gym: person.athlete.gym ?? null,
     };
   }
 

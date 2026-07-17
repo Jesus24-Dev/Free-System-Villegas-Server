@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { PersonDto, PersonFoundedResponseDto } from './dto/response';
+import { PersonDto, PersonFoundedResponseDto, CoachGymByDniResponseDto, AthleteGymByDniResponseDto } from './dto/response';
 import { CreatePersonDto, UpdatePersonDto } from './dto/request';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -110,6 +110,44 @@ export class PersonController {
     @Param('dni') dni: string,
   ): Promise<PersonFoundedResponseDto | null> {
     return this.personService.checkIfPersonByDnyExists(dni);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get('dni/:dni/coach-gym')
+  @ApiOperation({
+    summary: 'Verificar si un coach tiene gimnasio por cedula',
+    description:
+      'Retorna si el coach tiene un gimnasio asignado o es dueno de uno, junto con los datos del gimnasio si existe.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Informacion del gym del coach',
+    type: CoachGymByDniResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Persona o coach no encontrado' })
+  async findCoachGymByDni(
+    @Param('dni') dni: string,
+  ): Promise<CoachGymByDniResponseDto> {
+    return this.personService.findCoachGymByDni(dni);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get('dni/:dni/athlete-gym')
+  @ApiOperation({
+    summary: 'Verificar si un atleta tiene gimnasio por cedula',
+    description:
+      'Retorna si el atleta tiene un gimnasio asignado, junto con los datos del gimnasio si existe.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Informacion del gym del atleta',
+    type: AthleteGymByDniResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Persona o atleta no encontrado' })
+  async findAthleteGymByDni(
+    @Param('dni') dni: string,
+  ): Promise<AthleteGymByDniResponseDto> {
+    return this.personService.findAthleteGymByDni(dni);
   }
 
   @Roles('ADMIN')
