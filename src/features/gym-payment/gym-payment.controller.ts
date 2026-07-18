@@ -52,6 +52,7 @@ export class GymPaymentController {
     description: 'Lista de pagos con datos del atleta',
     type: [GymPaymentByGymResponseDto],
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async findByGym(
     @Param('gymId', ParseUUIDPipe) gymId: string,
   ): Promise<GymPaymentByGymResponseDto[]> {
@@ -66,6 +67,7 @@ export class GymPaymentController {
     description: 'Pago obtenido',
     type: GymPaymentResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<GymPaymentResponseDto> {
@@ -80,6 +82,7 @@ export class GymPaymentController {
     description: 'Pago registrado con exito',
     type: GymPaymentResponseDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
   async create(
     @Body() createGymPaymentDto: CreateGymPaymentDto,
   ): Promise<GymPaymentResponseDto> {
@@ -94,6 +97,8 @@ export class GymPaymentController {
     description: 'Pago actualizado',
     type: GymPaymentResponseDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateGymPaymentDto: UpdateGymPaymentDto,
@@ -108,6 +113,7 @@ export class GymPaymentController {
     status: 200,
     description: 'Pago confirmado',
   })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
   async confirmPayment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymPaymentService.confirmPayment(id);
   }
@@ -119,8 +125,8 @@ export class GymPaymentController {
   @ApiResponse({
     status: 204,
     description: 'Pago eliminado',
-    type: GymPaymentResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymPaymentService.remove(id);
   }

@@ -54,6 +54,7 @@ export class CompetitionDivisionController {
     description: 'Modalidad obtenida con exito',
     type: CompetitionDivisionDto,
   })
+  @ApiResponse({ status: 404, description: 'Modalidad no encontrada' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionDivisionDto> {
@@ -69,6 +70,11 @@ export class CompetitionDivisionController {
     status: 201,
     description: 'Modalidad registrada con exito',
     type: CompetitionDivisionWithoutCompetitionDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ya existe una division con los mismos parametros',
   })
   async create(
     @Body() createCompetitionDivisionDto: CreateCompetitionDivisionDto,
@@ -86,6 +92,8 @@ export class CompetitionDivisionController {
     description: 'Modalidad actualizada con exito',
     type: CompetitionDivisionWithoutCompetitionDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Modalidad no encontrada' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionDivisionDto: UpdateCompetitionDivisionDto,
@@ -103,9 +111,10 @@ export class CompetitionDivisionController {
     summary: 'Eliminar una modalidad registrada por su ID',
   })
   @ApiResponse({
-    status: 200,
-    description: 'Modalidad eliminar con exito',
+    status: 204,
+    description: 'Modalidad eliminada con exito',
   })
+  @ApiResponse({ status: 404, description: 'Modalidad no encontrada' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionDivisionService.remove(id);
   }

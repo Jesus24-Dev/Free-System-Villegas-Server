@@ -5,6 +5,8 @@ import {
   Body,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
@@ -53,6 +55,7 @@ export class PagoMovilController {
     description: 'Los datos han sido devueltos.',
     type: [PagoMovilResponseDto],
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   findByGym(
     @Param('gymId', ParseUUIDPipe) gymId: string,
   ): Promise<PagoMovilResponseDto[]> {
@@ -69,6 +72,7 @@ export class PagoMovilController {
     description: 'El dato ha sido devuelto.',
     type: PagoMovilResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Dato de pago movil no encontrado' })
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<PagoMovilResponseDto> {
@@ -85,6 +89,8 @@ export class PagoMovilController {
     description: 'El método de pago móvil ha sido creado.',
     type: PagoMovilResponseDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   create(
     @Param('gymId', ParseUUIDPipe) gymId: string,
     @Body() createPagoMovilDto: CreatePagoMovilDto,
@@ -94,6 +100,13 @@ export class PagoMovilController {
 
   @Roles('ADMIN', 'COACH')
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar un dato de pago movil' })
+  @ApiResponse({
+    status: 204,
+    description: 'Dato de pago movil eliminado',
+  })
+  @ApiResponse({ status: 404, description: 'Dato de pago movil no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.pagoMovilService.remove(id);
   }

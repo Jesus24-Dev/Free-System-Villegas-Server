@@ -40,6 +40,7 @@ export class CompetitionRegistrationController {
     description: 'Lista de atletas registrados en la competencia',
     type: [CompetitionRegistrationResponseDto],
   })
+  @ApiResponse({ status: 404, description: 'Competencia no encontrada' })
   async findByCompetitionId(
     @Param('competitionId', ParseUUIDPipe) competitionId: string,
     @Query() pagination: PaginationDto,
@@ -61,6 +62,7 @@ export class CompetitionRegistrationController {
     description: 'Lista de atletas del gimnasio registrados en competencias',
     type: [CompetitionRegistrationResponseDto],
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async findByGymId(
     @Param('gymId', ParseUUIDPipe) gymId: string,
     @Query() pagination: PaginationDto,
@@ -78,6 +80,10 @@ export class CompetitionRegistrationController {
     status: 200,
     description: 'Lista de atletas del gimnasio registrados en la competencia',
     type: [CompetitionRegistrationResponseDto],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Gimnasio o competencia no encontrado',
   })
   async findByGymAndCompetition(
     @Param('gymId', ParseUUIDPipe) gymId: string,
@@ -117,6 +123,7 @@ export class CompetitionRegistrationController {
     description: 'Registro encontrado',
     type: CompetitionRegistrationResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Registro no encontrado' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionRegistrationResponseDto> {
@@ -128,8 +135,14 @@ export class CompetitionRegistrationController {
   @ApiOperation({ summary: 'Registrar un atleta en una competencia' })
   @ApiResponse({
     status: 201,
-    description: 'Crear un nuevo usuario exitosamente',
+    description: 'Registro creado exitosamente',
     type: RawCompetitionRegistrationDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Atleta o competencia no encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'El atleta ya esta registrado en esta competencia',
   })
   async create(
     @Body() createCompetitionRegistrationDto: CreateCompetitionRegistrationDto,
@@ -147,6 +160,8 @@ export class CompetitionRegistrationController {
     description: 'Registro actualizado',
     type: RawCompetitionRegistrationDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Registro no encontrado' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionRegistrationDto: UpdateCompetitionRegistrationDto,
@@ -165,6 +180,7 @@ export class CompetitionRegistrationController {
     status: 204,
     description: 'Registro eliminado',
   })
+  @ApiResponse({ status: 404, description: 'Registro no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionRegistrationService.remove(id);
   }

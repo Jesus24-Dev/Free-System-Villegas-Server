@@ -51,18 +51,20 @@ export class GymController {
     description: 'Gimnasio conseguido exitosamente',
     type: GymDto,
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<GymDto> {
     return this.gymService.findOne(id);
   }
 
   @Roles('ADMIN', 'COACH')
   @Get(':gymId/details')
-  @ApiOperation({ summary: 'Obtener un gimnasio por su ID' })
+  @ApiOperation({ summary: 'Obtener detalles completos de un gimnasio' })
   @ApiResponse({
     status: 200,
     description: 'Gimnasio conseguido exitosamente',
     type: GymDetailsResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async getGymDetails(
     @Param('gymId', ParseUUIDPipe) gymId: string,
   ): Promise<GymDetailsResponseDto> {
@@ -76,6 +78,11 @@ export class GymController {
     status: 201,
     description: 'Crear un nuevo gimnasio exitosamente',
     type: RawGymDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ya existe un gimnasio con ese nombre',
   })
   async create(
     @Body(new ValidationPipe()) createGymDto: CreateGymDto,
@@ -96,13 +103,14 @@ export class GymController {
     description: 'Gimnasio actualizado exitosamente',
     type: RawGymDto,
   })
-  @ApiResponse({
-    status: 404,
-    description: 'Gimnasio no encontrado',
-  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
   @ApiResponse({
     status: 403,
     description: 'No eres el dueno del gimnasio',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Gimnasio no encontrado',
   })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -124,8 +132,8 @@ export class GymController {
   @ApiResponse({
     status: 204,
     description: 'Gimnasio eliminado exitosamente',
-    type: RawGymDto,
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymService.remove(id);
   }

@@ -60,6 +60,7 @@ export class UserController {
     description: 'El usuario ha sido encontrado exitosamente',
     type: UserDto,
   })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
     const user = await this.userService.findOne(id);
     return {
@@ -80,6 +81,8 @@ export class UserController {
     description: 'Crear un nuevo usuario exitosamente',
     type: UserDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 409, description: 'El email ya esta registrado' })
   async create(
     @Body(new ValidationPipe()) createUserDto: CreateUserDto,
   ): Promise<UserDto> {
@@ -102,6 +105,8 @@ export class UserController {
     description: 'El usuario ha sido actualizado exitosamente',
     type: UserDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
@@ -125,6 +130,7 @@ export class UserController {
     status: 204,
     description: 'El usuario ha sido eliminado exitosamente',
   })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.userService.remove(id);
   }

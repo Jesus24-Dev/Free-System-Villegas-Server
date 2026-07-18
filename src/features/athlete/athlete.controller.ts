@@ -77,6 +77,7 @@ export class AthleteController {
     description: 'Obtener solo un atleta por su identificador de persona',
     type: AthleteDto,
   })
+  @ApiResponse({ status: 404, description: 'Atleta no encontrado' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<AthleteDto> {
     const athlete = await this.athleteService.findOne(id);
     return {
@@ -106,6 +107,7 @@ export class AthleteController {
     description: 'Atletas del gimnasio obtenidos.',
     type: [AthleteDto],
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async findAthletesByGym(
     @Param('gymId') gymId: string,
     @Query('excludeCoaches') excludeCoaches?: string,
@@ -130,6 +132,7 @@ export class AthleteController {
     description: 'Perfil del atleta... obtenido.',
     type: AthleteProfileResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Atleta no encontrado' })
   async findAthleteProfile(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<AthleteProfileResponseDto> {
@@ -163,6 +166,11 @@ export class AthleteController {
     status: 201,
     description: 'Crear un nuevo atleta exitosamente',
     type: RawAthleteDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ya existe un atleta con esa cedula',
   })
   async create(
     @Body() createAthleteDto: CreateAthleteDto,
@@ -221,6 +229,8 @@ export class AthleteController {
     description: 'Actualizar datos del atleta',
     type: AthleteDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Atleta no encontrado' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateAthleteDto: UpdateAthleteDto,
@@ -239,6 +249,7 @@ export class AthleteController {
     status: 200,
     description: 'Datos personales actualizados exitosamente',
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
   @ApiResponse({
     status: 404,
     description:
@@ -288,8 +299,8 @@ export class AthleteController {
   @ApiResponse({
     status: 204,
     description: 'Eliminar un atleta de la base de datos',
-    type: AthleteDto,
   })
+  @ApiResponse({ status: 404, description: 'Atleta no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.athleteService.remove(id);
   }

@@ -43,6 +43,7 @@ export class AuthController {
     description: 'Perfil del usuario obtenido con exito',
     type: ProfileDto,
   })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async profile(@GetUser() user: JwtPayload): Promise<ProfileDto> {
     const rawProfile = await this.authService.profile(user.sub);
 
@@ -71,6 +72,10 @@ export class AuthController {
     description: 'Usuario inicio sesion exitosamente',
     type: AuthDto,
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales invalidas (email o password incorrectos)',
+  })
   async signIn(@Body() dto: SignInDto): Promise<AuthDto> {
     return this.authService.signIn(dto);
   }
@@ -81,10 +86,12 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Registrar nuevo usuario' })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Nuevo usuario registrado',
     type: AuthDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 409, description: 'El email ya esta registrado' })
   async register(@Body() dto: RegisterDto): Promise<AuthDto> {
     return this.authService.register(dto);
   }
@@ -99,6 +106,7 @@ export class AuthController {
     description: 'Perfil actualizado exitosamente',
     type: ProfileDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
   @ApiResponse({
     status: 404,
     description: 'Usuario no encontrado',

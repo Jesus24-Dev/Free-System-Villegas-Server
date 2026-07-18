@@ -57,6 +57,10 @@ export class CompetitionController {
     status: 200,
     description: 'Archivo Excel con la lista de atletas inscritos',
   })
+  @ApiResponse({
+    status: 404,
+    description: 'Competencia o gimnasio no encontrado',
+  })
   async exportAthletesByGym(
     @Param('competitionId', ParseUUIDPipe) competitionId: string,
     @Param('gymId', ParseUUIDPipe) gymId: string,
@@ -77,6 +81,7 @@ export class CompetitionController {
     description: 'Competencia encontrada',
     type: CompetitionDto,
   })
+  @ApiResponse({ status: 404, description: 'Competencia no encontrada' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<CompetitionDto> {
@@ -91,6 +96,7 @@ export class CompetitionController {
     description: 'Competencia creada exitosamente',
     type: CompetitionDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
   async create(
     @Body() createCompetitionDto: CreateCompetitionDto,
   ): Promise<CompetitionDto> {
@@ -104,6 +110,15 @@ export class CompetitionController {
     status: 201,
     description: 'Atleta registrado exitosamente',
     type: RegisterAthleteAtCompetitionDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({
+    status: 404,
+    description: 'Competencia o atleta no encontrado',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'El atleta ya esta registrado en esta competencia',
   })
   registerAthlete(
     @Param('competitionId', ParseUUIDPipe) competitionId: string,
@@ -125,6 +140,8 @@ export class CompetitionController {
     description: 'Competencia actualizada con exito',
     type: CompetitionDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Competencia no encontrada' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionDto: UpdateCompetitionDto,
@@ -140,6 +157,7 @@ export class CompetitionController {
     status: 204,
     description: 'Competencia eliminada',
   })
+  @ApiResponse({ status: 404, description: 'Competencia no encontrada' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionService.remove(id);
   }

@@ -83,6 +83,7 @@ export class CoachController {
     description: 'Perfil del coach autenticado obtenido exitosamente',
     type: CoachMeResponseDto,
   })
+  @ApiResponse({ status: 404, description: 'Perfil de coach no encontrado' })
   async findMyProfile(
     @GetUser() user: JwtPayload,
   ): Promise<CoachMeResponseDto> {
@@ -123,6 +124,7 @@ export class CoachController {
     description: 'Coaches del gimnasio obtenidos.',
     type: [CoachDto],
   })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
   async findCoachesByGym(
     @Param('gymId', ParseUUIDPipe) gymId: string,
   ): Promise<CoachDto[]> {
@@ -144,14 +146,16 @@ export class CoachController {
     return this.coachService.findCoachProfile(id);
   }
 
+  @Roles('ADMIN')
+  @Post()
   @ApiOperation({ summary: 'Crear un nuevo coach' })
   @ApiResponse({
     status: 201,
     description: 'Crear un nuevo coach exitosamente',
     type: RawCoachDto,
   })
-  @Roles('ADMIN')
-  @Post()
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 409, description: 'Ya existe un coach con esa cedula' })
   async create(@Body() createCoachDto: CreateCoachDto): Promise<RawCoachDto> {
     return this.coachService.create(createCoachDto);
   }
@@ -164,7 +168,12 @@ export class CoachController {
     description: 'Atleta registrado en el gym',
     type: CreateAthleteDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
   @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ya existe un atleta con esa cedula en el gimnasio',
+  })
   async registerAthleteInGym(
     @Param('idGym', ParseUUIDPipe) idGym: string,
     @Body() createPerson: CreatePersonDto,
@@ -214,6 +223,8 @@ export class CoachController {
     description: 'Actualizar datos del coach',
     type: RawCoachDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Coach no encontrado' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCoachDto: UpdateCoachDto,
@@ -299,6 +310,7 @@ export class CoachController {
     status: 204,
     description: 'Eliminar un coach de la base de datos',
   })
+  @ApiResponse({ status: 404, description: 'Coach no encontrado' })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.coachService.remove(id);
   }

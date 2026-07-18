@@ -62,6 +62,7 @@ export class PersonController {
     description: 'Persona encontrada',
     type: PersonDto,
   })
+  @ApiResponse({ status: 404, description: 'Persona no encontrada' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<PersonDto> {
     const person = await this.personService.findOne(id);
     return {
@@ -135,6 +136,8 @@ export class PersonController {
     description: 'La persona ha sido creada exitosamente',
     type: PersonDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 409, description: 'La cedula ya esta registrada' })
   async create(
     @Body(new ValidationPipe()) createPersonDto: CreatePersonDto,
   ): Promise<PersonDto> {
@@ -158,6 +161,8 @@ export class PersonController {
     description: 'Persona actualizada',
     type: PersonDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Persona no encontrada' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body(new ValidationPipe()) updatePersonDto: UpdatePersonDto,
@@ -182,6 +187,7 @@ export class PersonController {
     status: 204,
     description: 'Persona eliminada',
   })
+  @ApiResponse({ status: 404, description: 'Persona no encontrada' })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.personService.remove(id);
   }
