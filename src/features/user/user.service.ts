@@ -5,15 +5,24 @@ import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dto/request';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
+import { PasswordService } from '../auth/services/password.service';
 
 export type UserWithPerson = Prisma.UserGetPayload<{
   include: { person: true };
 }>;
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly passwordService: PasswordService,
+  ) {}
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return this.prisma.user.create({ data: createUserDto });
+    const hashedPassword = await this.passwordService.hash(
+      createUserDto.password,
+    );
+    return this.prisma.user.create({
+      data: { ...createUserDto, password: hashedPassword },
+    });
   }
 
   async findAll(

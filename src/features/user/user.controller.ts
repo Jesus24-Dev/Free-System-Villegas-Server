@@ -19,6 +19,7 @@ import { UserDto } from './dto/response';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @ApiTags('Users')
 @Controller('users')
@@ -73,8 +74,8 @@ export class UserController {
     };
   }
 
-  @Roles('ADMIN')
   @Post()
+  @Public()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiResponse({
     status: 201,
