@@ -11,11 +11,13 @@ describe('AssignCoachToGymUseCase', () => {
   let prisma: any;
 
   beforeEach(async () => {
-    // Inicializamos el objeto prisma con la estructura base vacía
     prisma = {
       coach: {
         findFirst: jest.fn(),
         update: jest.fn(),
+      },
+      gym: {
+        findFirst: jest.fn(),
       },
     };
 
@@ -32,17 +34,17 @@ describe('AssignCoachToGymUseCase', () => {
     useCase = module.get(AssignCoachToGymUseCase);
   });
 
-  // =========================================================================
-  // CAMINO FELIZ: Asignación exitosa
-  // =========================================================================
   it('debe asignar un coach al gimnasio correctamente', async () => {
-    // Simulamos que el coach existe y no tiene gimnasio (gym_id: null)
     prisma.coach.findFirst.mockResolvedValue({
       id: 'coach-1',
       gym_id: null,
     });
 
-    // Simulamos el update
+    prisma.gym.findFirst.mockResolvedValue({
+      id: 'gym-1',
+      name: 'Test Gym',
+    });
+
     prisma.coach.update.mockResolvedValue({
       id: 'coach-1',
       gym_id: 'gym-1',
@@ -50,9 +52,13 @@ describe('AssignCoachToGymUseCase', () => {
 
     const result = await useCase.execute('coach-1', 'gym-1');
 
-    // Verificaciones
-    expect(result).toEqual({ id: 'coach-1', gym_id: null }); // Espera 'null' porque devuelves la variable 'coach' original
-    expect(prisma.coach.findFirst).toHaveBeenCalledWith({ where: { id: 'coach-1' } });
+    expect(result).toEqual({ id: 'coach-1', gym_id: 'gym-1' });
+    expect(prisma.coach.findFirst).toHaveBeenCalledWith({
+      where: { id: 'coach-1', deleted_at: null },
+    });
+    expect(prisma.gym.findFirst).toHaveBeenCalledWith({
+      where: { id: 'gym-1', deleted_at: null },
+    });
     expect(prisma.coach.update).toHaveBeenCalledWith({
       where: { id: 'coach-1' },
       data: { gym_id: 'gym-1' },
@@ -77,6 +83,21 @@ describe('AssignCoachToGymUseCase', () => {
 
     await expect(useCase.execute('coach-1', 'gym-nuevo-100')).rejects.toThrow(
       ConflictException,
+    );
+
+    expect(prisma.coach.update).not.toHaveBeenCalled();
+  });
+
+  it('debe lanzar un NotFoundException si el gimnasio no existe', async () => {
+    prisma.coach.findFirst.mockResolvedValue({
+      id: 'coach-1',
+      gym_id: null,
+    });
+
+    prisma.gym.findFirst.mockResolvedValue(null);
+
+    await expect(useCase.execute('coach-1', 'gym-inexistente')).rejects.toThrow(
+      NotFoundException,
     );
 
     expect(prisma.coach.update).not.toHaveBeenCalled();

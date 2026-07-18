@@ -4,10 +4,19 @@ import { CoachController } from './coach.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { RegisterAthleteUseCase } from './use-cases/register-athlete.use-case';
 import { AssignAthleteToGymUseCase } from './use-cases/assign-athlete-gym.use-case';
+import { AssignCoachToGymUseCase } from './use-cases/assign-coach-gym.use-case';
+import { RegisterAsAthleteUseCase } from './use-cases/register-as-athlete.use-case';
 
 @Module({
   imports: [PrismaModule],
   controllers: [CoachController],
-  providers: [CoachService, RegisterAthleteUseCase, AssignAthleteToGymUseCase],
+  providers: [
+    CoachService,
+    RegisterAthleteUseCase,
+    AssignAthleteToGymUseCase,
+    AssignCoachToGymUseCase,
+    RegisterAsAthleteUseCase,
+  ],
+  exports: [CoachService],
 })
 export class CoachModule {}

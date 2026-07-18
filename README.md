@@ -1,476 +1,200 @@
-# Free-System-Villegas-Server
+# Free System Villegas - Kickboxing Gym Management API
 
-Backend API for managing combat sports gyms, athletes, coaches, competitions, registrations and payments.
+Backend RESTful API for managing a kickboxing gym's operations, built with NestJS, Prisma, and PostgreSQL. Deployed on Neon (serverless PostgreSQL).
 
-This project provides a modular backend architecture built with NestJS, Prisma ORM and PostgreSQL, focused on managing the operational needs of a combat sports organization.
+## Tech Stack
 
-The system allows coaches and administrators to manage athletes, gyms, competitions, registrations, divisions and payment processes through a REST API.
+| Layer | Technology |
+|-------|------------|
+| Framework | NestJS 11 |
+| ORM | Prisma 7.8 |
+| Database | PostgreSQL 15 (Neon) |
+| Authentication | JWT (access tokens) |
+| Validation | class-validator + class-transformer |
+| Logging | Pino (nestjs-pino) |
+| Documentation | Swagger/OpenAPI |
+| Container | Docker multi-stage build |
 
----
+## Project Structure
+
+```
+src/
+├── main.ts                          # Bootstrap, CORS, Helmet, Swagger
+├── app.module.ts                    # Root module, Throttler config
+├── prisma/
+│   ├── prisma.service.ts            # PrismaClient with lifecycle hooks
+│   └── prisma.config.ts             # CLI datasource config
+├── common/
+│   ├── decorators/                  # @Public() decorator
+│   ├── dto/                         # PaginationDto, PaginatedResponseDto
+│   ├── filters/                     # PrismaClientExceptionFilter (P2003, P2014)
+│   ├── guards/                      # AuthGuard, RolesGuard
+│   ├── interfaces/                  # JwtPayload interface
+│   └── logger/                      # Custom LoggerService (Pino)
+└── features/
+    ├── auth/                        # Register, Login, JWT
+    ├── user/                        # User CRUD (soft delete)
+    ├── person/                      # Person entity (soft delete)
+    ├── coach/                       # Coach profile (1:1 with gym)
+    ├── athlete/                     # Athlete profile (1:1 with gym)
+    ├── gym/                         # Gym CRUD (coach-owned)
+    ├── competition/                 # Competition CRUD + Excel export
+    ├── competition-registration/    # Athlete registration per competition
+    ├── competition-division/        # Weight/gender divisions
+    ├── gym-payment/                 # Gym payment tracking
+    ├── pago-movil/                  # Manual payment registration
+    ├── admin/                       # Admin-only operations
+    └── weights/                     # Fighting weight categories
+```
 
 ## Features
 
-### Authentication and Authorization
+### Authentication & Authorization
+- JWT-based authentication (access tokens)
+- Role-based access control (ADMIN, COACH, ATHLETE)
+- `@Public()` decorator for unprotected routes
+- API key authentication for Swagger UI (non-production only)
 
-* JWT-based authentication
-* Role-based access control
-* Protected routes
-* Public route decorators
+### Security
+- Helmet.js for HTTP security headers
+- CORS configuration (whitelist via `CORS_ORIGIN`)
+- Global rate limiting: 30 requests/60 seconds
+- `noImplicitAny: true`, `strictBindCallApply: true` in TypeScript
+- Swagger disabled in production
 
-Available roles:
+### Data Integrity
+- Soft delete on all entities (`deleted_at` field)
+- Foreign key cascade on related entities
+- Prisma indexes on frequently queried columns
+- PrismaClientExceptionFilter for P2003/P2014 errors
 
-* `ADMIN`
-* `COACH`
-* `ATHLETE`
+### Pagination
+- `page` and `limit` query parameters on all list endpoints
+- `PaginatedResponseDto<T>` generic wrapper
+- Consistent response format across all services
 
----
+### Excel Export
+- `GET /competition/:competitionId/export/:gymId`
+- Returns `.xlsx` with athlete data for a gym in a competition
 
-### Gym Management
+### Validation
+- DNI format: `^[VEve]\d{6,9}$` (Venezuelan national ID)
+- Password: min 8 chars, uppercase, number, special character
+- UUID validation on all route params via `ParseUUIDPipe`
 
-* Gym creation and management
-* Coach ownership
-* Athlete association
-* Payment configuration
+## Getting Started
 
----
+### Prerequisites
 
-### Athlete Management
+- Node.js 20+
+- PostgreSQL 15+ (or Neon account)
+- Docker & Docker Compose (optional)
 
-* Athlete registration
-* Personal information management
-* Gym association
-* Athlete profiles
-* Competition history
+### Environment Variables
 
----
-
-### Competition Management
-
-* Competition creation
-* Competition states:
-
-```
-DRAFT
-OPEN
-CLOSED
-FINISHED
-```
-
-* Competition divisions
-* Athlete registration
-* Fighting modes
-* Weight categories
-
----
-
-### Payment Management
-
-* Gym monthly payments
-* Mobile payment configuration
-* Payment verification workflow
-
----
-
-### Development Features
-
-* Modular architecture
-* DTO validation
-* Swagger documentation
-* Prisma migrations
-* Structured logging
-* Exception filters
-* Unit testing
-* Docker support
-
----
-
-# Tech Stack
-
-## Backend
-
-* NestJS
-* TypeScript
-* Prisma ORM
-* PostgreSQL
-* JWT Authentication
-* Swagger / OpenAPI
-
-## Infrastructure
-
-* Docker
-* Docker Compose
-* Neon PostgreSQL (production database)
-
----
-
-# Project Architecture
-
-The project follows a modular architecture based on NestJS features.
-
-Example:
-
-```
-src
-│
-├── common
-│   ├── filters
-│   ├── logger
-│   └── decorators
-│
-├── prisma
-│
-└── features
-    │
-    ├── auth
-    ├── athlete
-    ├── coach
-    ├── gym
-    ├── competition
-    ├── competition-registration
-    ├── competition-division
-    ├── gym-payment
-    └── pago-movil
-```
-
-Each feature contains its own:
-
-* Controllers
-* Services
-* DTOs
-* Use cases
-* Tests
-
----
-
-# Requirements
-
-Before running the project locally:
-
-* Node.js 22+
-* PostgreSQL 15+
-* npm
-
-or:
-
-* Docker
-* Docker Compose
-
----
-
-# Environment Variables
-
-Create an environment file:
-
-```
-.env
-```
-
-Example:
-
-```env
-PORT=3004
-
-NODE_ENV=development
-
-DATABASE_URL="postgresql://postgres:password@localhost:5432/kickbox_villegas"
-
-JWT_SECRET=your_secret
-JWT_EXPIRES_IN=1d
-
-CORS_ORIGIN=http://localhost:3000
-
-
-SEED_DEV=false
-RESET_DB=false
-
-
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=password
-ADMIN_DNI=00000000
-ADMIN_NAME=Admin
-ADMIN_SURNAME=User
-```
-
----
-
-# Running Locally
-
-## 1. Install dependencies
+Copy `.env.example` to `.env` and configure:
 
 ```bash
+cp .env.example .env
+```
+
+### Local Development
+
+```bash
+# Install dependencies
 npm install
-```
 
----
-
-## 2. Configure PostgreSQL
-
-Create a PostgreSQL database:
-
-```
-kickbox_villegas
-```
-
-Update:
-
-```env
-DATABASE_URL
-```
-
----
-
-## 3. Run Prisma migrations
-
-```bash
-npx prisma migrate dev
-```
-
----
-
-## 4. Generate Prisma Client
-
-```bash
+# Generate Prisma client
 npm run prisma:generate
-```
 
----
+# Run migrations
+npm run prisma:migrate
 
-## 5. Seed database
+# Seed development data
+npx prisma db seed
 
-The project contains multiple seeds.
-
-The default seed process executes:
-
-### WAKO Seed
-
-Creates:
-
-* Weight categories
-* Base federation data
-
-### Admin Seed
-
-Creates:
-
-* Production administrator account
-
-### Development Seed
-
-Creates:
-
-* Fake development data
-
-To enable development data:
-
-```env
-SEED_DEV=true
-```
-
-Then run:
-
-```bash
-npm run seed
-```
-
----
-
-## Start development server
-
-```bash
+# Start dev server
 npm run start:dev
 ```
 
-API:
-
-```
-http://localhost:3004
-```
-
-Swagger:
-
-```
-http://localhost:3004/docs
-```
-
----
-
-# Running with Docker
-
-The project includes a multi-stage Docker build.
-
-The image contains:
-
-* Production dependencies
-* Prisma generated client
-* Compiled NestJS application
-
----
-
-## Build image
+### Docker
 
 ```bash
-docker build -t free-system-api .
+# Build and start all services
+docker-compose up -d
+
+# Run migrations inside container
+docker exec kickbox_api_server npx prisma migrate deploy
 ```
 
----
-
-## Run container
+### Production
 
 ```bash
-docker run \
---env-file .env.production.local \
--p 3004:3004 \
---name free-system-api \
-free-system-api
+npm run build
+npm run start:prod
 ```
 
----
+## Available Scripts
 
-# Running with Docker Compose
+| Script | Description |
+|--------|-------------|
+| `npm run build` | Compile TypeScript |
+| `npm run start` | Start server |
+| `npm run start:dev` | Start with file watching |
+| `npm run start:prod` | Start compiled server |
+| `npm run prisma:generate` | Generate Prisma client |
+| `npm run prisma:migrate` | Deploy migrations |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run unit tests |
+| `npm run test:e2e` | Run end-to-end tests |
+| `npx prisma db seed` | Seed database |
 
-Docker Compose starts:
+## API Documentation
 
-* PostgreSQL container
-* NestJS API container
+Swagger UI is available at `/docs` in non-production environments.
 
-Start:
+Requires `X-API-KEY` header for access.
+
+## Database
+
+### Entities
+
+- **User** - Authentication credentials
+- **Person** - Personal data (name, surname, DNI)
+- **Coach** - Coach profile (linked to Person)
+- **Athlete** - Athlete profile (linked to Person)
+- **Gym** - Gym details (owned by Coach)
+- **Competition** - Competition events
+- **CompetitionDivision** - Weight/gender divisions per competition
+- **CompetitionRegistration** - Athlete registrations
+- **GymPayment** - Gym payment records
+- **PagoMovilFields** - Manual payment data
+
+### Migrations
 
 ```bash
-docker compose up
+# Create migration
+npx prisma migrate dev --name <migration_name>
+
+# Deploy to production
+npm run prisma:migrate
 ```
 
-The API automatically executes:
+## Commit Convention
 
-```bash
-npx prisma migrate deploy
-```
-
-before starting.
-
----
-
-## Services
-
-### API
+This project follows [Conventional Commits](https://www.conventionalcommits.org/) in English:
 
 ```
-localhost:3004
+feat: add new feature
+fix: bug fix
+refactor: code restructuring
+perf: performance improvement
+style: formatting, missing semi-colons, etc
+docs: documentation changes
+test: adding missing tests
+chore: maintenance tasks
 ```
 
-Swagger:
+## License
 
-```
-localhost:3004/docs
-```
-
-### PostgreSQL
-
-```
-localhost:5432
-```
-
----
-
-# Production Database (Neon)
-
-The application is compatible with Neon PostgreSQL.
-
-Set:
-
-```env
-DATABASE_URL=your_neon_connection_string
-```
-
-The same Prisma migrations are used:
-
-```bash
-npx prisma migrate deploy
-```
-
----
-
-# Testing
-
-Run tests:
-
-```bash
-npm run test
-```
-
-The project includes tests for:
-
-* Use cases
-* Business rules
-* Error handling scenarios
-
----
-
-# Database Workflow
-
-After modifying Prisma models:
-
-Generate client:
-
-```bash
-npm run prisma:generate
-```
-
-Create migration:
-
-```bash
-npx prisma migrate dev --name migration_name
-```
-
-Production migration:
-
-```bash
-npx prisma migrate deploy
-```
-
----
-
-# API Documentation
-
-Swagger UI:
-
-```
-http://localhost:3004/docs
-```
-
-The documentation includes:
-
-* Endpoints
-* Request DTOs
-* Response DTOs
-* Authentication requirements
-
----
-
-# Production Considerations
-
-Recommended production setup:
-
-* Docker container deployment
-* Neon PostgreSQL database
-* Environment variables managed by hosting provider
-* HTTPS reverse proxy
-* CI/CD pipeline
-
----
-
-# Future Improvements
-
-Potential improvements:
-
-* Complete CI/CD workflow
-* Advanced monitoring
-* Cloud deployment
-* File storage integration
-* Notification system
-* More extensive automated testing
-
----
-
-# License
-
-MIT License
+UNLICENSED

@@ -4,6 +4,8 @@ import { UpdateCompetitionRegistrationDto } from './dto/request/update-competiti
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CompetitionRegistration } from '@prisma/client';
 import { CompetitionRegistrationResponseDto } from './dto/response';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @Injectable()
 export class CompetitionRegistrationService {
@@ -16,39 +18,50 @@ export class CompetitionRegistrationService {
     });
   }
 
-  async findAll(): Promise<CompetitionRegistrationResponseDto[]> {
-    const competitionRegistrations =
-      await this.prisma.competitionRegistration.findMany({
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = { deleted_at: null };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
         include: {
-          athlete: {
-            include: {
-              person: true,
-            },
-          },
+          athlete: { include: { person: true } },
           division: true,
         },
-      });
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
 
-    return competitionRegistrations.map((competitionRegistration) => ({
-      id: competitionRegistration.id,
-      athlete: {
-        id: competitionRegistration.athlete.id,
-        name: competitionRegistration.athlete.person.name,
-        surname: competitionRegistration.athlete.person.surname,
-        gender: competitionRegistration.athlete.person.gender,
-      },
-      division: {
-        mode: competitionRegistration.division.mode,
-        category: competitionRegistration.division.category,
-        weight: competitionRegistration.division.weight,
-      },
-    }));
+    return new PaginatedResponseDto(
+      data.map((competitionRegistration) => ({
+        id: competitionRegistration.id,
+        athlete: {
+          id: competitionRegistration.athlete.id,
+          name: competitionRegistration.athlete.person.name,
+          surname: competitionRegistration.athlete.person.surname,
+          gender: competitionRegistration.athlete.person.gender,
+        },
+        division: {
+          mode: competitionRegistration.division.mode,
+          category: competitionRegistration.division.category,
+          gender: competitionRegistration.division.gender,
+          weight: competitionRegistration.division.weight,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
   }
 
   async findOne(id: string): Promise<CompetitionRegistrationResponseDto> {
     const competitionRegistration =
-      await this.prisma.competitionRegistration.findUnique({
-        where: { id },
+      await this.prisma.competitionRegistration.findFirst({
+        where: { id, deleted_at: null },
         include: {
           athlete: {
             include: {
@@ -76,6 +89,7 @@ export class CompetitionRegistrationService {
       division: {
         mode: competitionRegistration.division.mode,
         category: competitionRegistration.division.category,
+        gender: competitionRegistration.division.gender,
         weight: competitionRegistration.division.weight,
       },
     };
@@ -91,9 +105,155 @@ export class CompetitionRegistrationService {
     });
   }
 
+  async findByCompetitionId(
+    competitionId: string,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = {
+      deleted_at: null,
+      division: { competition_id: competitionId, deleted_at: null },
+    };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
+        include: {
+          athlete: { include: { person: true } },
+          division: true,
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(
+      data.map((reg) => ({
+        id: reg.id,
+        athlete: {
+          id: reg.athlete.id,
+          name: reg.athlete.person.name,
+          surname: reg.athlete.person.surname,
+          gender: reg.athlete.person.gender,
+        },
+        division: {
+          mode: reg.division.mode,
+          category: reg.division.category,
+          gender: reg.division.gender,
+          weight: reg.division.weight,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
+  }
+
+  async findByGymId(
+    gymId: string,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = {
+      deleted_at: null,
+      athlete: { gym_id: gymId, deleted_at: null },
+      division: { deleted_at: null },
+    };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
+        include: {
+          athlete: { include: { person: true } },
+          division: {
+            include: {
+              competition: { select: { id: true, name: true, status: true } },
+            },
+          },
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(
+      data.map((reg) => ({
+        id: reg.id,
+        athlete: {
+          id: reg.athlete.id,
+          name: reg.athlete.person.name,
+          surname: reg.athlete.person.surname,
+          gender: reg.athlete.person.gender,
+        },
+        division: {
+          mode: reg.division.mode,
+          category: reg.division.category,
+          gender: reg.division.gender,
+          weight: reg.division.weight,
+          competition: reg.division.competition,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
+  }
+
+  async findByGymAndCompetition(
+    gymId: string,
+    competitionId: string,
+    pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<CompetitionRegistrationResponseDto>> {
+    const { skip, limit, page } = pagination;
+    const where = {
+      deleted_at: null,
+      athlete: { gym_id: gymId, deleted_at: null },
+      division: { competition_id: competitionId, deleted_at: null },
+    };
+    const [data, total] = await Promise.all([
+      this.prisma.competitionRegistration.findMany({
+        where,
+        include: {
+          athlete: { include: { person: true } },
+          division: {
+            include: {
+              competition: { select: { id: true, name: true, status: true } },
+            },
+          },
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.competitionRegistration.count({ where }),
+    ]);
+
+    return new PaginatedResponseDto(
+      data.map((reg) => ({
+        id: reg.id,
+        athlete: {
+          id: reg.athlete.id,
+          name: reg.athlete.person.name,
+          surname: reg.athlete.person.surname,
+          gender: reg.athlete.person.gender,
+        },
+        division: {
+          mode: reg.division.mode,
+          category: reg.division.category,
+          gender: reg.division.gender,
+          weight: reg.division.weight,
+          competition: reg.division.competition,
+        },
+      })),
+      total,
+      page!,
+      limit!,
+    );
+  }
+
   async remove(id: string): Promise<void> {
-    await this.prisma.competitionRegistration.delete({
+    await this.prisma.competitionRegistration.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

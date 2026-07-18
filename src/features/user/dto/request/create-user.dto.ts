@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsUUID,
-  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -56,8 +55,7 @@ export class CreateUserDto {
       'ID de la persona con los datos personales asociada al usuario',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
-  @IsNotEmpty({ message: 'El ID de la persona asociada es obligatorio' })
   @IsUUID('4', { message: 'El ID de la persona debe ser un UUID válido' })
-  @IsOptional()
+  @IsNotEmpty({ message: 'El ID de la persona asociada es obligatorio' })
   person_id!: string;
 }

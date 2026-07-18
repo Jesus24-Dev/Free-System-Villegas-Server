@@ -1,34 +1,52 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  ParseUUIDPipe,
+  Query,
+} from '@nestjs/common';
 import { PagoMovilService } from './pago-movil.service';
 import { CreatePagoMovilDto } from './dto/request/create-pago-movil.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PagoMovilResponseDto } from './dto/responses/pago-movil-response.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Pago Movil')
 @Controller('pago-movil')
 export class PagoMovilController {
   constructor(private readonly pagoMovilService: PagoMovilService) {}
 
-  @Roles('ADMIN', 'COACH')
-  @Post(':gymId')
+  @Roles('ADMIN')
+  @Get()
   @ApiOperation({
-    summary: 'Crear un nuevo método de pago móvil para un gimnasio',
+    summary: 'Obtener todos los datos de pago movil',
   })
   @ApiResponse({
-    status: 201,
-    description: 'El método de pago móvil ha sido creado.',
-    type: PagoMovilResponseDto,
+    status: 200,
+    description: 'Los datos han sido devueltos.',
+    type: PaginatedResponseDto<PagoMovilResponseDto>,
   })
-  create(
-    @Param('gymId') gymId: string,
-    @Body() createPagoMovilDto: CreatePagoMovilDto,
-  ): Promise<PagoMovilResponseDto> {
-    return this.pagoMovilService.create(gymId, createPagoMovilDto);
+  async findAll(
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginatedResponseDto<PagoMovilResponseDto>> {
+    const result = await this.pagoMovilService.findAll(pagination);
+    return new PaginatedResponseDto(
+      result.data,
+      result.total,
+      result.page,
+      result.limit,
+    );
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
-  @Get(':gymId')
+  @Get('gym/:gymId')
   @ApiOperation({
     summary: 'Obtener todos los datos de pago movil de un gimnasio',
   })
@@ -37,7 +55,10 @@ export class PagoMovilController {
     description: 'Los datos han sido devueltos.',
     type: [PagoMovilResponseDto],
   })
-  findByGym(@Param('gymId') gymId: string): Promise<PagoMovilResponseDto[]> {
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
+  findByGym(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+  ): Promise<PagoMovilResponseDto[]> {
     return this.pagoMovilService.findByGym(gymId);
   }
 
@@ -51,13 +72,42 @@ export class PagoMovilController {
     description: 'El dato ha sido devuelto.',
     type: PagoMovilResponseDto,
   })
-  findOne(@Param('id') id: string): Promise<PagoMovilResponseDto> {
+  @ApiResponse({ status: 404, description: 'Dato de pago movil no encontrado' })
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<PagoMovilResponseDto> {
     return this.pagoMovilService.findOne(id);
   }
 
   @Roles('ADMIN', 'COACH')
+  @Post(':gymId')
+  @ApiOperation({
+    summary: 'Crear un nuevo método de pago móvil para un gimnasio',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'El método de pago móvil ha sido creado.',
+    type: PagoMovilResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
+  create(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+    @Body() createPagoMovilDto: CreatePagoMovilDto,
+  ): Promise<PagoMovilResponseDto> {
+    return this.pagoMovilService.create(gymId, createPagoMovilDto);
+  }
+
+  @Roles('ADMIN', 'COACH')
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Eliminar un dato de pago movil' })
+  @ApiResponse({
+    status: 204,
+    description: 'Dato de pago movil eliminado',
+  })
+  @ApiResponse({ status: 404, description: 'Dato de pago movil no encontrado' })
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.pagoMovilService.remove(id);
   }
 }

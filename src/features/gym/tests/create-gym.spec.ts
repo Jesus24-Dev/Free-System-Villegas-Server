@@ -57,6 +57,10 @@ describe('CreateGymUseCase', () => {
           findFirst: jest.fn().mockResolvedValue({
             id: 'coach-123',
           }),
+          update: jest.fn().mockResolvedValue({
+            id: 'coach-123',
+            gym_id: 'gym-999',
+          }),
         },
         gym: {
           create: jest.fn().mockResolvedValue({
@@ -96,6 +100,7 @@ describe('CreateGymUseCase', () => {
       const tx = {
         coach: {
           findFirst: jest.fn().mockResolvedValue(null),
+          update: jest.fn(),
         },
         gym: { create: jest.fn() },
         pagoMovilFields: { createMany: jest.fn() },
@@ -124,6 +129,7 @@ describe('CreateGymUseCase', () => {
       const tx = {
         coach: {
           findFirst: jest.fn().mockResolvedValue({ id: 'coach-123' }),
+          update: jest.fn(),
         },
         gym: { create: jest.fn() },
         pagoMovilFields: { createMany: jest.fn() },

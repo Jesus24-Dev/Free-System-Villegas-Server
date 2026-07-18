@@ -1,9 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  FightingCategory,
-  FightingMode,
-  Gender,
-} from '@prisma/client';
+import { FightingCategory, FightingMode, Gender } from '@prisma/client';
 
 export class CompetitionDivisionWithoutCompetitionDto {
   @ApiProperty({
@@ -22,7 +18,7 @@ export class CompetitionDivisionWithoutCompetitionDto {
   @ApiProperty({
     description: 'Modalidad de combate del atleta a registrar',
     example: FightingMode.K1,
-    enum: FightingCategory,
+    enum: FightingMode,
   })
   mode!: FightingMode;
 

@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   SerializeOptions,
   UseInterceptors,
@@ -14,42 +15,23 @@ import { AuthService } from './auth.service';
 import { GetUser } from './decorators/get-user.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { plainToInstance } from 'class-transformer';
-import { JwtPayload, RegisterDto, SignInDto } from './dto/request';
+import {
+  JwtPayload,
+  RegisterDto,
+  SignInDto,
+  UpdateProfileDto,
+} from './dto/request';
 import { AuthDto, ProfileDto } from './dto/responses';
 import { Throttle } from '@nestjs/throttler';
+import { UpdateProfileUseCase } from './use-cases/update-profile.use-case';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  @Post('login')
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Inicio de sesion del usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Usuario inicio sesion exitosamente',
-    type: AuthDto,
-  })
-  async signIn(@Body() dto: SignInDto): Promise<AuthDto> {
-    return this.authService.signIn(dto);
-  }
-
-  @Post('register')
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
-  @Public()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Registrar nuevo usuario' })
-  @ApiResponse({
-    status: 200,
-    description: 'Nuevo usuario registrado',
-    type: AuthDto,
-  })
-  async register(@Body() dto: RegisterDto): Promise<AuthDto> {
-    return this.authService.register(dto);
-  }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly updateProfileUseCase: UpdateProfileUseCase,
+  ) {}
 
   @Get('profile')
   @HttpCode(HttpStatus.OK)
@@ -61,7 +43,84 @@ export class AuthController {
     description: 'Perfil del usuario obtenido con exito',
     type: ProfileDto,
   })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async profile(@GetUser() user: JwtPayload): Promise<ProfileDto> {
+    const rawProfile = await this.authService.profile(user.sub);
+
+    const profile: ProfileDto = {
+      id: rawProfile.id,
+      email: rawProfile.email,
+      role: rawProfile.role,
+      dni: rawProfile.person.dni,
+      name: rawProfile.person.name,
+      surname: rawProfile.person.surname,
+      birthday: rawProfile.person.birthday,
+      gender: rawProfile.person.gender,
+      status: rawProfile.person.status,
+    };
+
+    return plainToInstance(ProfileDto, profile);
+  }
+
+  @Post('login')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Inicio de sesion del usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuario inicio sesion exitosamente',
+    type: AuthDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales invalidas (email o password incorrectos)',
+  })
+  async signIn(@Body() dto: SignInDto): Promise<AuthDto> {
+    return this.authService.signIn(dto);
+  }
+
+  @Post('register')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Public()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Registrar nuevo usuario' })
+  @ApiResponse({
+    status: 201,
+    description: 'Nuevo usuario registrado',
+    type: AuthDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 409, description: 'El email ya esta registrado' })
+  async register(@Body() dto: RegisterDto): Promise<AuthDto> {
+    return this.authService.register(dto);
+  }
+
+  @Patch('profile')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @SerializeOptions({ strategy: 'excludeAll' })
+  @ApiOperation({ summary: 'Actualizar perfil del usuario' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil actualizado exitosamente',
+    type: ProfileDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({
+    status: 404,
+    description: 'Usuario no encontrado',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'La cedula ya esta registrada por otro usuario',
+  })
+  async updateProfile(
+    @GetUser() user: JwtPayload,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<ProfileDto> {
+    await this.updateProfileUseCase.execute(user.sub, dto);
+
     const rawProfile = await this.authService.profile(user.sub);
 
     const profile: ProfileDto = {

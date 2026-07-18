@@ -30,23 +30,19 @@ export class LoggerService
     });
   }
 
-  log(message: unknown, ...optionalParams: any[]) {
-    this.logger.info({
-      msg: message,
-      message,
-      ...optionalParams,
-    });
+  log(message: unknown, ...optionalParams: unknown[]) {
+    const data =
+      optionalParams[0] && typeof optionalParams[0] === 'object'
+        ? optionalParams[0]
+        : {};
+    this.logger.info({ msg: message, ...data });
   }
 
-  info(event: string, data?: Record<string, any>) {
-    this.logger.info({
-      msg: event,
-      event,
-      ...data,
-    });
+  info(event: string, data?: Record<string, unknown>) {
+    this.logger.info({ msg: event, event, ...data });
   }
 
-  error(event: string, error?: unknown, data?: Record<string, any>) {
+  error(event: string, error?: unknown, data?: Record<string, unknown>) {
     const errorMessage =
       error instanceof Error
         ? error.message
@@ -58,28 +54,25 @@ export class LoggerService
       event,
       error:
         error instanceof Error
-          ? {
-              message: error.message,
-              stack: error.stack,
-            }
+          ? { message: error.message, stack: error.stack }
           : error,
       ...data,
     });
   }
 
-  warn(message: unknown, ...optionalParams: any[]) {
-    this.logger.warn({
-      msg: message,
-      message,
-      ...optionalParams,
-    });
+  warn(message: unknown, ...optionalParams: unknown[]) {
+    const data =
+      optionalParams[0] && typeof optionalParams[0] === 'object'
+        ? optionalParams[0]
+        : {};
+    this.logger.warn({ msg: message, ...data });
   }
 
-  debug(message: unknown, ...optionalParams: any[]) {
-    this.logger.debug({
-      msg: message,
-      message,
-      ...optionalParams,
-    });
+  debug(message: unknown, ...optionalParams: unknown[]) {
+    const data =
+      optionalParams[0] && typeof optionalParams[0] === 'object'
+        ? optionalParams[0]
+        : {};
+    this.logger.debug({ msg: message, ...data });
   }
 }

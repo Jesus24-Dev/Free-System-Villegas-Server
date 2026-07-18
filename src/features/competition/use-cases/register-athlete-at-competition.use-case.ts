@@ -35,9 +35,10 @@ export class RegisterAthleteAtCompetitionUseCase {
       // Competition validation
       // =====================================================
 
-      const competition = await tx.competition.findUnique({
+      const competition = await tx.competition.findFirst({
         where: {
           id: competitionId,
+          deleted_at: null,
         },
       });
 
@@ -65,9 +66,10 @@ export class RegisterAthleteAtCompetitionUseCase {
       // Athlete validation
       // =====================================================
 
-      const athlete = await tx.athlete.findUnique({
+      const athlete = await tx.athlete.findFirst({
         where: {
           id: athleteId,
+          deleted_at: null,
         },
         include: {
           person: true,
@@ -129,6 +131,7 @@ export class RegisterAthleteAtCompetitionUseCase {
           await tx.competitionRegistration.findFirst({
             where: {
               athlete_id: athleteId,
+              deleted_at: null,
               division: {
                 competition_id: competitionId,
                 mode: {
@@ -159,6 +162,7 @@ export class RegisterAthleteAtCompetitionUseCase {
           category: dto.category,
           gender: athlete.person.gender,
           weight: dto.weight,
+          deleted_at: null,
         },
       });
 
@@ -182,6 +186,7 @@ export class RegisterAthleteAtCompetitionUseCase {
         where: {
           athlete_id: athleteId,
           division_id: division.id,
+          deleted_at: null,
         },
       });
 

@@ -3,6 +3,7 @@ import {
   Catch,
   ConflictException,
   NotFoundException,
+  BadRequestException,
   HttpException,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
@@ -32,6 +33,19 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
       case 'P2025': {
         errorToThrow = new NotFoundException(
           'El registro solicitado no fue encontrado en la base de datos.',
+        );
+        break;
+      }
+      case 'P2003': {
+        const field = (exception.meta?.field_name as string) || 'relación';
+        errorToThrow = new BadRequestException(
+          `Error de integridad referencial: el campo '${field}' hace referencia a un registro que no existe o no puede ser eliminado.`,
+        );
+        break;
+      }
+      case 'P2014': {
+        errorToThrow = new BadRequestException(
+          'No se puede realizar la operación porque el registro tiene dependencias obligatorias.',
         );
         break;
       }

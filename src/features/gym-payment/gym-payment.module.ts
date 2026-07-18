@@ -8,5 +8,6 @@ import { LoggerService } from 'src/common/logger/logger.service';
   imports: [PrismaModule],
   controllers: [GymPaymentController],
   providers: [GymPaymentService, LoggerService],
+  exports: [GymPaymentService],
 })
 export class GymPaymentModule {}

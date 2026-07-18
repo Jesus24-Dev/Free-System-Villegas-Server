@@ -90,9 +90,12 @@ model User {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
+
+  @@index([deleted_at])
 }
 
 // Modelo person se encarga de los datos personales del usuario. Encargada de gestionar las entidades de rol 
@@ -107,10 +110,13 @@ model Person {
   status Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   user User?
   coach Coach?
   athlete Athlete?
+
+  @@index([deleted_at])
 }
 
 // Modelo Gym encargado de la creacion y gestion de gimnasios del sistema. 
@@ -122,6 +128,7 @@ model Gym {
   monthly_payment Float
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
   coach_owner Coach @relation("GymOwner", fields: [owner_id], references: [id])
   owner_id String @unique
 
@@ -129,6 +136,8 @@ model Gym {
   athletes Athlete[]
   payments GymPayment[] @relation("GymPayment")
   pago_movil PagoMovilFields[] @relation("GymDataToPay")
+
+  @@index([deleted_at])
 }
 
 // Modelo Coach para tener registro de coach. Permite crear gimnasios y gestionarlos, junto a la gestion de atletas.
@@ -136,6 +145,7 @@ model Coach {
   id String @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   gym_owned Gym? @relation("GymOwner")
 
@@ -144,6 +154,9 @@ model Coach {
 
   gym Gym? @relation(fields: [gym_id], references: [id])
   gym_id String?
+
+  @@index([gym_id])
+  @@index([deleted_at])
 }
 
 // Modelo atleta para los atletas en los gimnasios. Pueden participar en competencia
@@ -151,6 +164,7 @@ model Athlete {
   id String @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   person Person @relation(fields: [person_id], references: [id])
   person_id String @unique
@@ -160,6 +174,9 @@ model Athlete {
 
   registrations CompetitionRegistration[] @relation("AthleteRegistrations")
   payments_gym GymPayment[] @relation("AthleteGymPayment")
+
+  @@index([gym_id])
+  @@index([deleted_at])
 }
 
 // Tabla de pesos WAKO por categoria, modalidad y genero. Tabla rellenada por seeder.
@@ -171,6 +188,8 @@ model FightingWeights {
   gender Gender
 
   weight Float
+
+  @@index([mode, category, gender, weight])
 }
 
 // Modelo de competencia. Los administradores crean la competencia y los coaches pueden registrar a sus alumnos.
@@ -186,8 +205,12 @@ model Competition {
   status CompetitionStatus
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   competition_division CompetitionDivision[] @relation("FightModeForAthletes")
+
+  @@index([status])
+  @@index([deleted_at])
 }
 
 // Modelo para guardar el atleta registrado por competencia.
@@ -195,6 +218,7 @@ model CompetitionRegistration {
   id String @id @default(uuid())
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   athlete Athlete @relation("AthleteRegistrations", fields: [athlete_id], references: [id])
   athlete_id String
@@ -203,6 +227,8 @@ model CompetitionRegistration {
   division_id String
 
   @@unique([athlete_id, division_id])
+  @@index([division_id])
+  @@index([deleted_at])
 }
 
 // Modelo fight mode por si algun atleta desea registrar mas de una modalidad.
@@ -216,6 +242,7 @@ model CompetitionDivision {
   
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   competition Competition @relation("FightModeForAthletes", fields: [competition_id], references: [id])
   competition_id String 
@@ -223,6 +250,7 @@ model CompetitionDivision {
   registrations CompetitionRegistration[] @relation("AthleteFightModes")
 
   @@unique([competition_id, mode, category, gender, weight])
+  @@index([deleted_at])
 }
 
 // Modelo para gestionar los pagos del gimnasio y mensualidades. 
@@ -236,12 +264,17 @@ model GymPayment {
   isConfirmed Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  deleted_at DateTime?
 
   athlete Athlete @relation("AthleteGymPayment", fields: [athlete_id], references: [id])
   athlete_id String
 
   gym Gym @relation("GymPayment", fields: [gym_id], references: [id])
   gym_id String
+
+  @@index([athlete_id])
+  @@index([gym_id])
+  @@index([deleted_at])
 }
 
 model PagoMovilFields {
@@ -249,9 +282,12 @@ model PagoMovilFields {
   bank_to_pay String
   dni String
   phone String
+  deleted_at DateTime?
 
   gym Gym @relation("GymDataToPay", fields: [gym_id], references: [id])
   gym_id String
 
   @@unique([bank_to_pay, dni, phone])
+  @@index([gym_id])
+  @@index([deleted_at])
 }

@@ -42,7 +42,7 @@ import { AppService } from './app.service';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 80,
+        limit: 30,
       },
     ]),
     AdminModule,

@@ -3,6 +3,12 @@ import { States } from '@prisma/client';
 
 export class RawGymDto {
   @ApiProperty({
+    description: 'ID único del gimnasio',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id!: string;
+
+  @ApiProperty({
     description: 'Nombre del gimnasio',
     example: 'Kickboxing gimnasio grill',
   })
@@ -32,4 +38,10 @@ export class RawGymDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   owner_id?: string;
+
+  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
+  created_at!: Date;
+
+  @ApiProperty({ example: '2026-06-06T21:50:00.000Z' })
+  updated_at!: Date;
 }

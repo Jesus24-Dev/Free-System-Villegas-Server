@@ -5,11 +5,7 @@ import {
   ApiProperty,
   IntersectionType,
 } from '@nestjs/swagger';
-import {
-  FightingCategory,
-  FightingMode,
-  Gender,
-} from '@prisma/client';
+import { FightingCategory, FightingMode, Gender } from '@prisma/client';
 
 export class WeightsFilterDto {
   @ApiPropertyOptional({

@@ -23,6 +23,7 @@ export class CreateGymUseCase {
               id: userId,
             },
           },
+          deleted_at: null,
         },
       });
       if (!coach) {
@@ -54,19 +55,29 @@ export class CreateGymUseCase {
 
       const gym = await tx.gym.create({
         data: {
-          owner_id: coach.id,
-          ...createGym,
+          name: createGym.name,
+          address: createGym.address,
+          state: createGym.state,
+          monthly_payment: createGym.monthly_payment,
+          coach_owner: {
+            connect: { id: coach.id },
+          },
         },
       });
 
       const payments = createGym.payment_methods.map((pay) => ({
         bank_to_pay: pay.bank_to_pay,
         dni: pay.dni,
-        phone: pay.dni,
+        phone: pay.phone,
         gym_id: gym.id,
       }));
 
       await tx.pagoMovilFields.createMany({ data: payments });
+
+      await tx.coach.update({
+        where: { id: coach.id },
+        data: { gym_id: gym.id },
+      });
 
       this.logger.info('GYM_CREATED', {
         gymId: gym.id,

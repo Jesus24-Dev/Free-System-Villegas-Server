@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CompetitionDivisionService } from './competition-division.service';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
@@ -27,22 +28,6 @@ export class CompetitionDivisionController {
   constructor(
     private readonly competitionDivisionService: CompetitionDivisionService,
   ) {}
-
-  @Roles('ADMIN', 'COACH')
-  @Post()
-  @ApiOperation({
-    summary: 'Registrar una modalidad del atleta en la competencia',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Modalidad registrada con exito',
-    type: CompetitionDivisionWithoutCompetitionDto,
-  })
-  async create(
-    @Body() createCompetitionDivisionDto: CreateCompetitionDivisionDto,
-  ): Promise<CompetitionDivisionWithoutCompetitionDto> {
-    return this.competitionDivisionService.create(createCompetitionDivisionDto);
-  }
 
   @Roles('ADMIN', 'COACH')
   @Get()
@@ -69,8 +54,32 @@ export class CompetitionDivisionController {
     description: 'Modalidad obtenida con exito',
     type: CompetitionDivisionDto,
   })
-  async findOne(@Param('id') id: string): Promise<CompetitionDivisionDto> {
+  @ApiResponse({ status: 404, description: 'Modalidad no encontrada' })
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<CompetitionDivisionDto> {
     return this.competitionDivisionService.findOne(id);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Post()
+  @ApiOperation({
+    summary: 'Registrar una modalidad del atleta en la competencia',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Modalidad registrada con exito',
+    type: CompetitionDivisionWithoutCompetitionDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({
+    status: 409,
+    description: 'Ya existe una division con los mismos parametros',
+  })
+  async create(
+    @Body() createCompetitionDivisionDto: CreateCompetitionDivisionDto,
+  ): Promise<CompetitionDivisionWithoutCompetitionDto> {
+    return this.competitionDivisionService.create(createCompetitionDivisionDto);
   }
 
   @Roles('ADMIN')
@@ -83,8 +92,10 @@ export class CompetitionDivisionController {
     description: 'Modalidad actualizada con exito',
     type: CompetitionDivisionWithoutCompetitionDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Modalidad no encontrada' })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCompetitionDivisionDto: UpdateCompetitionDivisionDto,
   ): Promise<CompetitionDivisionWithoutCompetitionDto> {
     return this.competitionDivisionService.update(
@@ -100,10 +111,11 @@ export class CompetitionDivisionController {
     summary: 'Eliminar una modalidad registrada por su ID',
   })
   @ApiResponse({
-    status: 200,
-    description: 'Modalidad eliminar con exito',
+    status: 204,
+    description: 'Modalidad eliminada con exito',
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  @ApiResponse({ status: 404, description: 'Modalidad no encontrada' })
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.competitionDivisionService.remove(id);
   }
 }

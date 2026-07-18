@@ -6,6 +6,7 @@ import { CreateGymDto, UpdateGymDto } from './dto/request';
 import { GymDetailsResponseDto } from './dto/response/gym-details-response.dto';
 import { CoachDetailsDto } from './dto/response/coach-details-response.dto';
 import { PagoMovilDetailsDto } from './dto/response/pago-movil-details-response.dto';
+import { AthleteDetailsDto } from './dto/response/athlete-details-response.dto';
 
 @Injectable()
 export class GymService {
@@ -21,6 +22,7 @@ export class GymService {
 
   async findAll(): Promise<GymDto[]> {
     const gyms = await this.prisma.gym.findMany({
+      where: { deleted_at: null },
       include: {
         coach_owner: {
           include: {
@@ -53,8 +55,8 @@ export class GymService {
   }
 
   async findOne(id: string): Promise<GymDto> {
-    const gym = await this.prisma.gym.findUnique({
-      where: { id },
+    const gym = await this.prisma.gym.findFirst({
+      where: { id, deleted_at: null },
       include: {
         coach_owner: {
           include: {
@@ -94,19 +96,44 @@ export class GymService {
 
   async getGymDetails(gymId: string): Promise<GymDetailsResponseDto> {
     const gym = await this.prisma.gym.findFirst({
-      where: { id: gymId },
+      where: { id: gymId, deleted_at: null },
       include: {
         coaches: {
+          where: { deleted_at: null },
           include: {
-            person: true,
+            person: {
+              select: {
+                dni: true,
+                name: true,
+                surname: true,
+                gender: true,
+                status: true,
+              },
+            },
           },
         },
         athletes: {
+          where: { deleted_at: null },
           include: {
-            person: true,
+            person: {
+              select: {
+                dni: true,
+                name: true,
+                surname: true,
+                gender: true,
+                status: true,
+              },
+            },
           },
         },
-        pago_movil: true,
+        pago_movil: {
+          where: { deleted_at: null },
+          select: {
+            bank_to_pay: true,
+            dni: true,
+            phone: true,
+          },
+        },
       },
     });
 
@@ -115,7 +142,7 @@ export class GymService {
         `El gimnasio con la ID ${gymId} no fue encontrado.`,
       );
     }
-    const coaches: CoachDetailsDto[] = gym?.coaches.map((coach) => ({
+    const coaches: CoachDetailsDto[] = gym.coaches.map((coach) => ({
       id: coach.id,
       person: {
         dni: coach.person.dni,
@@ -126,7 +153,7 @@ export class GymService {
       },
     }));
 
-    const athletes: CoachDetailsDto[] = gym?.athletes.map((athlete) => ({
+    const athletes: AthleteDetailsDto[] = gym.athletes.map((athlete) => ({
       id: athlete.id,
       person: {
         dni: athlete.person.dni,
@@ -148,6 +175,7 @@ export class GymService {
       name: gym.name,
       address: gym.address,
       state: gym.state,
+      monthly_payment: gym.monthly_payment,
       athletes,
       coaches,
       pago_movil: pagoMovil,
@@ -162,6 +190,9 @@ export class GymService {
   }
 
   async remove(id: string): Promise<void> {
-    await this.prisma.gym.delete({ where: { id } });
+    await this.prisma.gym.update({
+      where: { id },
+      data: { deleted_at: new Date() },
+    });
   }
 }

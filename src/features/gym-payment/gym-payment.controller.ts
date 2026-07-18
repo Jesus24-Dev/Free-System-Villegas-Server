@@ -8,36 +8,27 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { GymPaymentService } from './gym-payment.service';
+import { CreateGymPaymentDto } from './dto/request';
+import { UpdateGymPaymentDto } from './dto/request';
+import { FilterGymPaymentDto } from './dto/request';
 import {
-  CreateGymPaymentDto,
   GymPaymentResponseDto,
-} from './dto/create-gym-payment.dto';
-import { UpdateGymPaymentDto } from './dto/update-gym-payment.dto';
+  GymPaymentByGymResponseDto,
+} from './dto/response';
 import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginatedResponseDto } from 'src/common/dto/paginated-response.dto';
 
 @ApiTags('Gym Payment')
 @Controller('gym-payment')
 export class GymPaymentController {
   constructor(private readonly gymPaymentService: GymPaymentService) {}
 
-  @Roles('ADMIN', 'ATHLETE')
-  @Post()
-  @ApiOperation({ summary: 'Registrar un nuevo pago por un atleta' })
-  @ApiResponse({
-    status: 201,
-    description: 'Pago registrado con exito',
-    type: GymPaymentResponseDto,
-  })
-  async create(
-    @Body() createGymPaymentDto: CreateGymPaymentDto,
-  ): Promise<GymPaymentResponseDto> {
-    return this.gymPaymentService.create(createGymPaymentDto);
-  }
-
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'COACH')
   @Get()
   @ApiOperation({ summary: 'Obtener todos los pagos de todos los gimnasios' })
   @ApiResponse({
@@ -45,8 +36,27 @@ export class GymPaymentController {
     description: 'Lista de pagos',
     type: [GymPaymentResponseDto],
   })
-  async findAll(): Promise<GymPaymentResponseDto[]> {
-    return this.gymPaymentService.findAll();
+  async findAll(
+    @Query() filter: FilterGymPaymentDto,
+  ): Promise<PaginatedResponseDto<GymPaymentResponseDto>> {
+    return this.gymPaymentService.findAll(filter);
+  }
+
+  @Roles('ADMIN', 'COACH')
+  @Get('gym/:gymId')
+  @ApiOperation({
+    summary: 'Obtener todos los pagos de un gimnasio con datos del atleta',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de pagos con datos del atleta',
+    type: [GymPaymentByGymResponseDto],
+  })
+  @ApiResponse({ status: 404, description: 'Gimnasio no encontrado' })
+  async findByGym(
+    @Param('gymId', ParseUUIDPipe) gymId: string,
+  ): Promise<GymPaymentByGymResponseDto[]> {
+    return this.gymPaymentService.findByGym(gymId);
   }
 
   @Roles('ADMIN', 'COACH', 'ATHLETE')
@@ -57,8 +67,26 @@ export class GymPaymentController {
     description: 'Pago obtenido',
     type: GymPaymentResponseDto,
   })
-  async findOne(@Param('id') id: string): Promise<GymPaymentResponseDto> {
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.findOne(id);
+  }
+
+  @Roles('ADMIN', 'ATHLETE')
+  @Post()
+  @ApiOperation({ summary: 'Registrar un nuevo pago por un atleta' })
+  @ApiResponse({
+    status: 201,
+    description: 'Pago registrado con exito',
+    type: GymPaymentResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  async create(
+    @Body() createGymPaymentDto: CreateGymPaymentDto,
+  ): Promise<GymPaymentResponseDto> {
+    return this.gymPaymentService.create(createGymPaymentDto);
   }
 
   @Roles('ADMIN')
@@ -69,8 +97,10 @@ export class GymPaymentController {
     description: 'Pago actualizado',
     type: GymPaymentResponseDto,
   })
+  @ApiResponse({ status: 400, description: 'Datos de entrada invalidos' })
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateGymPaymentDto: UpdateGymPaymentDto,
   ): Promise<GymPaymentResponseDto> {
     return this.gymPaymentService.update(id, updateGymPaymentDto);
@@ -83,7 +113,8 @@ export class GymPaymentController {
     status: 200,
     description: 'Pago confirmado',
   })
-  async confirmPayment(@Param('id') id: string): Promise<void> {
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
+  async confirmPayment(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymPaymentService.confirmPayment(id);
   }
 
@@ -94,9 +125,9 @@ export class GymPaymentController {
   @ApiResponse({
     status: 204,
     description: 'Pago eliminado',
-    type: GymPaymentResponseDto,
   })
-  async remove(@Param('id') id: string): Promise<void> {
+  @ApiResponse({ status: 404, description: 'Pago no encontrado' })
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.gymPaymentService.remove(id);
   }
 }

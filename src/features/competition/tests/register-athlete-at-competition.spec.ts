@@ -51,7 +51,7 @@ describe('RegisterAthleteAtCompetitionUseCase', () => {
     prisma.$transaction.mockImplementation(async (callback: any) => {
       const tx = {
         competition: {
-          findUnique: jest.fn().mockResolvedValue({
+          findFirst: jest.fn().mockResolvedValue({
             id: 'competition-1',
             name: 'competition-for-test',
             status: CompetitionStatus.OPEN,
@@ -59,10 +59,11 @@ describe('RegisterAthleteAtCompetitionUseCase', () => {
         },
 
         athlete: {
-          findUnique: jest.fn().mockResolvedValue({
+          findFirst: jest.fn().mockResolvedValue({
             id: 'athlete-1',
             person: {
               id: 'person-1',
+              gender: Gender.MALE,
             },
           }),
         },
@@ -80,13 +81,7 @@ describe('RegisterAthleteAtCompetitionUseCase', () => {
           create: jest.fn().mockResolvedValue({
             id: 'division-1',
           }),
-          findFirst: jest.fn().mockResolvedValue({
-            competition_id: 'competition-1',
-            mode: FightingMode.POINT_FIGHTING,
-            category: FightingCategory.S,
-            gender: Gender.MALE,
-            weight: -69,
-          }),
+          findFirst: jest.fn().mockResolvedValue(null),
         },
 
         competitionRegistration: {

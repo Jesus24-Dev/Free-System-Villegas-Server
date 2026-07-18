@@ -1,9 +1,4 @@
-import {
-  ArgumentMetadata,
-  Injectable,
-  PipeTransform,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class ParseEnumCaseInsensitivePipe implements PipeTransform {
@@ -13,7 +8,7 @@ export class ParseEnumCaseInsensitivePipe implements PipeTransform {
     private readonly enumName: string,
   ) {}
 
-  transform(value: any, metadata: ArgumentMetadata) {
+  transform(value: any) {
     if (value === undefined || value === null || value === '') {
       return undefined;
     }

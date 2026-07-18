@@ -31,6 +31,12 @@ export class GymDetailsResponseDto {
   state!: States;
 
   @ApiProperty({
+    description: 'Costo mensual del gimnasio en USD',
+    example: 20,
+  })
+  monthly_payment!: number;
+
+  @ApiProperty({
     type: [AthleteDetailsDto],
   })
   athletes!: AthleteDetailsDto[];

@@ -1,10 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUUID, IsNotEmpty, IsEnum, IsNumber, Min } from 'class-validator';
-import {
-  Gender,
-  FightingMode,
-  FightingCategory,
-} from '@prisma/client';
+import { Gender, FightingMode, FightingCategory } from '@prisma/client';
 
 export class CreateCompetitionDivisionDto {
   @ApiProperty({

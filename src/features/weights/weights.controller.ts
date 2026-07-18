@@ -19,6 +19,10 @@ export class WeightsController {
     description: 'Lista de pesos obtenida exitosamente.',
     type: [WeightResponseDto],
   })
+  @ApiResponse({
+    status: 400,
+    description: 'Parametros de filtro invalidos',
+  })
   async findAll(
     @Query() filterDto: WeightsFilterDto,
   ): Promise<WeightResponseDto[]> {
