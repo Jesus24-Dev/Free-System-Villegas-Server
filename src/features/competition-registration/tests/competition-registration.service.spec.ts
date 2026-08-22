@@ -2,7 +2,7 @@
 // @ts-nocheck
 import { describe, beforeEach, it, expect, jest } from '@jest/globals';
 import { Test } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CompetitionRegistrationService } from '../competition-registration.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -51,6 +51,7 @@ describe('CompetitionRegistrationService', () => {
       gender: 'MALE',
     },
     division: {
+      id: 'division-001',
       mode: 'K1',
       category: 'ADULT',
       gender: 'MALE',
@@ -66,6 +67,7 @@ describe('CompetitionRegistrationService', () => {
         findFirst: jest.fn(),
         count: jest.fn(),
         update: jest.fn(),
+        delete: jest.fn(),
       },
     };
 
@@ -210,6 +212,87 @@ describe('CompetitionRegistrationService', () => {
       await expect(service.remove('reg-inexistente')).rejects.toThrow(
         'Record to update not found',
       );
+    });
+  });
+
+  describe('removeByAthleteAndCompetition', () => {
+    const mockRegistrationWithCompetition = {
+      ...mockCompetitionRegistration,
+      athlete: mockAthlete,
+      division: {
+        ...mockDivision,
+        competition: { status: 'OPEN' },
+      },
+    };
+
+    it('debe eliminar un registro cuando la competencia esta OPEN', async () => {
+      prisma.competitionRegistration.findFirst.mockResolvedValue(
+        mockRegistrationWithCompetition,
+      );
+      prisma.competitionRegistration.delete.mockResolvedValue(
+        mockCompetitionRegistration,
+      );
+
+      await service.removeByAthleteAndCompetition(
+        'athlete-001',
+        'competition-001',
+        'division-001',
+      );
+
+      expect(prisma.competitionRegistration.findFirst).toHaveBeenCalledWith({
+        where: {
+          athlete_id: 'athlete-001',
+          division_id: 'division-001',
+          deleted_at: null,
+          division: {
+            competition_id: 'competition-001',
+            deleted_at: null,
+          },
+        },
+        include: {
+          division: {
+            include: {
+              competition: { select: { status: true } },
+            },
+          },
+        },
+      });
+      expect(prisma.competitionRegistration.delete).toHaveBeenCalledWith({
+        where: { id: 'reg-001' },
+      });
+    });
+
+    it('debe lanzar NotFoundException si no existe el registro', async () => {
+      prisma.competitionRegistration.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.removeByAthleteAndCompetition(
+          'athlete-inexistente',
+          'competition-001',
+          'division-001',
+        ),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('debe lanzar BadRequestException si la competencia no esta OPEN', async () => {
+      const registrationClosed = {
+        ...mockRegistrationWithCompetition,
+        division: {
+          ...mockDivision,
+          competition: { status: 'CLOSED' },
+        },
+      };
+      prisma.competitionRegistration.findFirst.mockResolvedValue(
+        registrationClosed,
+      );
+
+      await expect(
+        service.removeByAthleteAndCompetition(
+          'athlete-001',
+          'competition-001',
+          'division-001',
+        ),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });

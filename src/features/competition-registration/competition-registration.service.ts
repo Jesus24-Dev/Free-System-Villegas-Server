@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCompetitionRegistrationDto } from './dto/request/create-competition-registration.dto';
 import { UpdateCompetitionRegistrationDto } from './dto/request/update-competition-registration.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -46,6 +50,7 @@ export class CompetitionRegistrationService {
           gender: competitionRegistration.athlete.person.gender,
         },
         division: {
+          id: competitionRegistration.division.id,
           mode: competitionRegistration.division.mode,
           category: competitionRegistration.division.category,
           gender: competitionRegistration.division.gender,
@@ -87,6 +92,7 @@ export class CompetitionRegistrationService {
         gender: competitionRegistration.athlete.person.gender,
       },
       division: {
+        id: competitionRegistration.division.id,
         mode: competitionRegistration.division.mode,
         category: competitionRegistration.division.category,
         gender: competitionRegistration.division.gender,
@@ -137,6 +143,7 @@ export class CompetitionRegistrationService {
           gender: reg.athlete.person.gender,
         },
         division: {
+          id: reg.division.id,
           mode: reg.division.mode,
           category: reg.division.category,
           gender: reg.division.gender,
@@ -186,6 +193,7 @@ export class CompetitionRegistrationService {
           gender: reg.athlete.person.gender,
         },
         division: {
+          id: reg.division.id,
           mode: reg.division.mode,
           category: reg.division.category,
           gender: reg.division.gender,
@@ -237,6 +245,7 @@ export class CompetitionRegistrationService {
           gender: reg.athlete.person.gender,
         },
         division: {
+          id: reg.division.id,
           mode: reg.division.mode,
           category: reg.division.category,
           gender: reg.division.gender,
@@ -254,6 +263,48 @@ export class CompetitionRegistrationService {
     await this.prisma.competitionRegistration.update({
       where: { id },
       data: { deleted_at: new Date() },
+    });
+  }
+
+  async removeByAthleteAndCompetition(
+    athleteId: string,
+    competitionId: string,
+    divisionId: string,
+  ): Promise<void> {
+    const registration =
+      await this.prisma.competitionRegistration.findFirst({
+        where: {
+          athlete_id: athleteId,
+          division_id: divisionId,
+          deleted_at: null,
+          division: {
+            competition_id: competitionId,
+            deleted_at: null,
+          },
+        },
+        include: {
+          division: {
+            include: {
+              competition: { select: { status: true } },
+            },
+          },
+        },
+      });
+
+    if (!registration) {
+      throw new NotFoundException(
+        `No se encontro un registro del atleta ${athleteId} en la division ${divisionId} de la competencia ${competitionId}`,
+      );
+    }
+
+    if (registration.division.competition.status !== 'OPEN') {
+      throw new BadRequestException(
+        `No se puede eliminar el registro. La competencia no esta en estado OPEN`,
+      );
+    }
+
+    await this.prisma.competitionRegistration.delete({
+      where: { id: registration.id },
     });
   }
 }
