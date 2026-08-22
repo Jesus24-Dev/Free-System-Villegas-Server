@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RegisteredAthleteDto } from './registered-athlete-response.dto';
 import { CompetitionDivisionDto } from './competition-division-response.dto';
 
@@ -17,4 +17,9 @@ export class CompetitionRegistrationResponseDto {
     type: CompetitionDivisionDto,
   })
   division!: CompetitionDivisionDto;
+
+  @ApiPropertyOptional({
+    example: 'Gimnasio Force',
+  })
+  gym_name?: string;
 }

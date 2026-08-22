@@ -26,10 +26,12 @@ describe('CompetitionRegistrationService', () => {
       surname: 'Doe',
       gender: 'MALE',
     },
+    gym: { name: 'Gimnasio Force' },
   };
 
   const mockDivision = {
     id: 'division-001',
+    competition_id: 'competition-001',
     mode: 'K1',
     category: 'ADULT',
     gender: 'MALE',
@@ -52,11 +54,13 @@ describe('CompetitionRegistrationService', () => {
     },
     division: {
       id: 'division-001',
+      competition_id: 'competition-001',
       mode: 'K1',
       category: 'ADULT',
       gender: 'MALE',
       weight: 75,
     },
+    gym_name: 'Gimnasio Force',
   };
 
   beforeEach(async () => {
@@ -204,7 +208,7 @@ describe('CompetitionRegistrationService', () => {
       expect(prisma.competitionRegistration.findMany).toHaveBeenCalledWith({
         where: { deleted_at: null },
         include: {
-          athlete: { include: { person: true } },
+          athlete: { include: { person: true, gym: { select: { name: true } } } },
           division: true,
         },
         skip: 0,
@@ -242,6 +246,7 @@ describe('CompetitionRegistrationService', () => {
           athlete: {
             include: {
               person: true,
+              gym: { select: { name: true } },
             },
           },
           division: true,

@@ -106,7 +106,7 @@ export class CompetitionRegistrationService {
       this.prisma.competitionRegistration.findMany({
         where,
         include: {
-          athlete: { include: { person: true } },
+          athlete: { include: { person: true, gym: { select: { name: true } } } },
           division: true,
         },
         skip,
@@ -126,11 +126,13 @@ export class CompetitionRegistrationService {
         },
         division: {
           id: competitionRegistration.division.id,
+          competition_id: competitionRegistration.division.competition_id,
           mode: competitionRegistration.division.mode,
           category: competitionRegistration.division.category,
           gender: competitionRegistration.division.gender,
           weight: competitionRegistration.division.weight,
         },
+        gym_name: competitionRegistration.athlete.gym?.name,
       })),
       total,
       page!,
@@ -146,6 +148,7 @@ export class CompetitionRegistrationService {
           athlete: {
             include: {
               person: true,
+              gym: { select: { name: true } },
             },
           },
           division: true,
@@ -168,11 +171,13 @@ export class CompetitionRegistrationService {
       },
       division: {
         id: competitionRegistration.division.id,
+        competition_id: competitionRegistration.division.competition_id,
         mode: competitionRegistration.division.mode,
         category: competitionRegistration.division.category,
         gender: competitionRegistration.division.gender,
         weight: competitionRegistration.division.weight,
       },
+      gym_name: competitionRegistration.athlete.gym?.name,
     };
   }
 
@@ -199,7 +204,7 @@ export class CompetitionRegistrationService {
       this.prisma.competitionRegistration.findMany({
         where,
         include: {
-          athlete: { include: { person: true } },
+          athlete: { include: { person: true, gym: { select: { name: true } } } },
           division: true,
         },
         skip,
@@ -219,11 +224,13 @@ export class CompetitionRegistrationService {
         },
         division: {
           id: reg.division.id,
+          competition_id: reg.division.competition_id,
           mode: reg.division.mode,
           category: reg.division.category,
           gender: reg.division.gender,
           weight: reg.division.weight,
         },
+        gym_name: reg.athlete.gym?.name,
       })),
       total,
       page!,
@@ -245,7 +252,7 @@ export class CompetitionRegistrationService {
       this.prisma.competitionRegistration.findMany({
         where,
         include: {
-          athlete: { include: { person: true } },
+          athlete: { include: { person: true, gym: { select: { name: true } } } },
           division: {
             include: {
               competition: { select: { id: true, name: true, status: true } },
@@ -269,12 +276,14 @@ export class CompetitionRegistrationService {
         },
         division: {
           id: reg.division.id,
+          competition_id: reg.division.competition_id,
           mode: reg.division.mode,
           category: reg.division.category,
           gender: reg.division.gender,
           weight: reg.division.weight,
           competition: reg.division.competition,
         },
+        gym_name: reg.athlete.gym?.name,
       })),
       total,
       page!,
@@ -297,7 +306,7 @@ export class CompetitionRegistrationService {
       this.prisma.competitionRegistration.findMany({
         where,
         include: {
-          athlete: { include: { person: true } },
+          athlete: { include: { person: true, gym: { select: { name: true } } } },
           division: {
             include: {
               competition: { select: { id: true, name: true, status: true } },
@@ -321,12 +330,14 @@ export class CompetitionRegistrationService {
         },
         division: {
           id: reg.division.id,
+          competition_id: reg.division.competition_id,
           mode: reg.division.mode,
           category: reg.division.category,
           gender: reg.division.gender,
           weight: reg.division.weight,
           competition: reg.division.competition,
         },
+        gym_name: reg.athlete.gym?.name,
       })),
       total,
       page!,

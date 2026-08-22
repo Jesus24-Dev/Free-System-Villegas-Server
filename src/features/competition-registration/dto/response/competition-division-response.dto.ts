@@ -23,6 +23,11 @@ export class CompetitionDivisionDto {
   })
   id!: string;
 
+  @ApiPropertyOptional({
+    example: 'd7f71929-5260-4226-a25a-7a883bedca3e',
+  })
+  competition_id?: string;
+
   @ApiProperty({
     enum: FightingMode,
     example: FightingMode.K1,
