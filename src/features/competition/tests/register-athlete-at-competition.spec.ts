@@ -91,6 +91,7 @@ describe('RegisterAthleteAtCompetitionUseCase', () => {
             division_id: 'division-1',
           }),
           findFirst: jest.fn().mockResolvedValue(null),
+          findMany: jest.fn().mockResolvedValue([]),
         },
       };
 

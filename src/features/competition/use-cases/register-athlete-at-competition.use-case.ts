@@ -30,6 +30,13 @@ export class RegisterAthleteAtCompetitionUseCase {
       FightingMode.FULL_CONTACT,
     ]);
 
+    const TATAMI_MODES = new Set<FightingMode>([
+      FightingMode.POINT_FIGHTING,
+      FightingMode.KICK_LIGHT,
+      FightingMode.LIGHT_CONTACT,
+      FightingMode.BOXING,
+    ]);
+
     const registration = await this.prisma.$transaction(async (tx) => {
       // =====================================================
       // Competition validation
@@ -123,30 +130,53 @@ export class RegisterAthleteAtCompetitionUseCase {
       }
 
       // =====================================================
-      // Ring validation
+      // Ring / Tatami validation
       // =====================================================
 
-      if (RING_MODES.has(dto.mode)) {
-        const existingRingRegistration =
-          await tx.competitionRegistration.findFirst({
-            where: {
-              athlete_id: athleteId,
-              deleted_at: null,
-              division: {
-                competition_id: competitionId,
-                mode: {
-                  in: Array.from(RING_MODES),
-                },
-              },
-            },
-            include: {
-              division: true,
-            },
-          });
+      const isNewRing = RING_MODES.has(dto.mode);
+      const isNewTatami = TATAMI_MODES.has(dto.mode);
 
-        if (existingRingRegistration) {
+      const existingRegistrations =
+        await tx.competitionRegistration.findMany({
+          where: {
+            athlete_id: athleteId,
+            deleted_at: null,
+            division: {
+              competition_id: competitionId,
+              deleted_at: null,
+            },
+          },
+          include: {
+            division: { select: { mode: true } },
+          },
+        });
+
+      if (existingRegistrations.length > 0) {
+        const hasRing = existingRegistrations.some((r) =>
+          RING_MODES.has(r.division.mode),
+        );
+        const hasTatami = existingRegistrations.some((r) =>
+          TATAMI_MODES.has(r.division.mode),
+        );
+
+        if (isNewRing && hasRing) {
+          const existingRing = existingRegistrations.find((r) =>
+            RING_MODES.has(r.division.mode),
+          );
           throw new ConflictException(
-            `El atleta ya esta registrado en una modalidad de Ring ${existingRingRegistration.division.mode}`,
+            `El atleta ya esta registrado en una modalidad de Ring (${existingRing!.division.mode}). Solo puede registrarse en una modalidad de Ring por competencia`,
+          );
+        }
+
+        if (isNewTatami && hasRing) {
+          throw new BadRequestException(
+            `El atleta ya tiene un registro en modalidad de Ring. No puede registrarse en modalidades de Tatami y Ring simultaneamente`,
+          );
+        }
+
+        if (isNewRing && hasTatami) {
+          throw new BadRequestException(
+            `El atleta ya tiene registros en modalidades de Tatami. No puede registrarse en modalidades de Ring y Tatami simultaneamente`,
           );
         }
       }

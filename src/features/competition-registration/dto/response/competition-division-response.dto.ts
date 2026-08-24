@@ -19,6 +19,16 @@ export class CompetitionBasicDto {
 
 export class CompetitionDivisionDto {
   @ApiProperty({
+    example: '9ec2d338-dae9-4144-b807-c1dde106a5ca',
+  })
+  id!: string;
+
+  @ApiPropertyOptional({
+    example: 'd7f71929-5260-4226-a25a-7a883bedca3e',
+  })
+  competition_id?: string;
+
+  @ApiProperty({
     enum: FightingMode,
     example: FightingMode.K1,
   })

@@ -172,6 +172,36 @@ export class CompetitionRegistrationController {
     );
   }
 
+  @Roles('ADMIN', 'COACH')
+  @Delete(
+    'athlete/:athleteId/competition/:competitionId/division/:divisionId',
+  )
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary:
+      'Eliminar el registro de un atleta en una division especifica de una competencia',
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Registro eliminado',
+  })
+  @ApiResponse({ status: 404, description: 'Registro no encontrado' })
+  @ApiResponse({
+    status: 400,
+    description: 'La competencia no esta en estado OPEN',
+  })
+  async removeByAthleteAndCompetition(
+    @Param('athleteId', ParseUUIDPipe) athleteId: string,
+    @Param('competitionId', ParseUUIDPipe) competitionId: string,
+    @Param('divisionId', ParseUUIDPipe) divisionId: string,
+  ): Promise<void> {
+    await this.competitionRegistrationService.removeByAthleteAndCompetition(
+      athleteId,
+      competitionId,
+      divisionId,
+    );
+  }
+
   @Roles('ADMIN')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
